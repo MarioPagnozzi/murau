@@ -1,0 +1,22 @@
+{
+  "name": "atacadomurau",
+  "description": "Sistema de Pedido por atacado",
+  "main": "app.js",
+  "authors": [
+    "Murau"
+  ],
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.5.1",
+    "bootstrap": "^4.5.2"
+  }
+}
