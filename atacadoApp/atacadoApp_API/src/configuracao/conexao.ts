@@ -1,3 +1,5 @@
+import { Configuracoes } from './../entity/Configuracoes';
+import { Tabelas } from './../entity/Tabelas';
 import { ImagensProduto } from './../entity/imagesProduto';
 import { ItemPedido } from './../entity/ItemPedido';
 import { Pedidos } from './../entity/Pedidos';
@@ -38,7 +40,9 @@ export default {
                 Produtos,
                 Pedidos,
                 ItemPedido,
-                ImagensProduto
+                ImagensProduto,
+                Tabelas,
+                Configuracoes
             ]
         });
         console.log("Database connected");

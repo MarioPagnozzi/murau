@@ -1,3 +1,4 @@
+import { Configuracoes } from './../entity/Configuracoes';
 import { User } from './../entity/User';
 import { Produtos } from './../entity/Produtos';
 import { Vendedores } from './../entity/Vendedores';
@@ -7,6 +8,9 @@ import * as fs from "fs";
 import { Grupos } from '../entity/Grupos';
 import { Permissao } from '../entity/Permissao';
 import * as md5 from "md5";
+import { Tabelas } from '../entity/Tabelas';
+import config from "./config";
+
 
 
 
@@ -90,6 +94,33 @@ export class Setup {
            
            
        }
+
+       let _repTabelas: Repository<Tabelas> = getRepository(Tabelas);
+       let tabelas: Tabelas;
+
+       config.tabelas.forEach(async (tab) => {
+           let _tabela = await _repTabelas.findOne({tabela: tab});
+
+           if (!_tabela) {
+               tabelas = new Tabelas();
+               tabelas.tabela = tab;
+
+               await _repTabelas.save(tabelas);
+           }
+       });
+
+       let _repConfig: Repository<Configuracoes> = getRepository(Configuracoes);
+       let configuracoes: Configuracoes;
+
+       let _parametro = await _repConfig.findOne({nome_parametro: "cod_prod_busca"});
+
+       if (!_parametro) {
+           configuracoes = new Configuracoes();
+           configuracoes.nome_parametro = "cod_prod_busca";
+           configuracoes.valor = "0";
+           await _repConfig.save(configuracoes);
+       }
+
         console.log("Processo finalizado");
     }
    

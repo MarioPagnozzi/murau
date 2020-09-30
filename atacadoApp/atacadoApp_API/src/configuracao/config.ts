@@ -4,5 +4,16 @@ export default {
     publicRoutes: process.env.PUBLICROUTES || [
         '/users/create',
         '/users/auth'
+    ],
+    tabelas: [
+        "usuarios",
+        "clientes",
+        "configuracoes",
+        "empresas",
+        "grupos",
+        "pedidos",
+        "permissao",
+        "produtos",
+        "vendedores"
     ]
 }
