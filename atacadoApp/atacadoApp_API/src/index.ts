@@ -7,6 +7,7 @@ import config from "./configuracao/config";
 import auth from "./middleware/auth";
 import conexao from "./configuracao/conexao";
 import { Setup } from "./configuracao/inicializa";
+import cron_job from "./middleware/cron_job";
 
 
 // create express app
@@ -34,8 +35,11 @@ Routes.forEach(route => {
     });
 });
 
+
+
 app.listen(config.port,'0.0.0.0', async () => {
 
+    
     try {
         await conexao.createConnection().then(async () => {
             try {
@@ -69,6 +73,8 @@ app.listen(config.port,'0.0.0.0', async () => {
             catch (error) {
                  console.error("Usuário não registrado", error);
             }
+        }).catch((err) => {
+            console.error("API não iniciada corretamente: " + err);
         });
         console.log("Data base conectado");
     }
@@ -76,5 +82,6 @@ app.listen(config.port,'0.0.0.0', async () => {
         console.error("database not connected", error);
     }   
     console.log(`API atacado App Rodando inicializada na porta ${config.port}`);
+    cron_job.call(this);
 });
 

@@ -1,3 +1,4 @@
+import { ProdutosEmpresas } from './ProdutosEmpresas';
 
 import { Produtos } from './Produtos';
 import { Pedidos } from './Pedidos';
@@ -45,8 +46,10 @@ export class Empresas extends BaseEntity {
     @ManyToMany(type => Vendedores, vendedores => vendedores.empresas, {nullable: true})    
     vendedores: Vendedores[]
 
-    @ManyToMany(type => Produtos, produtos => produtos.empresas)  
-    produtos: Produtos[]
+    /*@ManyToMany(type => Produtos, produtos => produtos.empresas)  
+    produtos: Produtos[]*/
+    @OneToMany(type => ProdutosEmpresas, produtosempresas => produtosempresas.empresa)
+    produtosempresas: ProdutosEmpresas[]
 
     @OneToMany(type => Clientes, cliente => cliente.empresa, {nullable: true, eager: false})
     clientes: Clientes[]

@@ -4,9 +4,9 @@ import { BaseEntity } from "./BaseEntity";
 @Entity({name: "configuracao"})
 export class Configuracoes extends BaseEntity {
 
-    @Column({type: "varchar", length: 50, unique:true})
+    @Column({type: "varchar", length: 2000, unique:true})
     nome_parametro: string
 
-    @Column({type: "varchar", length: 50})
+    @Column({type: "varchar", length: 2000})
     valor: string
 }

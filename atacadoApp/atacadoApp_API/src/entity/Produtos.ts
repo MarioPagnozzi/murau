@@ -1,3 +1,4 @@
+import { ProdutosEmpresas } from './ProdutosEmpresas';
 import { ImagensProduto } from './imagesProduto';
 import { JoinTable, OneToMany } from 'typeorm';
 import { Empresas } from './Empresas';
@@ -32,9 +33,12 @@ export class Produtos extends BaseEntity {
     @Column({type: "float"})
     preco: number
 
-    @ManyToMany(type => Empresas, empresas => empresas.produtos, {eager: true})
+   /* @ManyToMany(type => Empresas, empresas => empresas.produtos, {eager: true})
     @JoinTable()
-    empresas: Empresas[]
+    empresas: Empresas[]*/
+
+    @OneToMany(type => ProdutosEmpresas, produtosempresas => produtosempresas.produto)
+    produtosEmpresas: ProdutosEmpresas[]
 
     @OneToMany (type => ImagensProduto, imagem => imagem.produto, {eager: true})
     imagens: ImagensProduto[]

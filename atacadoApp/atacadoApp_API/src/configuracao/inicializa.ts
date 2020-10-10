@@ -7,9 +7,10 @@ import { getRepository, Repository } from 'typeorm';
 import * as fs from "fs";
 import { Grupos } from '../entity/Grupos';
 import { Permissao } from '../entity/Permissao';
-import * as md5 from "md5";
 import { Tabelas } from '../entity/Tabelas';
+import * as md5 from "md5";
 import config from "./config";
+import { ProdutosEmpresas } from '../entity/ProdutosEmpresas';
 
 
 
@@ -121,6 +122,47 @@ export class Setup {
            await _repConfig.save(configuracoes);
        }
 
+       _parametro = await _repConfig.findOne({nome_parametro: "host_api_totvs"});
+
+       if (!_parametro) {
+           
+            configuracoes = new Configuracoes();
+            configuracoes.nome_parametro = "host_api_totvs";
+            configuracoes.valor = "www30.bhan.com.br";
+
+            await _repConfig.save(configuracoes);
+
+            configuracoes = new Configuracoes();
+            configuracoes.nome_parametro = "porta_api_totvs";
+            configuracoes.valor = "9443";
+
+            await _repConfig.save(configuracoes);
+
+           configuracoes = new Configuracoes();
+           configuracoes.nome_parametro = "autorizacao_api_totvs_token";
+           configuracoes.valor = "/api/v1/autorizacao/token";
+
+           await _repConfig.save(configuracoes);
+
+           configuracoes = new Configuracoes();
+           configuracoes.nome_parametro = "usuario_api_totvs_token";
+           configuracoes.valor = "planteamorws";
+           
+           await _repConfig.save(configuracoes);
+
+           configuracoes = new Configuracoes();
+           configuracoes.nome_parametro = "senha_api_totvs_token";
+           configuracoes.valor = "896314";
+
+           await _repConfig.save(configuracoes);
+
+           configuracoes = new Configuracoes();
+           configuracoes.nome_parametro = "rest_api_totvs";
+           configuracoes.valor = "/api/v1";
+
+           await _repConfig.save(configuracoes);
+       }
+
         console.log("Processo finalizado");
     }
    
@@ -137,9 +179,8 @@ export class Setup {
         let _prod: any;
 
         let temProduto = await _repProduto.findOne();
-        let prodcadastrado: any;
+        let prodcadastrado: any = false;
         if (!temProduto) { 
-            _empresasCount = await _repEmpresa.find();
             if (_empresasCount.length != 0) {
                 console.clear();
                  produtos.forEach(async function(dadosprod) {
@@ -148,10 +189,10 @@ export class Setup {
                              console.clear();                            
                              EntityProduto = new Produtos();
                              EntityProduto.ativo = true;
-         
+                             let codigo: string = _prod[1];
                              EntityProduto.codigo = _prod[1];
                              EntityProduto.cor = _prod[4];
-                         
+                             
                              EntityProduto.descricao = "nada consta";
                              EntityProduto.estoque = 0;
                              EntityProduto.nome = _prod[2];
@@ -165,20 +206,31 @@ export class Setup {
                                 i += 1;
                              })*/
                               
-                             EntityProduto.empresas = _empresasCount;
-
-
+                            
                              if (EntityProduto.nome != "") {
-                                 prodcadastrado = true;
-                                 prodcadastrado = await _repProduto.save(EntityProduto, {chunk: 2000});
+                                 prodcadastrado = true; 
+                                 _repProduto.save(EntityProduto).then(async (produto) => {
+                                    let _repProdutosEmpresas: Repository<ProdutosEmpresas> = getRepository(ProdutosEmpresas);
+                                    let produtosEmpresas: ProdutosEmpresas;
+                                    _empresasCount = await _repEmpresa.find();
+                                    _empresasCount.forEach(async (empresa) => {
+                                            produtosEmpresas = new ProdutosEmpresas();
+                                            produtosEmpresas.produto = produto,
+                                            produtosEmpresas.empresa = empresa;
+                                            _repProdutosEmpresas.save(produtosEmpresas);
+                                       }); 
+                                   
+                                 });
+                                 
                              }
                                                                  
          
                              if (prodcadastrado) {
                                  console.log("Produto: " + EntityProduto.nome + " cadastrado na empresa: "); 
+                                 prodcadastrado = false;
                              }                                
                              
-                     });  
+                });    
             }
                 
              

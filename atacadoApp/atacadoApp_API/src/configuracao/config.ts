@@ -14,6 +14,7 @@ export default {
         "pedidos",
         "permissao",
         "produtos",
-        "vendedores"
+        "vendedores",
+        "produtos_empresas"
     ]
 }
