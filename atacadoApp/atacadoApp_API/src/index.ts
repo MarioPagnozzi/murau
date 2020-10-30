@@ -36,8 +36,8 @@ Routes.forEach(route => {
 });
 
 
-
-app.listen(config.port,'0.0.0.0', async () => {
+let https = require("https");
+https.createServer(app).listen(config.port,'0.0.0.0', async () => {
 
     
     try {
