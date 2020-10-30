@@ -3,7 +3,10 @@ export default {
     secretkey: process.env.SECRETYKEY || '8e9dbaf1-2667-46ef-ae0c-779a8108e9a4',
     publicRoutes: process.env.PUBLICROUTES || [
         '/users/create',
-        '/users/auth'
+        '/users/auth',
+        "/home",
+        "/home/:prod",
+        "/home/:prodEmpresa/all"
     ],
     tabelas: [
         "usuarios",
