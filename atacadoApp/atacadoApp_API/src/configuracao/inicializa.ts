@@ -31,10 +31,11 @@ export class Setup {
         let EntityEmp: Empresas;
         let EntityVendedor: Vendedores; 
         
-        let _Empresas = await _repEmpresa.findOne();
+        let _Empresa = await _repEmpresa.findOne();
 
-        if (!_Empresas) {
-            
+        if (!_Empresa) {
+            let _Empresas: Empresas[];
+
             let emp = fs.readFileSync(__dirname + "/arquivos/empresas.csv", "utf8");           
             let emps = emp.split(/\n/);
                     
@@ -43,7 +44,7 @@ export class Setup {
             let vendedores = vend.split(/\n/);
            
 
-            emps.forEach(async function (dados) {                
+            await emps.forEach(async function (dados) {                
                 _emp = dados.split(";");
 
                
@@ -63,12 +64,17 @@ export class Setup {
                     EntityEmp.razao_social = "Cadastro Automático";
                     EntityEmp.uf = "UF";
                         
-                    await _repEmpresa.save(EntityEmp);  
-                    console.log(EntityEmp.nome_fantasia);
+                    _repEmpresa.save(EntityEmp).then(async (empresa) => {
+                        console.log("Empresa " + empresa.nome_fantasia + " cadastrada");
+                        //_Empresas.push(empresa);
+                    }).catch(async (error) => {
+                        console.error("Erro ao cadastradar a empresa " + EntityEmp.nome_fantasia + " " + error);
+                    });
+                    
             });
 
             let vendcadastrado: any;
-            vendedores.forEach(async function(dadosvend) {
+            await vendedores.forEach(async function(dadosvend) {
                 console.clear();
                 _vend = dadosvend.split(";");          
                  
@@ -84,16 +90,13 @@ export class Setup {
     
                     EntityVendedor.endereco = "Cadastro Automático";
                     EntityVendedor.nome = _vend[1]
-                     
-                    vendcadastrado = await _repVendedor.save(EntityVendedor,{chunk: 100});                   
-                   
-                   if (vendcadastrado) {
-                    console.log("Vendedor: " + EntityVendedor.nome + " cadastrado");
-                   }
+                    EntityVendedor.empresas = _Empresas;
+                    vendcadastrado = await _repVendedor.save(EntityVendedor,{chunk: 100}).then(async (vendedor) => {
+                        console.log("Vendedor " + vendedor.nome + " cadastrado");
+                    }).catch((error) => {
+                        console.error("Erro ao cadastradar o vendedor " + EntityVendedor.nome);
+                    });
            });
-
-           
-           
        }
 
        let _repTabelas: Repository<Tabelas> = getRepository(Tabelas);
@@ -106,7 +109,7 @@ export class Setup {
                tabelas = new Tabelas();
                tabelas.tabela = tab;
 
-               await _repTabelas.save(tabelas);
+               _repTabelas.save(tabelas);
            }
        });
 
@@ -119,7 +122,7 @@ export class Setup {
            configuracoes = new Configuracoes();
            configuracoes.nome_parametro = "cod_prod_busca";
            configuracoes.valor = "0";
-           await _repConfig.save(configuracoes);
+           _repConfig.save(configuracoes);
        }
 
        _parametro = await _repConfig.findOne({nome_parametro: "host_api_totvs"});
@@ -130,37 +133,37 @@ export class Setup {
             configuracoes.nome_parametro = "host_api_totvs";
             configuracoes.valor = "www30.bhan.com.br";
 
-            await _repConfig.save(configuracoes);
+            _repConfig.save(configuracoes);
 
             configuracoes = new Configuracoes();
             configuracoes.nome_parametro = "porta_api_totvs";
             configuracoes.valor = "9443";
 
-            await _repConfig.save(configuracoes);
+            _repConfig.save(configuracoes);
 
            configuracoes = new Configuracoes();
            configuracoes.nome_parametro = "autorizacao_api_totvs_token";
            configuracoes.valor = "/api/v1/autorizacao/token";
 
-           await _repConfig.save(configuracoes);
+           _repConfig.save(configuracoes);
 
            configuracoes = new Configuracoes();
            configuracoes.nome_parametro = "usuario_api_totvs_token";
            configuracoes.valor = "planteamorws";
            
-           await _repConfig.save(configuracoes);
+           _repConfig.save(configuracoes);
 
            configuracoes = new Configuracoes();
            configuracoes.nome_parametro = "senha_api_totvs_token";
            configuracoes.valor = "896314";
 
-           await _repConfig.save(configuracoes);
+           _repConfig.save(configuracoes);
 
            configuracoes = new Configuracoes();
            configuracoes.nome_parametro = "rest_api_totvs";
            configuracoes.valor = "/api/v1";
 
-           await _repConfig.save(configuracoes);
+           _repConfig.save(configuracoes);
        }
 
         console.log("Processo finalizado");
@@ -199,13 +202,7 @@ export class Setup {
          
                              EntityProduto.preco = 0;
                              EntityProduto.referencia = _prod[0];
-                             EntityProduto.tamanho = _prod[3];  
-
-                             /*_empresasCount.forEach(function (emp) {
-                                EntityProduto.empresas[i] = emp;
-                                i += 1;
-                             })*/
-                              
+                             EntityProduto.tamanho = _prod[3]; 
                             
                              if (EntityProduto.nome != "") {
                                  prodcadastrado = true; 
@@ -228,7 +225,7 @@ export class Setup {
                              if (prodcadastrado) {
                                  console.log("Produto: " + EntityProduto.nome + " cadastrado na empresa: "); 
                                  prodcadastrado = false;
-                             }                                
+                             }
                              
                 });    
             }
@@ -369,7 +366,7 @@ export class Setup {
                 _repUsuario.save(usuario);
             }
             
-         }         
+         }
 
      }
 }
