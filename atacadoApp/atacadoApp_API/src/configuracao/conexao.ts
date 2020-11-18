@@ -1,3 +1,4 @@
+import { VendedoresEmpresas } from './../entity/VendedoresEmpresas';
 import { ProdutosEmpresas } from './../entity/ProdutosEmpresas';
 import { Configuracoes } from './../entity/Configuracoes';
 import { Tabelas } from './../entity/Tabelas';
@@ -44,7 +45,8 @@ export default {
                 ImagensProduto,
                 Tabelas,
                 Configuracoes,
-                ProdutosEmpresas
+                ProdutosEmpresas,
+                VendedoresEmpresas
             ]
         });
         console.log("Database connected");

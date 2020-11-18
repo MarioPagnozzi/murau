@@ -47,7 +47,15 @@ https.createServer(app).listen(config.port,'0.0.0.0', async () => {
                 await inicializa.inicializar.call(this);
             }
             catch (error) {
-                console.error("Empresa e Vendedores não registrados", error); 
+                console.error("Empresa não registrada", error); 
+            }
+        }).then(async () => {
+            try {
+                let inicializa = new Setup();
+                 await inicializa.cadastraVendedores.call(this);
+            }
+            catch (error) {
+                console.error("Vendedores não foram cadastrados ", error)
             }
         }).then(async () => {
             try {

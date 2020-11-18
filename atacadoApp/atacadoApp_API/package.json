@@ -3,9 +3,9 @@
     "version": "0.0.1",
     "description": "API do App atacado",
     "devDependencies": {
-        "@types/node": "^8.0.29",
+        "@types/node": "^8.10.66",
         "ts-node": "^3.3.0",
-        "ts-node-dev": "^1.0.0-pre.63",
+        "ts-node-dev": "^1.0.0",
         "typescript": "^3.9.7"
     },
     "dependencies": {

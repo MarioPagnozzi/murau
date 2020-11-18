@@ -11,6 +11,7 @@ import { Tabelas } from '../entity/Tabelas';
 import * as md5 from "md5";
 import config from "./config";
 import { ProdutosEmpresas } from '../entity/ProdutosEmpresas';
+import { VendedoresEmpresas } from '../entity/VendedoresEmpresas';
 
 
 
@@ -25,26 +26,16 @@ export class Setup {
     async inicializar() {
 
         let _repEmpresa: Repository<Empresas> =  getRepository(Empresas);
-        let _repVendedor: Repository<Vendedores> = getRepository(Vendedores);
         let _emp: any;
-        let _vend: any;
         let EntityEmp: Empresas;
-        let EntityVendedor: Vendedores; 
-        
         let _Empresa = await _repEmpresa.findOne();
 
         if (!_Empresa) {
-            let _Empresas: Empresas[];
 
             let emp = fs.readFileSync(__dirname + "/arquivos/empresas.csv", "utf8");           
             let emps = emp.split(/\n/);
-                    
 
-            let vend = fs.readFileSync(__dirname + "/arquivos/vendedores.csv", "utf8");
-            let vendedores = vend.split(/\n/);
-           
-
-            await emps.forEach(async function (dados) {                
+            emps.forEach(async function (dados) {
                 _emp = dados.split(";");
 
                
@@ -63,40 +54,13 @@ export class Setup {
                     EntityEmp.numero = "0000";
                     EntityEmp.razao_social = "Cadastro Automático";
                     EntityEmp.uf = "UF";
-                        
-                    _repEmpresa.save(EntityEmp).then(async (empresa) => {
-                        console.log("Empresa " + empresa.nome_fantasia + " cadastrada");
-                        //_Empresas.push(empresa);
-                    }).catch(async (error) => {
+                    _repEmpresa.save(EntityEmp).then((empresa) => {
+                        console.log("Empresa " + empresa.nome_fantasia + " cadastrada");                        
+                    }).catch( (error) => {
                         console.error("Erro ao cadastradar a empresa " + EntityEmp.nome_fantasia + " " + error);
                     });
                     
             });
-
-            let vendcadastrado: any;
-            await vendedores.forEach(async function(dadosvend) {
-                console.clear();
-                _vend = dadosvend.split(";");          
-                 
-
-                    EntityVendedor = new Vendedores();
-                    EntityVendedor.ativo = true;
-                    
-                    EntityVendedor.bairro = "Cadastro Automático";
-                    EntityVendedor.cidade = "Cadastro Automático";
-                    EntityVendedor.codigo = parseFloat(_vend[0]);
-                    EntityVendedor.numero = "000";
-                    EntityVendedor.uf = "UF";
-    
-                    EntityVendedor.endereco = "Cadastro Automático";
-                    EntityVendedor.nome = _vend[1]
-                    EntityVendedor.empresas = _Empresas;
-                    vendcadastrado = await _repVendedor.save(EntityVendedor,{chunk: 100}).then(async (vendedor) => {
-                        console.log("Vendedor " + vendedor.nome + " cadastrado");
-                    }).catch((error) => {
-                        console.error("Erro ao cadastradar o vendedor " + EntityVendedor.nome);
-                    });
-           });
        }
 
        let _repTabelas: Repository<Tabelas> = getRepository(Tabelas);
@@ -168,7 +132,53 @@ export class Setup {
 
         console.log("Processo finalizado");
     }
-   
+    
+    async cadastraVendedores() {
+
+        let _repVendedor: Repository<Vendedores> = getRepository(Vendedores);
+        let _vend: any;
+        let EntityVendedor: Vendedores;
+        let _repEmpresa: Repository<Empresas> = getRepository(Empresas);
+        let _temVendedor = await _repVendedor.findOne();
+        
+        if (!_temVendedor) {
+            let vend = fs.readFileSync(__dirname + "/arquivos/vendedores.csv", "utf8");
+            let vendedores = vend.split(/\n/);
+            let _Empresas = await _repEmpresa.find();
+            vendedores.forEach(async function(dadosvend) {
+                console.clear();
+                _vend = dadosvend.split(";");
+
+                    EntityVendedor = new Vendedores();
+                    EntityVendedor.ativo = true;
+                    
+                    EntityVendedor.bairro = "Cadastro Automático";
+                    EntityVendedor.cidade = "Cadastro Automático";
+                    EntityVendedor.codigo = parseFloat(_vend[0]);
+                    EntityVendedor.numero = "000";
+                    EntityVendedor.uf = "UF";
+
+                    EntityVendedor.endereco = "Cadastro Automático";
+                    EntityVendedor.nome = _vend[1];
+                    _repVendedor.save(EntityVendedor).then(async (vendedor) => {
+                        let _repVendedoresEmpresas: Repository<VendedoresEmpresas> = getRepository(VendedoresEmpresas);
+                        let vendedoresEmpresas: VendedoresEmpresas;
+                        
+                        _Empresas.forEach(async function(empresa) {
+                            vendedoresEmpresas  = new VendedoresEmpresas();
+                            vendedoresEmpresas.empresa = empresa;
+                            vendedoresEmpresas.vendedor = vendedor;
+
+                            _repVendedoresEmpresas.save(vendedoresEmpresas);
+                        });
+                        console.log("Vendedor " + vendedor.nome + " cadastrado");
+                    }).catch((error) => {
+                        console.error("Erro ao cadastradar o vendedor " + EntityVendedor.nome);
+                    });
+            });
+        }
+
+    }
      async cadastraProduto() {
 
         let _repEmpresa: Repository<Empresas> =  getRepository(Empresas); 

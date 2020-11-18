@@ -1,9 +1,9 @@
 import { Pedidos } from './Pedidos';
-import { Empresas } from './Empresas';
 import { Clientes } from './Clientes';
 import { ContatosVendedores } from './ContatosVendedores';
-import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
+import { Column, Entity, OneToMany } from "typeorm";
 import { BaseEntity } from "./BaseEntity";
+import { VendedoresEmpresas } from './VendedoresEmpresas';
 
 @Entity({ name: "vendedores"})
 export class Vendedores extends BaseEntity {

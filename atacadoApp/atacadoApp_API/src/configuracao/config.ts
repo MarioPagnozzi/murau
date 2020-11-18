@@ -18,6 +18,7 @@ export default {
         "permissao",
         "produtos",
         "vendedores",
-        "produtos_empresas"
+        "produtos_empresas",
+        "vendedores_produtos"
     ]
 }

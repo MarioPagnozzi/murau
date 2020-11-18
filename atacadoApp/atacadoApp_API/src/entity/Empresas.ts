@@ -1,3 +1,4 @@
+import { VendedoresEmpresas } from './VendedoresEmpresas';
 import { ProdutosEmpresas } from './ProdutosEmpresas';
 
 import { Produtos } from './Produtos';
@@ -40,17 +41,15 @@ export class Empresas extends BaseEntity {
     @Column({type: "varchar", length: 2})
     uf: string
 
-    @OneToMany(type => Pedidos, pedidos => pedidos.empresa, {nullable: true})
+    @OneToMany(type => Pedidos, pedidos => pedidos.empresa)
     pedidos: Pedidos[]
     
-    @ManyToMany(type => Vendedores, vendedores => vendedores.empresas, {nullable: true})    
-    vendedores: Vendedores[]
-
-    /*@ManyToMany(type => Produtos, produtos => produtos.empresas)  
-    produtos: Produtos[]*/
+    @OneToMany(type => VendedoresEmpresas, vendedoresempresas => vendedoresempresas.empresa)
+    vendedoresempresas: VendedoresEmpresas[]
+   
     @OneToMany(type => ProdutosEmpresas, produtosempresas => produtosempresas.empresa)
     produtosempresas: ProdutosEmpresas[]
 
-    @OneToMany(type => Clientes, cliente => cliente.empresa, {nullable: true, eager: false})
+    @OneToMany(type => Clientes, cliente => cliente.empresa)
     clientes: Clientes[]
 }
