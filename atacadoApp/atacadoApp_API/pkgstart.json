@@ -1,7 +1,7 @@
 {
     "apps": [{
         "name": "apimurau.mapxsolucoes.comm.br",
-        "script": "./src/index.js",
+        "script": "src/index.js",
         "watch": ["atacadoApp_API", "src"]
     }]
 }
