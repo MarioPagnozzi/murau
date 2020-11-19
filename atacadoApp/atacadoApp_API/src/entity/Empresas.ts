@@ -1,13 +1,10 @@
-import { VendedoresEmpresas } from './VendedoresEmpresas';
 import { ProdutosEmpresas } from './ProdutosEmpresas';
-
-import { Produtos } from './Produtos';
 import { Pedidos } from './Pedidos';
-import { ManyToMany, OneToMany } from 'typeorm';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, OneToMany } from 'typeorm';
 import { BaseEntity } from './BaseEntity';
-import { Vendedores } from './Vendedores';
 import { Clientes } from './Clientes';
+import { VendedoresEmpresas } from './VendedoresEmpresas';
+
 @Entity({name: "empresas"})
 export class Empresas extends BaseEntity {
 
@@ -43,13 +40,13 @@ export class Empresas extends BaseEntity {
 
     @OneToMany(type => Pedidos, pedidos => pedidos.empresa)
     pedidos: Pedidos[]
-    
-    @OneToMany(type => VendedoresEmpresas, vendedoresempresas => vendedoresempresas.empresa)
-    vendedoresempresas: VendedoresEmpresas[]
-   
+
     @OneToMany(type => ProdutosEmpresas, produtosempresas => produtosempresas.empresa)
     produtosempresas: ProdutosEmpresas[]
 
     @OneToMany(type => Clientes, cliente => cliente.empresa)
     clientes: Clientes[]
+
+    @OneToMany(type => VendedoresEmpresas, vendedoresEmpresas => vendedoresEmpresas.empresa)
+    vendedores: VendedoresEmpresas[]
 }

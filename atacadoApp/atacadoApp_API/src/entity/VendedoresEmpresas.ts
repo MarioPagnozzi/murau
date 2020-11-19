@@ -1,15 +1,15 @@
-import { Empresas } from './Empresas';
 import { Vendedores } from './Vendedores';
-import { ManyToOne, Entity } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne } from "typeorm";
 import { BaseEntity } from "./BaseEntity";
+import { Empresas } from './Empresas';
 
 @Entity({name: "vendedores_empresas"})
 export class VendedoresEmpresas extends BaseEntity {
-    
-    @ManyToOne(type => Vendedores, vendedores => vendedores.vendedoresempresas, {eager: true})
+    @ManyToOne(type => Vendedores, vendedores => vendedores.empresas, {eager: true})
+    @JoinColumn({name: "vendedorUid"})
     vendedor: Vendedores
 
-    @ManyToOne(type => Empresas, empresas => empresas.vendedoresempresas, {eager: true})
+    @ManyToOne(type => Empresas, empresas => empresas.vendedores, {eager: true})
+    @JoinColumn({name: "empresaUid"})
     empresa: Empresas
-
 }

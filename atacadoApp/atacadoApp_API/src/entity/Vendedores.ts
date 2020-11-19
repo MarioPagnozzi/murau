@@ -1,10 +1,9 @@
+import { VendedoresEmpresas } from './VendedoresEmpresas';
 import { Pedidos } from './Pedidos';
 import { Clientes } from './Clientes';
 import { ContatosVendedores } from './ContatosVendedores';
 import { Column, Entity, OneToMany } from "typeorm";
 import { BaseEntity } from "./BaseEntity";
-import { VendedoresEmpresas } from './VendedoresEmpresas';
-
 @Entity({ name: "vendedores"})
 export class Vendedores extends BaseEntity {
 
@@ -29,15 +28,15 @@ export class Vendedores extends BaseEntity {
     @Column({type: "varchar", length: 2})
     uf: string
 
-    @OneToMany(type => ContatosVendedores, vendedor => Vendedores, {nullable: true, eager: true})
+    @OneToMany(type => ContatosVendedores, contatos => contatos.vendedor, {nullable: true, eager: true})
     contatos: ContatosVendedores[]
 
-    @OneToMany(type => Clientes, vendedor => Vendedores, {nullable: true})
+    @OneToMany(type => Clientes, clientes => clientes.vendedor, {nullable: true})
     clientes: Clientes[]
 
-    @OneToMany(type => Pedidos, vendedor => Vendedores, {nullable: true})
+    @OneToMany(type => Pedidos, pedidos => pedidos.vendedor, {nullable: true})
     pedidos: Pedidos[]
 
-    @OneToMany(type => VendedoresEmpresas, vendedoresempresas => vendedoresempresas.vendedor)
-    vendedoresempresas: VendedoresEmpresas[]
+    @OneToMany(type => VendedoresEmpresas, vendedoresEmpresas => vendedoresEmpresas.vendedor)
+    empresas: VendedoresEmpresas[]
 }

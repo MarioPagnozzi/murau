@@ -21,8 +21,6 @@ export class Setup {
     constructor () {
         
     }
-            
-    
     async inicializar() {
 
         let _repEmpresa: Repository<Empresas> =  getRepository(Empresas);
@@ -139,6 +137,7 @@ export class Setup {
         let _vend: any;
         let EntityVendedor: Vendedores;
         let _repEmpresa: Repository<Empresas> = getRepository(Empresas);
+        
         let _temVendedor = await _repVendedor.findOne();
         
         if (!_temVendedor) {
@@ -184,7 +183,7 @@ export class Setup {
         let _repEmpresa: Repository<Empresas> =  getRepository(Empresas); 
         let _empresasCount = await _repEmpresa.find();
 
-        let _repProduto: Repository<Produtos> = getRepository(Produtos);        
+        let _repProduto: Repository<Produtos> = getRepository(Produtos);
         let EntityProduto: Produtos;
 
         let prod = fs.readFileSync(__dirname + "/arquivos/produtos.csv", "utf8");
