@@ -1,7 +1,8 @@
 {
     "apps": [{
         "name": "apimurau.mapxsolucoes.comm.br",
-        "script": "src/index.js",
+        "script": "src/index.ts",
         "watch": ["atacadoApp_API", "src"]
-    }]
+    }],
+    "postinstall": "$(yarn bin)/pm2 install typecsript"
 }
