@@ -4,5 +4,5 @@
         "script": "src/index.ts",
         "watch": ["atacadoApp_API", "src"]
     }],
-    "postinstall": "$(yarn bin)/pm2 install typecsript"
+    "postinstall": "$(yum bin)/pm2 install typecsript"
 }

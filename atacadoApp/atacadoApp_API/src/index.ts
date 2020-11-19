@@ -37,7 +37,7 @@ Routes.forEach(route => {
 
 
 let https = require("https");
-https.createServer(app).listen(config.port,'0.0.0.0', async () => {
+https.createServer(app).listen(config.port,'https://apimurau.mapxsolucoes.com.br', async () => {
 
     
     try {
