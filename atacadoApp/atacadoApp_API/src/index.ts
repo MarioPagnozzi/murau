@@ -13,7 +13,7 @@ import cron_job from "./middleware/cron_job";
 // create express app
 const app = express();
 app.use(bodyParser.json());
-app.use(express.vhost("apimurau.mapxsolucoes.com.br",__dirname));
+app.use(express.vhost(`apimurau.mapxsolucoes.com.br`));
 app.use(auth);
 
 // register express routes from defined application routes
