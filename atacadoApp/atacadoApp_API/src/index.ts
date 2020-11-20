@@ -37,7 +37,7 @@ Routes.forEach(route => {
 
 
 let https = require("https");
-https.createServer(app).listen(config.port,'191.252.178.190', async () => {
+https.createServer(app).listen(config.port,'0.0.0.0', async () => {
 
     
     try {
