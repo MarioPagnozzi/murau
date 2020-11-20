@@ -35,9 +35,16 @@ Routes.forEach(route => {
     });
 });
 
-
+var fs = require("fs");
+var constants = require("constants");
 let https = require("https");
-https.createServer(app).listen(config.port,'0.0.0.0', async () => {
+https.createServer({
+    secureOptions: constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_SSLv2,
+    key: fs.readFileSync("/etc/letsencrypt/live/apimurau.mapxsolucoes.com.br/privkey.pem"),
+    cert: fs.readFileSync("/etc/letsencrypt/live/apimurau.mapxsolucoes.com.br/cert.pem"),
+    ca: fs.readFileSync("/etc/letsencrypt/live/apimurau.mapxsolucoes.com.br/chain.pem"),
+    dhparam: fs.readFileSync("/etc/letsencrypt/archive/apimurau.mapxsolucoes.com.br/dh1.pem")
+},app).listen(config.port,'0.0.0.0', async () => {
 
     
     try {
