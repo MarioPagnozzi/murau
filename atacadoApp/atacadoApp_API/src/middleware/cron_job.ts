@@ -81,7 +81,7 @@ function apiRequest(options, write = null, ms = 3000) {
         request.reusedSockets = true;
         request.setTimeout(ms);
         request.end();
-     }, 30000);
+     }, 65000);
    });
 }
 async function geraToken() {
