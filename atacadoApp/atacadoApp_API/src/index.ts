@@ -13,7 +13,7 @@ import cron_job from "./middleware/cron_job";
 // create express app
 const app = express();
 app.use(bodyParser.json());
-
+app.use(express.vhost("apimurau.mapxsolucoes.com.br",__dirname));
 app.use(auth);
 
 // register express routes from defined application routes
@@ -40,7 +40,6 @@ var constants = require("constants");
 let https = require("https");
 https.createServer({
     secureOptions: constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_SSLv2,
-    vhost: "apimurau.mapxsolucoes.com.br",
     key: fs.readFileSync("/etc/letsencrypt/live/apimurau.mapxsolucoes.com.br/privkey.pem"),
     cert: fs.readFileSync("/etc/letsencrypt/live/apimurau.mapxsolucoes.com.br/cert.pem"),
     ca: fs.readFileSync("/etc/letsencrypt/live/apimurau.mapxsolucoes.com.br/chain.pem"),
