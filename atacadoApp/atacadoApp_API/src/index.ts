@@ -39,6 +39,7 @@ var fs = require("fs");
 var constants = require("constants");
 let https = require("https");
 https.createServer({
+    target: "https://apimurau.mapxsolucoes.com.br:9443",
     secureOptions: constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_SSLv2,
     key: fs.readFileSync("/etc/letsencrypt/live/apimurau.mapxsolucoes.com.br/privkey.pem"),
     cert: fs.readFileSync("/etc/letsencrypt/live/apimurau.mapxsolucoes.com.br/cert.pem"),
