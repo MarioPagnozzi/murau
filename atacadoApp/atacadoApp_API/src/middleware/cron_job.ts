@@ -22,7 +22,15 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         let token = await geraToken();
         atualizaProduto(token);
     });
+    var rule = new cron.RecurrenceRule();
+    rule.hour = 23;
+    rule.minute = 59;
+    rule.dayOfWeek = new cron.Range(1,5);
 
+    var job_insere = await cron.sheduleJob(rule, async function () {
+        let token = await geraToken();
+        insereNovoProduto(token);
+    })
 }
 
 function sleep(ms) {
@@ -243,7 +251,6 @@ async function atualizaProduto(_token) {
         }).catch((error) => {
             console.error(error);
         });
-        insereNovoProduto(_token);
     }
 }
 
