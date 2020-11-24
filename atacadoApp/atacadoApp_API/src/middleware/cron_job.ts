@@ -17,7 +17,7 @@ var fs = require("fs");
 
 export default async (req: Request, res: Response, next: NextFunction) => {
 
-   var job_atualiza = await cron.scheduleJob('*/30 * * * *',async function() {
+   var job_atualiza = await cron.scheduleJob('*/60 * * * *',async function() {
 
         let token = await geraToken();
         atualizaProduto(token);
