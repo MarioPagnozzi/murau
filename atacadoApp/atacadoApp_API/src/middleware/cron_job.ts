@@ -27,7 +27,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
     rule.minute = 59;
     rule.dayOfWeek = new cron.Range(1,5);
 
-    var job_insere = await cron.sheduleJob(rule, async function () {
+    var job_insere = await cron.scheduleJob(rule, async function () {
         let token = await geraToken();
         insereNovoProduto(token);
     })

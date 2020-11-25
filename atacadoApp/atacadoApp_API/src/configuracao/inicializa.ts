@@ -277,6 +277,7 @@ export class Setup {
                 permissaoCliente.ativo = true;
                 permissaoCliente.excluir = true;
                 permissaoCliente.inserir = true;
+                permissaoCliente.visualizar = true;
                 permissaoCliente.tabela = "Clientes";
 
                 permissaoCliente.grupo = grupo;
@@ -287,6 +288,7 @@ export class Setup {
                 permissaoEmpresa.ativo = true;
                 permissaoEmpresa.excluido = true;
                 permissaoEmpresa.inserir = true;
+                permissaoEmpresa.visualizar = true;
                 permissaoEmpresa.tabela = "Empresas";
 
                 permissaoEmpresa.grupo = grupo;
@@ -297,6 +299,7 @@ export class Setup {
                 permissaoGrupo.ativo = true;
                 permissaoGrupo.excluir = true;
                 permissaoGrupo.inserir = true;
+                permissaoGrupo.visualizar = true;
                 permissaoGrupo.tabela = "Grupo";
 
                 permissaoGrupo.grupo = grupo;
@@ -307,6 +310,7 @@ export class Setup {
                 permissaoPedidos.ativo = true;
                 permissaoPedidos.excluir = true;
                 permissaoPedidos.inserir = true;
+                permissaoPedidos.visualizar = true;
                 permissaoPedidos.tabela = "Pedidos";
 
                 permissaoPedidos.grupo = grupo;
@@ -317,6 +321,7 @@ export class Setup {
                 permissaoProdutos.ativo = true;
                 permissaoProdutos.excluir = true;
                 permissaoProdutos.inserir = true;
+                permissaoProdutos.visualizar = true;
                 permissaoProdutos.tabela = "Produtos";
 
                 permissaoProdutos.grupo = grupo;
@@ -327,6 +332,7 @@ export class Setup {
                 permissaoUser.ativo = true;
                 permissaoUser.excluir = true;
                 permissaoUser.inserir = true;
+                permissaoUser.visualizar = true;
                 permissaoUser.tabela = "Usuarios";
 
                 permissaoUser.grupo = grupo;
@@ -337,6 +343,7 @@ export class Setup {
                 permissaoVendedores.ativo = true;
                 permissaoVendedores.excluir = true;
                 permissaoVendedores.inserir = true;
+                permissaoVendedores.visualizar = true;
                 permissaoVendedores.tabela = "Vendedores";
 
                 permissaoVendedores.grupo = grupo;
@@ -348,6 +355,190 @@ export class Setup {
             _rePermissao.save(permissaoProdutos);
             _rePermissao.save(permissaoUser);
             _rePermissao.save(permissaoVendedores); 
+
+            //Cria grupo e permissão de vendedores
+
+            grupo = new Grupos();
+            grupo.ativo = true;
+            grupo.nome_grupo = "Vendedores";
+            _repGrupo.save(grupo);
+
+            permissaoCliente = new Permissao();
+
+                permissaoCliente.alterar = true;
+                permissaoCliente.ativo = true;
+                permissaoCliente.excluir = false;
+                permissaoCliente.inserir = true;
+                permissaoCliente.visualizar = true;
+                permissaoCliente.tabela = "Clientes";
+
+                permissaoCliente.grupo = grupo;
+
+            permissaoEmpresa = new Permissao();
+            
+                permissaoEmpresa.alterar = false;
+                permissaoEmpresa.ativo = false;
+                permissaoEmpresa.excluido = false;
+                permissaoEmpresa.inserir = false;
+                permissaoEmpresa.visualizar = false;
+                permissaoEmpresa.tabela = "Empresas";
+
+                permissaoEmpresa.grupo = grupo;
+
+            permissaoGrupo = new Permissao();
+
+                permissaoGrupo.alterar = false;
+                permissaoGrupo.ativo = false;
+                permissaoGrupo.excluir = false;
+                permissaoGrupo.inserir = false;
+                permissaoGrupo.visualizar = false;
+                permissaoGrupo.tabela = "Grupo";
+
+                permissaoGrupo.grupo = grupo;
+
+            permissaoPedidos = new Permissao();
+
+                permissaoPedidos.alterar = true;
+                permissaoPedidos.ativo = true;
+                permissaoPedidos.excluir = true;
+                permissaoPedidos.inserir = true;
+                permissaoPedidos.visualizar = true;
+                permissaoPedidos.tabela = "Pedidos";
+
+                permissaoPedidos.grupo = grupo;
+                
+            permissaoProdutos = new Permissao();
+            
+                permissaoProdutos.alterar = false;
+                permissaoProdutos.ativo = false;
+                permissaoProdutos.excluir = false;
+                permissaoProdutos.inserir = false;
+                permissaoProdutos.visualizar = false;
+                permissaoProdutos.tabela = "Produtos";
+
+                permissaoProdutos.grupo = grupo;
+
+            permissaoUser = new Permissao()
+
+                permissaoUser.alterar = false;
+                permissaoUser.ativo = false;
+                permissaoUser.excluir = false;
+                permissaoUser.inserir = false;
+                permissaoUser.visualizar = false;
+                permissaoUser.tabela = "Usuarios";
+
+                permissaoUser.grupo = grupo;
+
+            permissaoVendedores = new Permissao();
+
+                permissaoVendedores.alterar = false;
+                permissaoVendedores.ativo = false;
+                permissaoVendedores.excluir = false;
+                permissaoVendedores.inserir = false;
+                permissaoVendedores.visualizar = false;
+                permissaoVendedores.tabela = "Vendedores";
+
+                permissaoVendedores.grupo = grupo;
+
+            _rePermissao.save(permissaoCliente);
+            _rePermissao.save(permissaoEmpresa);
+            _rePermissao.save(permissaoGrupo);
+            _rePermissao.save(permissaoPedidos);
+            _rePermissao.save(permissaoProdutos);
+            _rePermissao.save(permissaoUser);
+            _rePermissao.save(permissaoVendedores); 
+
+            //Grupo Clientes
+
+            grupo = new Grupos();
+            grupo.ativo = true;
+            grupo.nome_grupo = "Clientes";
+            _repGrupo.save(grupo);
+
+            permissaoCliente = new Permissao();
+
+            permissaoCliente.alterar = false;
+            permissaoCliente.ativo = false;
+            permissaoCliente.excluir = false;
+            permissaoCliente.inserir = false;
+            permissaoCliente.visualizar = false;
+            permissaoCliente.tabela = "Clientes";
+
+            permissaoCliente.grupo = grupo;
+
+        permissaoEmpresa = new Permissao();
+        
+            permissaoEmpresa.alterar = false;
+            permissaoEmpresa.ativo = false;
+            permissaoEmpresa.excluido = false;
+            permissaoEmpresa.inserir = false;
+            permissaoEmpresa.visualizar = false;
+            permissaoEmpresa.tabela = "Empresas";
+
+            permissaoEmpresa.grupo = grupo;
+
+        permissaoGrupo = new Permissao();
+
+            permissaoGrupo.alterar = false;
+            permissaoGrupo.ativo = false;
+            permissaoGrupo.excluir = false;
+            permissaoGrupo.inserir = false;
+            permissaoGrupo.visualizar = false;
+            permissaoGrupo.tabela = "Grupo";
+
+            permissaoGrupo.grupo = grupo;
+
+        permissaoPedidos = new Permissao();
+
+            permissaoPedidos.alterar = true;
+            permissaoPedidos.ativo = true;
+            permissaoPedidos.excluir = false;
+            permissaoPedidos.inserir = true;
+            permissaoPedidos.visualizar = true;
+            permissaoPedidos.tabela = "Pedidos";
+
+            permissaoPedidos.grupo = grupo;
+            
+        permissaoProdutos = new Permissao();
+        
+            permissaoProdutos.alterar = false;
+            permissaoProdutos.ativo = false;
+            permissaoProdutos.excluir = false;
+            permissaoProdutos.inserir = false;
+            permissaoProdutos.visualizar = false;
+            permissaoProdutos.tabela = "Produtos";
+
+            permissaoProdutos.grupo = grupo;
+
+        permissaoUser = new Permissao()
+
+            permissaoUser.alterar = false;
+            permissaoUser.ativo = false;
+            permissaoUser.excluir = false;
+            permissaoUser.inserir = false;
+            permissaoUser.visualizar = false;
+            permissaoUser.tabela = "Usuarios";
+
+            permissaoUser.grupo = grupo;
+
+        permissaoVendedores = new Permissao();
+
+            permissaoVendedores.alterar = false;
+            permissaoVendedores.ativo = false;
+            permissaoVendedores.excluir = false;
+            permissaoVendedores.inserir = false;
+            permissaoVendedores.visualizar = false;
+            permissaoVendedores.tabela = "Vendedores";
+
+            permissaoVendedores.grupo = grupo;
+
+        _rePermissao.save(permissaoCliente);
+        _rePermissao.save(permissaoEmpresa);
+        _rePermissao.save(permissaoGrupo);
+        _rePermissao.save(permissaoPedidos);
+        _rePermissao.save(permissaoProdutos);
+        _rePermissao.save(permissaoUser);
+        _rePermissao.save(permissaoVendedores);
         }
     }
      async cadastroUsuario () {
