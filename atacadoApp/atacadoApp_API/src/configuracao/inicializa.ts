@@ -52,7 +52,7 @@ export class Setup {
                     EntityEmp.numero = "0000";
                     EntityEmp.razao_social = "Cadastro Automático";
                     EntityEmp.uf = "UF";
-                    _repEmpresa.save(EntityEmp).then((empresa) => {
+                    await _repEmpresa.save(EntityEmp).then((empresa) => {
                         console.log("Empresa " + empresa.nome_fantasia + " cadastrada");                        
                     }).catch( (error) => {
                         console.error("Erro ao cadastradar a empresa " + EntityEmp.nome_fantasia + " " + error);
@@ -95,37 +95,37 @@ export class Setup {
             configuracoes.nome_parametro = "host_api_totvs";
             configuracoes.valor = "www30.bhan.com.br";
 
-            _repConfig.save(configuracoes);
+            await _repConfig.save(configuracoes);
 
             configuracoes = new Configuracoes();
             configuracoes.nome_parametro = "porta_api_totvs";
             configuracoes.valor = "9443";
 
-            _repConfig.save(configuracoes);
+            await _repConfig.save(configuracoes);
 
            configuracoes = new Configuracoes();
            configuracoes.nome_parametro = "autorizacao_api_totvs_token";
            configuracoes.valor = "/api/v1/autorizacao/token";
 
-           _repConfig.save(configuracoes);
+           await _repConfig.save(configuracoes);
 
            configuracoes = new Configuracoes();
            configuracoes.nome_parametro = "usuario_api_totvs_token";
            configuracoes.valor = "planteamorws";
            
-           _repConfig.save(configuracoes);
+           await _repConfig.save(configuracoes);
 
            configuracoes = new Configuracoes();
            configuracoes.nome_parametro = "senha_api_totvs_token";
            configuracoes.valor = "896314";
 
-           _repConfig.save(configuracoes);
+           await _repConfig.save(configuracoes);
 
            configuracoes = new Configuracoes();
            configuracoes.nome_parametro = "rest_api_totvs";
            configuracoes.valor = "/api/v1";
 
-           _repConfig.save(configuracoes);
+           await _repConfig.save(configuracoes);
        }
 
         console.log("Processo finalizado");
@@ -159,7 +159,7 @@ export class Setup {
 
                     EntityVendedor.endereco = "Cadastro Automático";
                     EntityVendedor.nome = _vend[1];
-                    _repVendedor.save(EntityVendedor).then(async (vendedor) => {
+                    await _repVendedor.save(EntityVendedor).then(async (vendedor) => {
                         let _repVendedoresEmpresas: Repository<VendedoresEmpresas> = getRepository(VendedoresEmpresas);
                         let vendedoresEmpresas: VendedoresEmpresas;
                         
@@ -194,7 +194,6 @@ export class Setup {
         let prodcadastrado: any = false;
         if (!temProduto) { 
             if (_empresasCount.length != 0) {
-                console.clear();
                  produtos.forEach(async function(dadosprod) {
                     let i = 0; 
                      _prod = dadosprod.split(";");
@@ -215,7 +214,7 @@ export class Setup {
                             
                              if (EntityProduto.nome != "") {
                                  prodcadastrado = true; 
-                                 _repProduto.save(EntityProduto).then(async (produto) => {
+                                 await _repProduto.save(EntityProduto).then(async (produto) => {
                                     let _repProdutosEmpresas: Repository<ProdutosEmpresas> = getRepository(ProdutosEmpresas);
                                     let produtosEmpresas: ProdutosEmpresas;
                                     _empresasCount = await _repEmpresa.find();
@@ -225,25 +224,17 @@ export class Setup {
                                             produtosEmpresas.empresa = empresa;
                                             _repProdutosEmpresas.save(produtosEmpresas);
                                        }); 
-                                   
+                                   console.log("Produto: " + EntityProduto.nome + " cadastrado na empresa: ");
                                  });
                                  
                              }
-                                                                 
-         
-                             if (prodcadastrado) {
-                                 console.log("Produto: " + EntityProduto.nome + " cadastrado na empresa: "); 
-                                 prodcadastrado = false;
-                             }
-                             
-                });    
+                });
             }
-                
-             
 
         }
      }
      async cadastroGrupoPermissao () {
+
          let _repGrupo: Repository<Grupos> = getRepository(Grupos);
          let _rePermissao: Repository<Permissao> = getRepository(Permissao);
          let _repUsuario: Repository<User> = getRepository(User);
@@ -269,7 +260,7 @@ export class Setup {
             grupo.ativo = true;
             grupo.nome_grupo = "Super Usuário";
 
-            _repGrupo.save(grupo);
+            await _repGrupo.save(grupo);
 
             permissaoCliente = new Permissao();
 
@@ -348,197 +339,197 @@ export class Setup {
 
                 permissaoVendedores.grupo = grupo;
 
-            _rePermissao.save(permissaoCliente);
-            _rePermissao.save(permissaoEmpresa);
-            _rePermissao.save(permissaoGrupo);
-            _rePermissao.save(permissaoPedidos);
-            _rePermissao.save(permissaoProdutos);
-            _rePermissao.save(permissaoUser);
-            _rePermissao.save(permissaoVendedores); 
+            await _rePermissao.save(permissaoCliente);
+            await _rePermissao.save(permissaoEmpresa);
+            await _rePermissao.save(permissaoGrupo);
+            await _rePermissao.save(permissaoPedidos);
+            await _rePermissao.save(permissaoProdutos);
+            await _rePermissao.save(permissaoUser);
+            await _rePermissao.save(permissaoVendedores); 
 
             //Cria grupo e permissão de vendedores
 
-            grupo = new Grupos();
-            grupo.ativo = true;
-            grupo.nome_grupo = "Vendedores";
-            _repGrupo.save(grupo);
+            var grupoVendedores = new Grupos();
+            grupoVendedores.ativo = true;
+            grupoVendedores.nome_grupo = "Vendedores";
+            await _repGrupo.save(grupoVendedores);
 
-            permissaoCliente = new Permissao();
+            var permissaoCliente_grupoVendedores = new Permissao();
 
-                permissaoCliente.alterar = true;
-                permissaoCliente.ativo = true;
-                permissaoCliente.excluir = false;
-                permissaoCliente.inserir = true;
-                permissaoCliente.visualizar = true;
-                permissaoCliente.tabela = "Clientes";
+                permissaoCliente_grupoVendedores.alterar = true;
+                permissaoCliente_grupoVendedores.ativo = true;
+                permissaoCliente_grupoVendedores.excluir = false;
+                permissaoCliente_grupoVendedores.inserir = true;
+                permissaoCliente_grupoVendedores.visualizar = true;
+                permissaoCliente_grupoVendedores.tabela = "Clientes";
 
-                permissaoCliente.grupo = grupo;
+                permissaoCliente_grupoVendedores.grupo = grupoVendedores;
 
-            permissaoEmpresa = new Permissao();
+            var permissaoEmpresa_grupoVendedores = new Permissao();
             
-                permissaoEmpresa.alterar = false;
-                permissaoEmpresa.ativo = false;
-                permissaoEmpresa.excluido = false;
-                permissaoEmpresa.inserir = false;
-                permissaoEmpresa.visualizar = false;
-                permissaoEmpresa.tabela = "Empresas";
+                permissaoEmpresa_grupoVendedores.alterar = false;
+                permissaoEmpresa_grupoVendedores.ativo = false;
+                permissaoEmpresa_grupoVendedores.excluido = false;
+                permissaoEmpresa_grupoVendedores.inserir = false;
+                permissaoEmpresa_grupoVendedores.visualizar = false;
+                permissaoEmpresa_grupoVendedores.tabela = "Empresas";
 
-                permissaoEmpresa.grupo = grupo;
+                permissaoEmpresa_grupoVendedores.grupo = grupoVendedores;
 
-            permissaoGrupo = new Permissao();
+            var permissaoGrupo_grupoVendedores = new Permissao();
 
-                permissaoGrupo.alterar = false;
-                permissaoGrupo.ativo = false;
-                permissaoGrupo.excluir = false;
-                permissaoGrupo.inserir = false;
-                permissaoGrupo.visualizar = false;
-                permissaoGrupo.tabela = "Grupo";
+                permissaoGrupo_grupoVendedores.alterar = false;
+                permissaoGrupo_grupoVendedores.ativo = false;
+                permissaoGrupo_grupoVendedores.excluir = false;
+                permissaoGrupo_grupoVendedores.inserir = false;
+                permissaoGrupo_grupoVendedores.visualizar = false;
+                permissaoGrupo_grupoVendedores.tabela = "Grupo";
 
-                permissaoGrupo.grupo = grupo;
+                permissaoGrupo_grupoVendedores.grupo = grupoVendedores;
 
-            permissaoPedidos = new Permissao();
+            var permissaoPedidos_grupoVendedores = new Permissao();
 
-                permissaoPedidos.alterar = true;
-                permissaoPedidos.ativo = true;
-                permissaoPedidos.excluir = true;
-                permissaoPedidos.inserir = true;
-                permissaoPedidos.visualizar = true;
-                permissaoPedidos.tabela = "Pedidos";
+                permissaoPedidos_grupoVendedores.alterar = true;
+                permissaoPedidos_grupoVendedores.ativo = true;
+                permissaoPedidos_grupoVendedores.excluir = true;
+                permissaoPedidos_grupoVendedores.inserir = true;
+                permissaoPedidos_grupoVendedores.visualizar = true;
+                permissaoPedidos_grupoVendedores.tabela = "Pedidos";
 
-                permissaoPedidos.grupo = grupo;
+                permissaoPedidos_grupoVendedores.grupo = grupoVendedores;
                 
-            permissaoProdutos = new Permissao();
+            var permissaoProdutos_grupoVendedores = new Permissao();
             
-                permissaoProdutos.alterar = false;
-                permissaoProdutos.ativo = false;
-                permissaoProdutos.excluir = false;
-                permissaoProdutos.inserir = false;
-                permissaoProdutos.visualizar = false;
-                permissaoProdutos.tabela = "Produtos";
+                permissaoProdutos_grupoVendedores.alterar = false;
+                permissaoProdutos_grupoVendedores.ativo = false;
+                permissaoProdutos_grupoVendedores.excluir = false;
+                permissaoProdutos_grupoVendedores.inserir = false;
+                permissaoProdutos_grupoVendedores.visualizar = false;
+                permissaoProdutos_grupoVendedores.tabela = "Produtos";
 
-                permissaoProdutos.grupo = grupo;
+                permissaoProdutos_grupoVendedores.grupo = grupoVendedores;
 
-            permissaoUser = new Permissao()
+            var permissaoUser_grupoVendedores = new Permissao()
 
-                permissaoUser.alterar = false;
-                permissaoUser.ativo = false;
-                permissaoUser.excluir = false;
-                permissaoUser.inserir = false;
-                permissaoUser.visualizar = false;
-                permissaoUser.tabela = "Usuarios";
+                permissaoUser_grupoVendedores.alterar = false;
+                permissaoUser_grupoVendedores.ativo = false;
+                permissaoUser_grupoVendedores.excluir = false;
+                permissaoUser_grupoVendedores.inserir = false;
+                permissaoUser_grupoVendedores.visualizar = false;
+                permissaoUser_grupoVendedores.tabela = "Usuarios";
 
-                permissaoUser.grupo = grupo;
+                permissaoUser_grupoVendedores.grupo = grupoVendedores;
 
-            permissaoVendedores = new Permissao();
+            var permissaoVendedores_grupoVendedores = new Permissao();
 
-                permissaoVendedores.alterar = false;
-                permissaoVendedores.ativo = false;
-                permissaoVendedores.excluir = false;
-                permissaoVendedores.inserir = false;
-                permissaoVendedores.visualizar = false;
-                permissaoVendedores.tabela = "Vendedores";
+                permissaoVendedores_grupoVendedores.alterar = false;
+                permissaoVendedores_grupoVendedores.ativo = false;
+                permissaoVendedores_grupoVendedores.excluir = false;
+                permissaoVendedores_grupoVendedores.inserir = false;
+                permissaoVendedores_grupoVendedores.visualizar = false;
+                permissaoVendedores_grupoVendedores.tabela = "Vendedores";
 
-                permissaoVendedores.grupo = grupo;
+                permissaoVendedores_grupoVendedores.grupo = grupoVendedores;
 
-            _rePermissao.save(permissaoCliente);
-            _rePermissao.save(permissaoEmpresa);
-            _rePermissao.save(permissaoGrupo);
-            _rePermissao.save(permissaoPedidos);
-            _rePermissao.save(permissaoProdutos);
-            _rePermissao.save(permissaoUser);
-            _rePermissao.save(permissaoVendedores); 
+            await _rePermissao.save(permissaoCliente_grupoVendedores);
+            await _rePermissao.save(permissaoEmpresa_grupoVendedores);
+            await _rePermissao.save(permissaoGrupo_grupoVendedores);
+            await _rePermissao.save(permissaoPedidos_grupoVendedores);
+            await  _rePermissao.save(permissaoProdutos_grupoVendedores);
+            await _rePermissao.save(permissaoUser_grupoVendedores);
+            await _rePermissao.save(permissaoVendedores_grupoVendedores); 
 
             //Grupo Clientes
 
-            grupo = new Grupos();
-            grupo.ativo = true;
-            grupo.nome_grupo = "Clientes";
-            _repGrupo.save(grupo);
+            var grupoClientes = new Grupos();
+            grupoClientes.ativo = true;
+            grupoClientes.nome_grupo = "Clientes";
+            await _repGrupo.save(grupoClientes);
 
-            permissaoCliente = new Permissao();
+            var permissaoCliente_grupoClientes = new Permissao();
 
-            permissaoCliente.alterar = false;
-            permissaoCliente.ativo = false;
-            permissaoCliente.excluir = false;
-            permissaoCliente.inserir = false;
-            permissaoCliente.visualizar = false;
-            permissaoCliente.tabela = "Clientes";
+            permissaoCliente_grupoClientes.alterar = false;
+            permissaoCliente_grupoClientes.ativo = false;
+            permissaoCliente_grupoClientes.excluir = false;
+            permissaoCliente_grupoClientes.inserir = false;
+            permissaoCliente_grupoClientes.visualizar = false;
+            permissaoCliente_grupoClientes.tabela = "Clientes";
 
-            permissaoCliente.grupo = grupo;
+            permissaoCliente_grupoClientes.grupo = grupoClientes;
 
-        permissaoEmpresa = new Permissao();
+        var permissaoEmpresa_grupoClientes = new Permissao();
         
-            permissaoEmpresa.alterar = false;
-            permissaoEmpresa.ativo = false;
-            permissaoEmpresa.excluido = false;
-            permissaoEmpresa.inserir = false;
-            permissaoEmpresa.visualizar = false;
-            permissaoEmpresa.tabela = "Empresas";
+            permissaoEmpresa_grupoClientes.alterar = false;
+            permissaoEmpresa_grupoClientes.ativo = false;
+            permissaoEmpresa_grupoClientes.excluido = false;
+            permissaoEmpresa_grupoClientes.inserir = false;
+            permissaoEmpresa_grupoClientes.visualizar = false;
+            permissaoEmpresa_grupoClientes.tabela = "Empresas";
 
-            permissaoEmpresa.grupo = grupo;
+            permissaoEmpresa_grupoClientes.grupo = grupoClientes;
 
-        permissaoGrupo = new Permissao();
+        var permissaoGrupo_grupoClientes = new Permissao();
 
-            permissaoGrupo.alterar = false;
-            permissaoGrupo.ativo = false;
-            permissaoGrupo.excluir = false;
-            permissaoGrupo.inserir = false;
-            permissaoGrupo.visualizar = false;
-            permissaoGrupo.tabela = "Grupo";
+            permissaoGrupo_grupoClientes.alterar = false;
+            permissaoGrupo_grupoClientes.ativo = false;
+            permissaoGrupo_grupoClientes.excluir = false;
+            permissaoGrupo_grupoClientes.inserir = false;
+            permissaoGrupo_grupoClientes.visualizar = false;
+            permissaoGrupo_grupoClientes.tabela = "Grupo";
 
-            permissaoGrupo.grupo = grupo;
+            permissaoGrupo_grupoClientes.grupo = grupoClientes;
 
-        permissaoPedidos = new Permissao();
+        var permissaoPedidos_grupoClientes = new Permissao();
 
-            permissaoPedidos.alterar = true;
-            permissaoPedidos.ativo = true;
-            permissaoPedidos.excluir = false;
-            permissaoPedidos.inserir = true;
-            permissaoPedidos.visualizar = true;
-            permissaoPedidos.tabela = "Pedidos";
+            permissaoPedidos_grupoClientes.alterar = true;
+            permissaoPedidos_grupoClientes.ativo = true;
+            permissaoPedidos_grupoClientes.excluir = false;
+            permissaoPedidos_grupoClientes.inserir = true;
+            permissaoPedidos_grupoClientes.visualizar = true;
+            permissaoPedidos_grupoClientes.tabela = "Pedidos";
 
-            permissaoPedidos.grupo = grupo;
+            permissaoPedidos_grupoClientes.grupo = grupoClientes;
             
-        permissaoProdutos = new Permissao();
+        var permissaoProdutos_grupoClientes = new Permissao();
         
-            permissaoProdutos.alterar = false;
-            permissaoProdutos.ativo = false;
-            permissaoProdutos.excluir = false;
-            permissaoProdutos.inserir = false;
-            permissaoProdutos.visualizar = false;
-            permissaoProdutos.tabela = "Produtos";
+            permissaoProdutos_grupoClientes.alterar = false;
+            permissaoProdutos_grupoClientes.ativo = false;
+            permissaoProdutos_grupoClientes.excluir = false;
+            permissaoProdutos_grupoClientes.inserir = false;
+            permissaoProdutos_grupoClientes.visualizar = false;
+            permissaoProdutos_grupoClientes.tabela = "Produtos";
 
-            permissaoProdutos.grupo = grupo;
+            permissaoProdutos_grupoClientes.grupo = grupoClientes;
 
-        permissaoUser = new Permissao()
+        var permissaoUser_grupoClientes = new Permissao()
 
-            permissaoUser.alterar = false;
-            permissaoUser.ativo = false;
-            permissaoUser.excluir = false;
-            permissaoUser.inserir = false;
-            permissaoUser.visualizar = false;
-            permissaoUser.tabela = "Usuarios";
+            permissaoUser_grupoClientes.alterar = false;
+            permissaoUser_grupoClientes.ativo = false;
+            permissaoUser_grupoClientes.excluir = false;
+            permissaoUser_grupoClientes.inserir = false;
+            permissaoUser_grupoClientes.visualizar = false;
+            permissaoUser_grupoClientes.tabela = "Usuarios";
 
-            permissaoUser.grupo = grupo;
+            permissaoUser_grupoClientes.grupo = grupoClientes;
 
-        permissaoVendedores = new Permissao();
+        var permissaoVendedores_grupoClientes = new Permissao();
 
-            permissaoVendedores.alterar = false;
-            permissaoVendedores.ativo = false;
-            permissaoVendedores.excluir = false;
-            permissaoVendedores.inserir = false;
-            permissaoVendedores.visualizar = false;
-            permissaoVendedores.tabela = "Vendedores";
+            permissaoVendedores_grupoClientes.alterar = false;
+            permissaoVendedores_grupoClientes.ativo = false;
+            permissaoVendedores_grupoClientes.excluir = false;
+            permissaoVendedores_grupoClientes.inserir = false;
+            permissaoVendedores_grupoClientes.visualizar = false;
+            permissaoVendedores_grupoClientes.tabela = "Vendedores";
 
-            permissaoVendedores.grupo = grupo;
+            permissaoVendedores_grupoClientes.grupo = grupoClientes;
 
-        _rePermissao.save(permissaoCliente);
-        _rePermissao.save(permissaoEmpresa);
-        _rePermissao.save(permissaoGrupo);
-        _rePermissao.save(permissaoPedidos);
-        _rePermissao.save(permissaoProdutos);
-        _rePermissao.save(permissaoUser);
-        _rePermissao.save(permissaoVendedores);
+        await _rePermissao.save(permissaoCliente_grupoClientes);
+        await _rePermissao.save(permissaoEmpresa_grupoClientes);
+        await _rePermissao.save(permissaoGrupo_grupoClientes);
+        await _rePermissao.save(permissaoPedidos_grupoClientes);
+        await _rePermissao.save(permissaoProdutos_grupoClientes);
+        await _rePermissao.save(permissaoUser_grupoClientes);
+        await _rePermissao.save(permissaoVendedores_grupoClientes);
         }
     }
      async cadastroUsuario () {
