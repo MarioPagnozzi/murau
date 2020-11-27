@@ -41,12 +41,12 @@ let https = require("https");
 https.createServer({
     target: "https://apimurau.mapxsolucoes.com.br:9443",
     secureOptions: constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_SSLv2,
-    key: fs.readFileSync("C:/Program Files/OpenSSL-Win64/bin/certificate.key"),
-    cert: fs.readFileSync("C:/Program Files/OpenSSL-Win64/bin/certificate.crt")
-    /*key: fs.readFileSync("/etc/letsencrypt/live/apimurau.mapxsolucoes.com.br/privkey.pem"),
+    /*key: fs.readFileSync("C:/Program Files/OpenSSL-Win64/bin/certificate.key"),
+    cert: fs.readFileSync("C:/Program Files/OpenSSL-Win64/bin/certificate.crt")*/
+    key: fs.readFileSync("/etc/letsencrypt/live/apimurau.mapxsolucoes.com.br/privkey.pem"),
     cert: fs.readFileSync("/etc/letsencrypt/live/apimurau.mapxsolucoes.com.br/cert.pem"),
     ca: fs.readFileSync("/etc/letsencrypt/live/apimurau.mapxsolucoes.com.br/chain.pem"),
-    dhparam: fs.readFileSync("/etc/letsencrypt/archive/apimurau.mapxsolucoes.com.br/dh1.pem")*/
+    dhparam: fs.readFileSync("/etc/letsencrypt/archive/apimurau.mapxsolucoes.com.br/dh1.pem")
 },app).listen(config.port,'0.0.0.0', async () => {
 
     

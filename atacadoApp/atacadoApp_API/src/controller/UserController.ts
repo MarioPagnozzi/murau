@@ -1,5 +1,4 @@
-import { Repository, getRepository } from 'typeorm';
-import { Grupos } from './../entity/Grupos';
+import { getRepository, Like, Repository } from 'typeorm';
 import {NextFunction, Request, Response} from "express";
 import { User } from "../entity/User";
 import { BaseController } from "./BaseController";
@@ -9,7 +8,8 @@ import config from "../configuracao/config";
 
 export class UserController extends BaseController<User> {
 
-   constructor() {
+    private _repositories: Repository<User> = getRepository(User);
+    constructor() {
        super(User);
    }
 
@@ -74,5 +74,8 @@ export class UserController extends BaseController<User> {
         super.isEmail(_user.email, "E-mail é inválido");
         super.isRequired(_user.grupos, "É preciso atribuir ao menos 1 (um) grupo para o usuário");
         return super.save(_user);
+   }
+   async nome_like(request: Request) {
+       return this._repositories.find({nome: Like("%" + request.params.nome + "%")});
    }
 }
