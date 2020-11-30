@@ -8,7 +8,7 @@ export const Routes = [
 
     //roteamento liberado home
     {method: "get", route: "/home", controller: HomeController, action: "all"}, 
-    {method: "get", route: "/home/:prod", controller: HomeController, action: "one"},
+    {method: "get", route: "/home/:id", controller: HomeController, action: "one"},
     {method: "get", route: "/home/:prodEmpresa/all", controller: HomeController, action: "all"},
 
     //roteamento liberado usuário
@@ -24,19 +24,21 @@ export const Routes = [
 
     //roteamentos restritos: Produtos
     {method: "get", route: "/produtos", controller: ProdutosController, action: "all"},
-    {method: "get", route: "/produtos/:prod", controller: ProdutosController, action: "one"}, 
+    {method: "get", route: "/produtos/:id", controller: ProdutosController, action: "one"}, 
     {method: "post", route: "/produtos", controller: ProdutosController, action: "save"},
     {method: "delete",route: "/produtos/:id", controller: ProdutosController, action: "remove"},
 
     //roteamentos restritos: Vendedores
     {method: "get", route: "/vendedores", controller: VendedoresController, action: "all"}, 
-    {method: "get", route: "/vendedores/:vend", controller: VendedoresController, action: "one"}, 
+    {method: "get", route: "/vendedores/:id", controller: VendedoresController, action: "one"}, 
     {method: "post", route: "/vendedores", controller: VendedoresController, action: "save"},
     {method: "delete",route: "/vendedores/:id", controller: VendedoresController, action: "remove"},
+    {method: "post",route: "/vendedores/:nome", controller: VendedoresController, action: "nome_like"},
+    {method: "post", route: "/vendedores/:codigo", controller: VendedoresController, action: "codigo"},
 
     //retoeamento restritos: Empresas
     {method: "get", route: "/empresas", controller: EmpresasController, action: "all"}, 
-    {method: "get", route: "/empresas/:emp", controller: EmpresasController, action: "one"}, 
+    {method: "get", route: "/empresas/:id", controller: EmpresasController, action: "one"}, 
     {method: "post", route: "/empresas", controller: EmpresasController, action: "save"},
     {method: "delete",route: "/empresas/:id", controller: EmpresasController, action: "remove"},
 ];
