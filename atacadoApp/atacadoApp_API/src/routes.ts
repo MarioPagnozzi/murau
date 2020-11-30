@@ -20,7 +20,7 @@ export const Routes = [
     {method: "post", route: "/users", controller: UserController, action: "save"},
     {method: "post", route: "/users/auth", controller: UserController, action: "auth"},
     {method: "delete",route: "/users/:id", controller: UserController, action: "remove"},
-    {method: "post", route: "/users/:nome", controller: UserController, action: "nome_like"},
+    {method: "get", route: "/users/:nome/nome", controller: UserController, action: "nome_like"},
 
     //roteamentos restritos: Produtos
     {method: "get", route: "/produtos", controller: ProdutosController, action: "all"},
@@ -33,8 +33,8 @@ export const Routes = [
     {method: "get", route: "/vendedores/:id", controller: VendedoresController, action: "one"}, 
     {method: "post", route: "/vendedores", controller: VendedoresController, action: "save"},
     {method: "delete",route: "/vendedores/:id", controller: VendedoresController, action: "remove"},
-    {method: "post",route: "/vendedores/:nome", controller: VendedoresController, action: "nome_like"},
-    {method: "post", route: "/vendedores/:codigo", controller: VendedoresController, action: "codigo"},
+    {method: "get",route: "/vendedores/:nome/nome", controller: VendedoresController, action: "nome_like"},
+    {method: "get", route: "/vendedores/:codigo/vendedor", controller: VendedoresController, action: "codigo"},
 
     //retoeamento restritos: Empresas
     {method: "get", route: "/empresas", controller: EmpresasController, action: "all"}, 
