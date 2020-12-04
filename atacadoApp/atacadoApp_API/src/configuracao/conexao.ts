@@ -45,8 +45,7 @@ export default {
                 ImagensProduto,
                 Tabelas,
                 Configuracoes,
-                ProdutosEmpresas,
-                VendedoresEmpresas
+                ProdutosEmpresas
             ]
         });
         console.log("Database connected");

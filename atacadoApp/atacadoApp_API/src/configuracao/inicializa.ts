@@ -159,17 +159,8 @@ export class Setup {
 
                     EntityVendedor.endereco = "Cadastro Automático";
                     EntityVendedor.nome = _vend[1];
+                    EntityVendedor.empresas = _Empresas
                     await _repVendedor.save(EntityVendedor).then(async (vendedor) => {
-                        let _repVendedoresEmpresas: Repository<VendedoresEmpresas> = getRepository(VendedoresEmpresas);
-                        let vendedoresEmpresas: VendedoresEmpresas;
-                        
-                        _Empresas.forEach(async function(empresa) {
-                            vendedoresEmpresas  = new VendedoresEmpresas();
-                            vendedoresEmpresas.empresa = empresa;
-                            vendedoresEmpresas.vendedor = vendedor;
-
-                            _repVendedoresEmpresas.save(vendedoresEmpresas);
-                        });
                         console.log("Vendedor " + vendedor.nome + " cadastrado");
                     }).catch((error) => {
                         console.error("Erro ao cadastradar o vendedor " + EntityVendedor.nome);
@@ -224,7 +215,7 @@ export class Setup {
                                             produtosEmpresas.empresa = empresa;
                                             _repProdutosEmpresas.save(produtosEmpresas);
                                        }); 
-                                   console.log("Produto: " + EntityProduto.nome + " cadastrado na empresa: ");
+                                   console.log("Produto: " + produto.nome + " cadastrado na empresa: ");
                                  });
                                  
                              }

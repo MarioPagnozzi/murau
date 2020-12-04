@@ -78,4 +78,7 @@ export class UserController extends BaseController<User> {
    async nome_like(request: Request) {
        return this._repositories.find({nome: Like("%" + request.params.nome + "%")});
    }
+   async porGrupo(request: Request){
+        return this._repositories.find({grupos: [{nome_grupo: request.params.nome_grupo}]});
+   }
 }

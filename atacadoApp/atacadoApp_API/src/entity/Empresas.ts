@@ -1,9 +1,10 @@
 import { ProdutosEmpresas } from './ProdutosEmpresas';
 import { Pedidos } from './Pedidos';
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, ManyToMany, OneToMany } from 'typeorm';
 import { BaseEntity } from './BaseEntity';
 import { Clientes } from './Clientes';
 import { VendedoresEmpresas } from './VendedoresEmpresas';
+import { Vendedores } from './Vendedores';
 
 @Entity({name: "empresas"})
 export class Empresas extends BaseEntity {
@@ -47,6 +48,8 @@ export class Empresas extends BaseEntity {
     @OneToMany(type => Clientes, cliente => cliente.empresa)
     clientes: Clientes[]
 
-    @OneToMany(type => VendedoresEmpresas, vendedoresEmpresas => vendedoresEmpresas.empresa)
-    vendedores: VendedoresEmpresas[]
+    /*@OneToMany(type => VendedoresEmpresas, vendedoresEmpresas => vendedoresEmpresas.empresa,{eager: true})
+    vendedores: VendedoresEmpresas[]*/
+    @ManyToMany(type => Vendedores, vendedores => vendedores.empresas)
+    vendedores: Vendedores[]
 }

@@ -31,4 +31,10 @@ export class VendedoresController extends BaseController<Vendedores> {
     async codigo(request: Request) {
         return this._repVendedor.findOne({where: {codigo: request.params.codigo}});
     }
+    async porEmpresa(request: Request) {
+        return this._repVendedor.createQueryBuilder("vendedores")
+                                .innerJoinAndSelect("vendedores.empresas","empresas")
+                                .where("empresas.codigo = :codigo", {codigo: request.params.codigo})
+                                .getMany();
+    }
 }
