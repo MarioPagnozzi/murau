@@ -6,7 +6,7 @@ DROP TABLE contatosvendedores;
 DROP TABLE usuarios;
 DROP TABLE itempedido;
 DROP TABLE pedidos;
-DROP TABLE clientes;
+DROP TABLE clientes; 
 DROP TABLE empresas;
 DROP TABLES vendedores;
 DROP TABLE permissao;

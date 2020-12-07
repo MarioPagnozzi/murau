@@ -1,8 +1,150 @@
+import { ContatosClientes } from './../entity/ContatosClientes';
+import { Request } from 'express';
+import { getRepository, Like, Repository } from 'typeorm';
 import { Clientes } from './../entity/Clientes';
 import { BaseController } from "./BaseController";
 
 export class ClientesController extends BaseController<Clientes> {
+    private _repClientes: Repository<Clientes> = getRepository(Clientes);
+    
     constructor(){
         super(Clientes);
+    }
+    async createCliente(request: Request) {
+        let {razao_social, nome_fantasia, cnpj, cep, endereco, 
+            numero, bairro, cidade, uf, email, contatos  } = request.body;
+        
+        super.isRequired(razao_social, "A 'Razão Social' deve ser informada");
+        super.isRequired(nome_fantasia, "O 'Nome Fantasia' dever ser informado");        
+        super.isRequired(cep, "O 'CEP' deve ser informado");
+        super.isRequired(endereco, "O 'Endereço' deve ser informado");
+        super.isRequired(numero,"O 'Número' deve ser informado ");
+        super.isRequired(bairro,"O 'Bairro' deve ser informado");
+        super.isRequired(cidade, "A 'Cidade' deve ser informada");
+        super.isRequired(uf, "A 'UF' deve ser informada");
+        super.isRequired(email, "O 'E-mail' deve ser informada");
+        super.isEmail(email, "Informe um 'E-mail' válido");
+        super.isRequired(contatos, "Deve ser informado um ou mais 'Contatos'");
+        super.isCPFCNPJ(cnpj, "'CNPJ' informado não é válido");
+
+        let _cliente: Clientes = new Clientes();
+
+        _cliente.razao_social = razao_social;
+        _cliente.nome_fantasia = nome_fantasia;
+        _cliente.cnpj = cnpj;
+        _cliente.cep = cep;
+        _cliente.endereco = endereco;
+        _cliente.numero = numero;
+        _cliente.bairro = bairro;
+        _cliente.cidade = cidade;
+        _cliente.uf = uf;
+        _cliente.email = email;       
+        _cliente.ativo = false;
+        _cliente.statusCliente = 1;
+
+        let codigo = await this._repClientes.createQueryBuilder("clientes")
+                         .select("IFNULL(max(cast(cli.codigo as unsigned INTEGER)),0)","maxCodigo")
+                         .from(Clientes, "cli")
+                         .getRawOne();
+
+        _cliente.codigo =  +codigo["maxCodigo"] + 1;
+
+        super.save(_cliente);
+        
+        contatos.forEach(async (contato) => {
+            let _contato: ContatosClientes = new ContatosClientes();
+            _contato.ddd = contato.ddd;
+            _contato.numero = contato.numero;
+            _contato.operadoras = contato.operadoras;
+            _contato.cliente = _cliente;
+
+            let _repContatoClientes: Repository<ContatosClientes> = getRepository(ContatosClientes);
+            _repContatoClientes.save(_contato);
+        });
+
+        return _cliente;
+
+    }
+    async filtro(request: Request) {
+        let filtro = request.params.filtro;        
+        let valor = request.params.valor;
+
+        if (filtro == "nome") {
+            return this._repClientes.find({where: {razao_social: Like("%" + valor + "%")}});
+        }
+
+        if (filtro == "empresa") {
+            return this._repClientes.find({where: {empresa: {codigo: +valor}}});
+        }
+
+        if (filtro == "contato") {
+            return this._repClientes.createQueryBuilder("clientes")
+                                    .innerJoinAndSelect("clientes.contatos", "contatos")
+                                    .leftJoinAndSelect("clientes.contatos","cont")
+                                    .where("contatos.numero = :numero", {numero: valor})
+                                    .getMany();
+        }
+
+        if (filtro == "cidade") {
+            return this._repClientes.find({where: {cidade: Like("%" + valor + "%")}});
+        }
+
+        if (filtro == "vendedor") {
+            return this._repClientes.find({where: {vendedor: Like("%" + valor + "%")}});
+        }
+
+        if (filtro == "cnpj") {
+            return this._repClientes.find({where: {cnpj: Like("%" + valor + "%")}});
+        }
+
+        if (filtro == "email") {
+            return this._repClientes.find({where: {email: Like("%" + valor + "%")}});
+        }
+
+        if (filtro == "pedidos") {
+            return this._repClientes.createQueryBuilder("clientes")
+                                    .innerJoinAndSelect("clientes.pedidos", "pedidos")
+                                    .where("pedidos.num_pedido = :num_pedido", {num_pedido: valor})
+                                    .getMany();
+        }
+    }
+    async save(request: Request) {
+        let _cliente = <Clientes>request.body;
+
+        super.isRequired(_cliente.razao_social, "A 'Razão Social' deve ser informada");
+        super.isRequired(_cliente.nome_fantasia, "O 'Nome Fantasia' dever ser informado");        
+        super.isRequired(_cliente.cep, "O 'CEP' deve ser informado");
+        super.isRequired(_cliente.endereco, "O 'Endereço' deve ser informado");
+        super.isRequired(_cliente.numero,"O 'Número' deve ser informado ");
+        super.isRequired(_cliente.bairro,"O 'Bairro' deve ser informado");
+        super.isRequired(_cliente.cidade, "A 'Cidade' deve ser informada");
+        super.isRequired(_cliente.uf, "A 'UF' deve ser informada");
+        super.isRequired(_cliente.email, "O 'E-mail' deve ser informada");
+        super.isEmail(_cliente.email, "Informe um 'E-mail' válido");
+        super.isRequired(_cliente.contatos, "Deve ser informado um ou mais 'Contatos'");
+        super.isCPFCNPJ(_cliente.cnpj, "'CNPJ' informado não é válido");
+
+        let codigo = await this._repClientes.findOne({where:{codigo: _cliente.codigo}});
+        if (codigo) {
+            let maxCodigo = await this._repClientes.createQueryBuilder("clientes")
+                         .select("IFNULL(max(cast(cli.codigo as unsigned INTEGER)),0)","maxCodigo")
+                         .from(Clientes, "cli")
+                         .getRawOne();
+            let sugestao = +maxCodigo["maxCodigo"] + 1;
+            return {status: 400, errors: ["Este código já está sendo usado por outro cliente. Sugestão: " + sugestao]};
+        }
+        super.save(_cliente).then((cliente) => {
+            _cliente.contatos.forEach(async (contato) => {
+                let _contato: ContatosClientes = new ContatosClientes();
+                _contato.ddd = contato.ddd;
+                _contato.numero = contato.numero;
+                _contato.operadoras = contato.operadoras;
+                _contato.cliente = cliente;
+    
+                let _repContatoClientes: Repository<ContatosClientes> = getRepository(ContatosClientes);
+                _repContatoClientes.save(_contato);
+            });
+        });
+        return _cliente;
     }
 }

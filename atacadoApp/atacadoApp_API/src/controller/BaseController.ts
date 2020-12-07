@@ -49,7 +49,8 @@ export abstract class BaseController<T> extends BaseNotificacao {
         let uid = request.params.id;
         let model: any = await this._repositorio.findOne(uid);
         if (model) {
-            model.deleted = true;
+            model.excluido = true;
+            model.ativo = false;
             return this._repositorio.save(model);
         } 
         else {

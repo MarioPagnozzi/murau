@@ -6,7 +6,8 @@ export default {
         '/users/auth',
         "/home",
         "/home/:prod",
-        "/home/:prodEmpresa/all"
+        "/home/:prodEmpresa/all",
+        "/clientes/createCliente"
     ],
     tabelas: [
         "usuarios",

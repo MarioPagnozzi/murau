@@ -16,8 +16,9 @@ const agent = new https.Agent({keepAlive: true, maxSockets: Infinity});
 var fs = require("fs");
 
 export default async (req: Request, res: Response, next: NextFunction) => {
-
-   var job_atualiza = await cron.scheduleJob('*/60 * * * *',async function() {
+   let startTime = new Date().setUTCHours(8,0,0);
+   let endTime = new Date().setUTCHours(20,0,0);
+   var job_atualiza = await cron.scheduleJob({start: startTime, end: endTime, rule: '*/60 * * * *'},async function() {
 
         let token = await geraToken();
         atualizaProduto(token);
@@ -266,7 +267,7 @@ async function insereNovoProduto(_token) {
 
     let maxCodigo = await _repProdutos.createQueryBuilder("produtos")
                                         .select("max(cast(produtos.codigo as unsigned integer))","maxCodigo")
-                                        .from(Produtos, "usuarios")
+                                        .from(Produtos, "produtos")
                                         .getRawOne();
 
     let _cdProd = +maxCodigo["maxCodigo"] + 1;    
