@@ -266,8 +266,8 @@ async function insereNovoProduto(_token) {
     let _url = _restapi_totvs.valor + "/produto/classificacaoproduto";
 
     let maxCodigo = await _repProdutos.createQueryBuilder("produtos")
-                                        .select("max(cast(produtos.codigo as unsigned integer))","maxCodigo")
-                                        .from(Produtos, "produtos")
+                                        .select("max(cast(prod.codigo as unsigned integer))","maxCodigo")
+                                        .from(Produtos, "prod")
                                         .getRawOne();
 
     let _cdProd = +maxCodigo["maxCodigo"] + 1;    
