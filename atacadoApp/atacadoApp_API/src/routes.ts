@@ -29,6 +29,8 @@ export const Routes = [
     {method: "get", route: "/produtos/:id", controller: ProdutosController, action: "one"}, 
     {method: "post", route: "/produtos", controller: ProdutosController, action: "save"},
     {method: "delete",route: "/produtos/:id", controller: ProdutosController, action: "remove"},
+    {method: "get", route: "/produtos/:valor/:filtro", controller: ProdutosController, action: "filtro"},
+    {method: "post", route: "/produtos/:codigo/novo", controller: ProdutosController,action: "insereNovo"},
 
     //roteamentos restritos: Vendedores
     {method: "get", route: "/vendedores", controller: VendedoresController, action: "all"}, 
