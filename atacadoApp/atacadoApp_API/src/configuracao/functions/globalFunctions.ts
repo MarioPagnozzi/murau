@@ -578,4 +578,23 @@ export class functions {
         }
     }
     
+    formData(request: Request) {
+        return new Promise<Array<string>>((resolve, reject) => {
+            const util = require('util');
+            const formidable = require("formidable");
+            let form = new formidable.IncomingForm();
+
+            form.parse(request, (err, fields, files) => {
+                let obj = [];
+                obj[0] = fields;
+                obj[1] = files
+                resolve(obj);
+              
+            });
+
+            form.on("error", (err) => {
+                reject(err.message);
+            });
+        })
+    }
 }

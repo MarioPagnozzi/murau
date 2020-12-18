@@ -4,16 +4,19 @@ import * as bodyParser from "body-parser";
 import {Request, Response} from "express";
 import {Routes} from "./routes";
 import config from "./configuracao/config";
-import auth from "./middleware/auth";
+import auth from "./middleware/auth"
 import conexao from "./configuracao/conexao";
 import { Setup } from "./configuracao/inicializa";
 import cron_job from "./middleware/cron_job";
 
+var multer = require("multer");
+//var upload = multer();S
 
 // create express app
 const app = express();
 app.use(bodyParser.json());
-
+app.use(bodyParser.urlencoded({ extended: true }));
+//app.use(upload.array());
 app.use(auth);
 
 // register express routes from defined application routes
@@ -34,7 +37,8 @@ Routes.forEach(route => {
         }
     });
 });
-
+var path = require('path');
+app.use(path.join("/","uploads"), express.static("public"));
 var fs = require("fs");
 var constants = require("constants");
 let https = require("https");

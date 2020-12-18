@@ -1,9 +1,10 @@
 import { Configuracoes } from './../entity/Configuracoes';
-import { Request } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { getRepository, Like, Repository } from 'typeorm';
 import { Produtos } from './../entity/Produtos';
 import { BaseController } from "./BaseController";
 import {functions} from "./../configuracao/functions/globalFunctions";
+import { ImagensProduto } from '../entity/imagesProduto';
 export class ProdutosController extends BaseController<Produtos> {
     private _repProdutos: Repository<Produtos> = getRepository(Produtos);
     constructor () {
@@ -79,8 +80,89 @@ export class ProdutosController extends BaseController<Produtos> {
         catch (err) {
             return {status: err.status, errors: err.errors}
         }
-        
-      
         return {status: 400, errors: "Produto não encontrado para este código"}
+    }
+    async uploadFotos(request: Request, response: Response, next: NextFunction) {
+
+        const fs = require('fs');
+        const multer = require('multer');
+        var sharp = require('sharp');
+        
+        let dir = "public/uploads/fotos";
+
+        let _dir = dir.split("/");
+        let ndir = "./";
+
+        for (let el in _dir) {
+            ndir = ndir + _dir[el] + "/";
+            if (!fs.existsSync(ndir)) {
+                fs.mkdirSync(ndir, {recursive: true});
+            }
+        }
+
+       let dirname = ndir;
+       request.body.dirname = dirname;
+       let upload = require("./../middleware/upload");
+
+       await upload(request, response, function (err) {
+       
+            if (request.fileValidationError) {
+                response.status(401).send({message: "Erro na validação do Arquivo"});
+                return;
+            }
+            else if (err instanceof multer.MulterError) {
+                response.status(401).send({message: "Erro na instancia do aquivo ou aplicativo"});
+                return;
+                
+            }
+            else if (!request.files) {
+                response.status(404).send({message: "Arquivos não encontrados"});
+                return;
+            }
+            else if (err) {
+                response.status(500).send({message: "Erro geral do servidor"});
+                return;
+                
+            }
+            else {
+                try {
+                    let directory = dirname + request.body.cdproduto;
+                    console.log(directory);
+                    if(!fs.existsSync(directory)) {
+                        fs.mkdirSync(directory);
+                    }
+                    let files = JSON.parse(JSON.stringify(request.files));
+                    console.log(JSON.parse(JSON.stringify(request.files)));
+                    
+                    
+                    for (let el in files) {
+                        console.log(directory);
+                        let caminho = directory + "/" + Date.now().toString() + ".png" ;
+                        sharp(files[el].path).resize(350,600).toFormat('png')
+                                                        .png({quality: 80}).toFile(caminho)
+                        .then(async () => {
+                            fs.unlinkSync(files[el].path);
+                            let _repImagemProduto: Repository<ImagensProduto> = getRepository(ImagensProduto);
+                            let _repProdutos: Repository<Produtos> = getRepository(Produtos);
+                            let imagesProd = new ImagensProduto();
+
+                            let produto = await _repProdutos.findOne({where: {codigo: request.body.cdproduto}});
+                            
+                            imagesProd.produto = produto;
+                            imagesProd.caminho = caminho;
+
+                            _repImagemProduto.save(imagesProd);
+
+                        });
+                    }
+                    response.status(200).send({message: "Arquivos carregados com sucesso"});
+                    return;
+                }
+                catch (err) {
+                    response.status(401).send({message: "Erro ao carregar os arquivos"});
+                    return;
+                }
+            }
+        })
     }
 }

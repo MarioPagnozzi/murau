@@ -31,6 +31,7 @@ export const Routes = [
     {method: "delete",route: "/produtos/:id", controller: ProdutosController, action: "remove"},
     {method: "get", route: "/produtos/:valor/:filtro", controller: ProdutosController, action: "filtro"},
     {method: "post", route: "/produtos/:codigo/novo", controller: ProdutosController,action: "insereNovo"},
+    {method: "post", route: "/produtos/uploadfotos", controller: ProdutosController,action: "uploadFotos"},
 
     //roteamentos restritos: Vendedores
     {method: "get", route: "/vendedores", controller: VendedoresController, action: "all"}, 
