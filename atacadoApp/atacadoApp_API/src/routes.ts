@@ -32,6 +32,7 @@ export const Routes = [
     {method: "get", route: "/produtos/:valor/:filtro", controller: ProdutosController, action: "filtro"},
     {method: "post", route: "/produtos/:codigo/novo", controller: ProdutosController,action: "insereNovo"},
     {method: "post", route: "/produtos/uploadfotos", controller: ProdutosController,action: "uploadFotos"},
+    {method: "post", route: "/produtos/empresas", controller: ProdutosController,action: "vinculaEmpresas"},
 
     //roteamentos restritos: Vendedores
     {method: "get", route: "/vendedores", controller: VendedoresController, action: "all"}, 
