@@ -1,8 +1,10 @@
 import { Request } from 'express';
+import { getRepository, Repository } from 'typeorm';
 import { Grupos } from './../entity/Grupos';
 import { BaseController } from "./BaseController";
 
 export class GrupoController extends BaseController<Grupos> {
+    private _repGrupo: Repository<Grupos> = getRepository(Grupos);
     constructor () {
         super(Grupos);
     }
