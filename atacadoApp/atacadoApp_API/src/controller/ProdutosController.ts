@@ -1,10 +1,12 @@
 import { Configuracoes } from './../entity/Configuracoes';
 import { Request, Response, NextFunction } from 'express';
-import { getRepository, Like, Repository } from 'typeorm';
+import { getRepository, Like, Repository, In } from 'typeorm';
 import { Produtos } from './../entity/Produtos';
 import { BaseController } from "./BaseController";
 import {functions} from "./../configuracao/functions/globalFunctions";
 import { ImagensProduto } from '../entity/imagesProduto';
+import { ProdutosEmpresas } from '../entity/ProdutosEmpresas';
+import { Empresas } from '../entity/Empresas';
 export class ProdutosController extends BaseController<Produtos> {
     private _repProdutos: Repository<Produtos> = getRepository(Produtos);
     constructor () {
@@ -164,5 +166,27 @@ export class ProdutosController extends BaseController<Produtos> {
                 }
             }
         })
+    }
+    async vinculaEmpresas(request: Request) {
+        let {produto, empresas} = request.body;
+
+        super.isRequired(produto, "Produto deve ser informado");
+        super.isRequired(empresas, "É preciso informar uma ou mais empresas");
+
+        let _repProdutosEmpresas: Repository<ProdutosEmpresas> = getRepository(ProdutosEmpresas);
+        let _repEmpresa: Repository<Empresas> =  getRepository(Empresas);
+
+        let _produto = await this._repProdutos.findOne(produto);
+        let _empresas = await _repEmpresa.find({where: {codigo: In([empresas])}});
+
+        let prodEmpresas: ProdutosEmpresas = new ProdutosEmpresas();
+
+        _empresas.forEach((emp) => {
+            prodEmpresas.produto = _produto;
+            prodEmpresas.empresa = emp;
+            _repProdutosEmpresas.save(prodEmpresas);
+        });
+
+        return _empresas;
     }
 }
