@@ -11,6 +11,7 @@ export const Routes = [
     {method: "get", route: "/home", controller: HomeController, action: "all"}, 
     {method: "get", route: "/home/:id", controller: HomeController, action: "one"},
     {method: "get", route: "/home/:prodEmpresa/all", controller: HomeController, action: "all"},
+    {method: "get", route: "/home/:empresa/:valor", controller: HomeController, action: "Pesquisa"},
 
     //roteamento liberado usuário
     {method: "post", route: "/users/create", controller: UserController, action: "createUser"}, 

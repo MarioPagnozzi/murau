@@ -7,7 +7,8 @@ export default {
         "/home",
         "/home/:prod",
         "/home/:prodEmpresa/all",
-        "/clientes/createCliente"
+        "/clientes/createCliente",
+        "/home/:empresa/:valor"
     ],
     tabelas: [
         "usuarios",
