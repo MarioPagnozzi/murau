@@ -10,8 +10,6 @@ export class GrupoController extends BaseController<Grupos> {
         let grupo = <Grupos>request.body;
 
         super.isRequired(grupo.nome_grupo, "O 'Nome do Grupo' deve ser informado!");
-        super.isRequired(grupo.permissoes, "A 'Permissão' do grupo deve ser configurada!");
-
         return super.save(grupo);
     }
 }
