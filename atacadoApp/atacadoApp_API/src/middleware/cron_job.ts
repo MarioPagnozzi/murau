@@ -20,8 +20,8 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         fun.atualizaProduto(token);
     });
     var rule = new cron.RecurrenceRule();
-    rule.hour = 23;
-    rule.minute = 59;
+    rule.hour = 17;
+    rule.minute = 30;
     rule.dayOfWeek = new cron.Range(1,5);
 
     var job_insere = await cron.scheduleJob(rule, async function () {

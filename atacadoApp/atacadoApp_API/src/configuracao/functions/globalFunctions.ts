@@ -597,4 +597,30 @@ export class functions {
             });
         })
     }
+    Email(mensagem) {
+       return new Promise( (resolve, reject) => {const nodemailer = require('nodemailer');
+            console.log("chamou funcao Email")
+            let transport = nodemailer.createTransport({
+                host: "smtp.gmail.com",
+                port: 465,
+                secure: true,
+                auth: {
+                    user: "vermell.software@gmail.com",
+                    pass: "M@r10@1979"
+                }
+            });
+
+            transport.sendMail(mensagem, function(err, info) {
+                if (err) {
+                    transport.close();
+                    return reject(err);
+                }
+                else {
+                    transport.close();
+                    return resolve(info);
+                }
+            });
+        })
+    
+    }
 }

@@ -3,7 +3,9 @@ import { Request } from 'express';
 import { getRepository, Like, Repository } from 'typeorm';
 import { Clientes } from './../entity/Clientes';
 import { BaseController } from "./BaseController";
-
+import {functions} from "./../configuracao/functions/globalFunctions";
+import { Produtos } from '../entity/Produtos';
+import { ImagensProduto } from '../entity/imagesProduto';
 export class ClientesController extends BaseController<Clientes> {
     private _repClientes: Repository<Clientes> = getRepository(Clientes);
     
@@ -50,6 +52,8 @@ export class ClientesController extends BaseController<Clientes> {
         _cliente.codigo =  +codigo["maxCodigo"] + 1;
 
         super.save(_cliente);
+
+        
         
         contatos.forEach(async (contato) => {
             let _contato: ContatosClientes = new ContatosClientes();
@@ -61,7 +65,43 @@ export class ClientesController extends BaseController<Clientes> {
             let _repContatoClientes: Repository<ContatosClientes> = getRepository(ContatosClientes);
             _repContatoClientes.save(_contato);
         });
+        let fs = require("fs");
+        let path = require("path");
+        const arqHtml = path.join(path.dirname(__dirname),"templates") + "/email_cadastro.html";
+        const imgFb = path.join(path.dirname(__dirname), "templates" ) + "/images/005-facebook.png";
+        let html = fs.readFileSync(arqHtml);
+        html = html.toString().replace("NomeCliente", _cliente.razao_social);
 
+        let _repProdutos: Repository<Produtos> = getRepository(Produtos);
+        
+        let produtos = await _repProdutos.find({order: {data_inclusao: "DESC"}, take: 6});
+        let _repImagensProduto: Repository<ImagensProduto> = getRepository(ImagensProduto);
+        let i = 1;
+        for (let prod in produtos) {
+            
+            html = html.toString().replace("nomeProduto" + i.toString(), produtos[prod].nome);
+            html = html.toString().replace("DescricaoProduto" + i.toString(), produtos[prod].descricao);
+
+            let imagem = await _repImagensProduto.find({where: {produto: produtos[prod]}, take: 1});
+            if (imagem.length > 0) {
+                html = html.toString().replace("Linkimage" + i.toString(), imagem[0].caminho);
+            }
+            else {
+                html = html.toString().replace("LinkImage" + i.toString(), "https://i.ibb.co/qs4w265/sem-foto.jpg")
+            }
+            i = +i + 1;
+        }
+        console.log(html)
+        const mensagem = {
+            from: "atendimento@murau.com",
+            to: _cliente.email,
+            subject: "Confirmação de Cadastro",
+            html: html
+        }
+        let fun = new functions();
+        let sendMail = fun.Email(mensagem);
+        let retornoEmail = await sendMail;
+        console.log(retornoEmail)
         return _cliente;
 
     }
