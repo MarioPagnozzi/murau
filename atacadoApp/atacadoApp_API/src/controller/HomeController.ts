@@ -8,6 +8,9 @@ export class HomeController extends BaseController<Produtos> {
     constructor() {
         super(Produtos);
     }
+    async all(request: Request) {
+        return super.all(request, false);
+    }
     async Pesquisa(request: Request) {
         return this._repProdutos.createQueryBuilder("produtos").addSelect("produtos.*")
                                 .innerJoin("produtos.produtosEmpresas", "produtosEmpresas").addSelect([

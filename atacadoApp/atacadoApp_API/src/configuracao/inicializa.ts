@@ -239,7 +239,8 @@ export class Setup {
          let permissaoPedidos: Permissao;      
          let permissaoProdutos: Permissao;
          let permissaoUser: Permissao;
-         let permissaoVendedores: Permissao; 
+         let permissaoVendedores: Permissao;
+         let permissaoPermissoes: Permissao; 
 
          let temUsuario = await _repUsuario.findOne();
          let temgrupo = await _repGrupo.findOne();
@@ -329,6 +330,16 @@ export class Setup {
                 permissaoVendedores.tabela = "Vendedores";
 
                 permissaoVendedores.grupo = grupo;
+            
+            permissaoPermissoes = new Permissao();
+
+                permissaoPermissoes.alterar = true;
+                permissaoPermissoes.ativo = true;
+                permissaoPermissoes.excluir = true;
+                permissaoPermissoes.inserir = true;
+                permissaoPermissoes.visualizar = true;
+                permissaoPermissoes.grupo = grupo;
+                permissaoPermissoes.tabela = "Permissoes";
 
             await _rePermissao.save(permissaoCliente);
             await _rePermissao.save(permissaoEmpresa);
@@ -336,7 +347,8 @@ export class Setup {
             await _rePermissao.save(permissaoPedidos);
             await _rePermissao.save(permissaoProdutos);
             await _rePermissao.save(permissaoUser);
-            await _rePermissao.save(permissaoVendedores); 
+            await _rePermissao.save(permissaoVendedores);
+            await _rePermissao.save(permissaoPermissoes);  
 
             //Cria grupo e permissão de vendedores
 
@@ -348,7 +360,6 @@ export class Setup {
             var permissaoCliente_grupoVendedores = new Permissao();
 
                 permissaoCliente_grupoVendedores.alterar = true;
-                permissaoCliente_grupoVendedores.ativo = true;
                 permissaoCliente_grupoVendedores.excluir = false;
                 permissaoCliente_grupoVendedores.inserir = true;
                 permissaoCliente_grupoVendedores.visualizar = true;
@@ -359,7 +370,6 @@ export class Setup {
             var permissaoEmpresa_grupoVendedores = new Permissao();
             
                 permissaoEmpresa_grupoVendedores.alterar = false;
-                permissaoEmpresa_grupoVendedores.ativo = false;
                 permissaoEmpresa_grupoVendedores.excluido = false;
                 permissaoEmpresa_grupoVendedores.inserir = false;
                 permissaoEmpresa_grupoVendedores.visualizar = false;
@@ -370,7 +380,6 @@ export class Setup {
             var permissaoGrupo_grupoVendedores = new Permissao();
 
                 permissaoGrupo_grupoVendedores.alterar = false;
-                permissaoGrupo_grupoVendedores.ativo = false;
                 permissaoGrupo_grupoVendedores.excluir = false;
                 permissaoGrupo_grupoVendedores.inserir = false;
                 permissaoGrupo_grupoVendedores.visualizar = false;
@@ -381,7 +390,6 @@ export class Setup {
             var permissaoPedidos_grupoVendedores = new Permissao();
 
                 permissaoPedidos_grupoVendedores.alterar = true;
-                permissaoPedidos_grupoVendedores.ativo = true;
                 permissaoPedidos_grupoVendedores.excluir = true;
                 permissaoPedidos_grupoVendedores.inserir = true;
                 permissaoPedidos_grupoVendedores.visualizar = true;
@@ -392,7 +400,6 @@ export class Setup {
             var permissaoProdutos_grupoVendedores = new Permissao();
             
                 permissaoProdutos_grupoVendedores.alterar = false;
-                permissaoProdutos_grupoVendedores.ativo = false;
                 permissaoProdutos_grupoVendedores.excluir = false;
                 permissaoProdutos_grupoVendedores.inserir = false;
                 permissaoProdutos_grupoVendedores.visualizar = false;
@@ -403,7 +410,6 @@ export class Setup {
             var permissaoUser_grupoVendedores = new Permissao()
 
                 permissaoUser_grupoVendedores.alterar = false;
-                permissaoUser_grupoVendedores.ativo = false;
                 permissaoUser_grupoVendedores.excluir = false;
                 permissaoUser_grupoVendedores.inserir = false;
                 permissaoUser_grupoVendedores.visualizar = false;
@@ -414,7 +420,6 @@ export class Setup {
             var permissaoVendedores_grupoVendedores = new Permissao();
 
                 permissaoVendedores_grupoVendedores.alterar = false;
-                permissaoVendedores_grupoVendedores.ativo = false;
                 permissaoVendedores_grupoVendedores.excluir = false;
                 permissaoVendedores_grupoVendedores.inserir = false;
                 permissaoVendedores_grupoVendedores.visualizar = false;
@@ -422,13 +427,24 @@ export class Setup {
 
                 permissaoVendedores_grupoVendedores.grupo = grupoVendedores;
 
+            var permissaoPermissoes_grupoVendedores = new Permissao();
+
+                permissaoPermissoes_grupoVendedores.alterar = true;
+                permissaoPermissoes_grupoVendedores.excluir = false;
+                permissaoPermissoes_grupoVendedores.inserir = true;
+                permissaoPermissoes_grupoVendedores.visualizar = true;
+                permissaoPermissoes_grupoVendedores.tabela = "Permissoes";
+
+                permissaoPermissoes_grupoVendedores.grupo = grupoVendedores;
+
             await _rePermissao.save(permissaoCliente_grupoVendedores);
             await _rePermissao.save(permissaoEmpresa_grupoVendedores);
             await _rePermissao.save(permissaoGrupo_grupoVendedores);
             await _rePermissao.save(permissaoPedidos_grupoVendedores);
             await  _rePermissao.save(permissaoProdutos_grupoVendedores);
             await _rePermissao.save(permissaoUser_grupoVendedores);
-            await _rePermissao.save(permissaoVendedores_grupoVendedores); 
+            await _rePermissao.save(permissaoVendedores_grupoVendedores);
+            await _rePermissao.save(permissaoPermissoes_grupoVendedores) ;
 
             //Grupo Clientes
 
@@ -440,7 +456,7 @@ export class Setup {
             var permissaoCliente_grupoClientes = new Permissao();
 
             permissaoCliente_grupoClientes.alterar = false;
-            permissaoCliente_grupoClientes.ativo = false;
+            permissaoCliente_grupoClientes.ativo = true;
             permissaoCliente_grupoClientes.excluir = false;
             permissaoCliente_grupoClientes.inserir = false;
             permissaoCliente_grupoClientes.visualizar = false;
@@ -451,7 +467,7 @@ export class Setup {
         var permissaoEmpresa_grupoClientes = new Permissao();
         
             permissaoEmpresa_grupoClientes.alterar = false;
-            permissaoEmpresa_grupoClientes.ativo = false;
+            permissaoEmpresa_grupoClientes.ativo = true;
             permissaoEmpresa_grupoClientes.excluido = false;
             permissaoEmpresa_grupoClientes.inserir = false;
             permissaoEmpresa_grupoClientes.visualizar = false;
@@ -462,7 +478,7 @@ export class Setup {
         var permissaoGrupo_grupoClientes = new Permissao();
 
             permissaoGrupo_grupoClientes.alterar = false;
-            permissaoGrupo_grupoClientes.ativo = false;
+            permissaoGrupo_grupoClientes.ativo = true;
             permissaoGrupo_grupoClientes.excluir = false;
             permissaoGrupo_grupoClientes.inserir = false;
             permissaoGrupo_grupoClientes.visualizar = false;
@@ -484,7 +500,7 @@ export class Setup {
         var permissaoProdutos_grupoClientes = new Permissao();
         
             permissaoProdutos_grupoClientes.alterar = false;
-            permissaoProdutos_grupoClientes.ativo = false;
+            permissaoProdutos_grupoClientes.ativo = true;
             permissaoProdutos_grupoClientes.excluir = false;
             permissaoProdutos_grupoClientes.inserir = false;
             permissaoProdutos_grupoClientes.visualizar = false;
@@ -495,7 +511,7 @@ export class Setup {
         var permissaoUser_grupoClientes = new Permissao()
 
             permissaoUser_grupoClientes.alterar = false;
-            permissaoUser_grupoClientes.ativo = false;
+            permissaoUser_grupoClientes.ativo = true;
             permissaoUser_grupoClientes.excluir = false;
             permissaoUser_grupoClientes.inserir = false;
             permissaoUser_grupoClientes.visualizar = false;
@@ -506,13 +522,24 @@ export class Setup {
         var permissaoVendedores_grupoClientes = new Permissao();
 
             permissaoVendedores_grupoClientes.alterar = false;
-            permissaoVendedores_grupoClientes.ativo = false;
+            permissaoVendedores_grupoClientes.ativo = true;
             permissaoVendedores_grupoClientes.excluir = false;
             permissaoVendedores_grupoClientes.inserir = false;
             permissaoVendedores_grupoClientes.visualizar = false;
             permissaoVendedores_grupoClientes.tabela = "Vendedores";
 
             permissaoVendedores_grupoClientes.grupo = grupoClientes;
+        
+        var permissaoPermissoes_grupoClientes = new Permissao();
+        
+            permissaoPermissoes_grupoClientes.alterar = false;
+            permissaoPermissoes_grupoClientes.ativo = true;
+            permissaoPermissoes_grupoClientes.excluido = false;
+            permissaoPermissoes_grupoClientes.inserir = false;
+            permissaoPermissoes_grupoClientes.visualizar = false;
+            permissaoPermissoes_grupoClientes.tabela = "Permissoes";
+
+            permissaoPermissoes_grupoClientes.grupo = grupoClientes;
 
         await _rePermissao.save(permissaoCliente_grupoClientes);
         await _rePermissao.save(permissaoEmpresa_grupoClientes);
@@ -521,6 +548,7 @@ export class Setup {
         await _rePermissao.save(permissaoProdutos_grupoClientes);
         await _rePermissao.save(permissaoUser_grupoClientes);
         await _rePermissao.save(permissaoVendedores_grupoClientes);
+        await _rePermissao.save(permissaoPermissoes_grupoClientes);
         }
     }
      async cadastroUsuario () {

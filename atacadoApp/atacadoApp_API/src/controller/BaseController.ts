@@ -1,17 +1,24 @@
 import {getRepository, Repository} from "typeorm";
 import {NextFunction, Request, Response} from "express";
 import { BaseNotificacao } from "../entity/BaseNotificacao";
-
+import { functions } from "../configuracao/functions/globalFunctions"
 export abstract class BaseController<T> extends BaseNotificacao {
 
     private _repositorio: Repository<T>;
-
+    protected _func: functions;
     constructor(entity: any) {
         super();
         this._repositorio = getRepository<T>(entity);
+        this._func = new functions();
     }
 
-    async all() {
+    async all(request: Request, restrito = true) {
+        
+        if (restrito) {
+            let tabela = this._func.Tabela(request);
+            if (!this._func.Permissao(request, tabela, "V")) 
+                return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
+        }
         return this._repositorio.find({
             where: {
                 excluido: false
@@ -19,7 +26,12 @@ export abstract class BaseController<T> extends BaseNotificacao {
         });
     }
 
-    async one(request: Request) {
+    async one(request: Request, restrito = true) {
+        if (restrito) {
+            let tabela = this._func.Tabela(request);
+            if (!this._func.Permissao(request, tabela, "V")) 
+                return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
+        }
         return this._repositorio.findOne(request.params.id);
     }
 
@@ -45,7 +57,12 @@ export abstract class BaseController<T> extends BaseNotificacao {
             }
     }
 
-    async remove(request: Request) {
+    async remove(request: Request, restrito = true) {
+        if (restrito) {
+            let tabela = this._func.Tabela(request);
+            if (!this._func.Permissao(request, tabela, "E")) 
+                return {status: 400, errors: ["Você não tem permissão para excluir o registro"]}
+        }
         let uid = request.params.id;
         let model: any = await this._repositorio.findOne(uid);
         if (model) {

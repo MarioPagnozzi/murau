@@ -3,7 +3,6 @@ import { Request, Response, NextFunction } from 'express';
 import { getRepository, Like, Repository, In } from 'typeorm';
 import { Produtos } from './../entity/Produtos';
 import { BaseController } from "./BaseController";
-import {functions} from "./../configuracao/functions/globalFunctions";
 import { ImagensProduto } from '../entity/imagesProduto';
 import { ProdutosEmpresas } from '../entity/ProdutosEmpresas';
 import { Empresas } from '../entity/Empresas';
@@ -13,7 +12,12 @@ export class ProdutosController extends BaseController<Produtos> {
         super(Produtos);
     }
     async save(request: Request) {
+        
         let _produto = <Produtos>request.body;
+
+        if (!this._func.Permissao(request,"Produtos", _produto.uid ? "A" : "I")) {
+            return {status: 400, errors: ["Vocês não tem permissão para alterar ou inserir registros"]}
+        }
         
         super.isRequired(_produto.nome, "'Nome' do produto deve ser informado");
         super.isRequired(_produto.descricao, "'Descrição' do produto deve ser informada");
@@ -39,6 +43,11 @@ export class ProdutosController extends BaseController<Produtos> {
         return super.save(_produto);
     }
     async filtro(request: Request) {
+
+        if (!this._func.Permissao(request,"Produtos", "V")) {
+            return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
+        }
+
         let filtro = request.params.filtro;
         let valor = request.params.valor;
         
@@ -69,12 +78,13 @@ export class ProdutosController extends BaseController<Produtos> {
         return {status: 400, errors: "Parâmetros fornecidos não satisfazem a pesquisa."};
     }
     async insereNovo(request: Request) {
-
+        if (this._func.Permissao(request, "Produtos", "I")) {
+            return {status: 400, errors: ["Você não tem permissão para inserir novos produtos"]}
+        }
         let cdProduto = request.params.codigo;
-        try {
-            let fun = new functions();
-            let _token = await fun.geraToken();
-            let cadastrado = await fun.insereNovoProduto(cdProduto, _token);
+        try {           
+            let _token = await this._func.geraToken();
+            let cadastrado = await this._func.insereNovoProduto(cdProduto, _token);
             if (cadastrado) {
                 return this._repProdutos.findOne({where: {codigo: cdProduto}})
             }
@@ -85,7 +95,10 @@ export class ProdutosController extends BaseController<Produtos> {
         return {status: 400, errors: "Produto não encontrado para este código"}
     }
     async uploadFotos(request: Request, response: Response, next: NextFunction) {
-
+        
+        if (!this._func.Permissao(request, "Produtos", "A") || !this._func.Permissao(request, "Produtos", "I")) {
+            return {status: 400, errors: ["Você não tem permissão para carregar novas fotos"]}
+        }
         const fs = require('fs');
         const multer = require('multer');
         var sharp = require('sharp');
@@ -168,6 +181,10 @@ export class ProdutosController extends BaseController<Produtos> {
         })
     }
     async vinculaEmpresas(request: Request) {
+
+        if (!this._func.Permissao(request, "Produtos", "A") || !this._func.Permissao(request, "Produtos", "I")) {
+            return {status: 400, errors: ["Você não tem permissão para vincular empresas ao produto"]}
+        }
         let {produto, empresas} = request.body;
 
         super.isRequired(produto, "Produto deve ser informado");

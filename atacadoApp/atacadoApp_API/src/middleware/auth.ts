@@ -29,6 +29,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                 let _usuario = await _repUsuario.findOne({where: { uid: _userAuth.uid }});
                 req.isRoot = _usuario.isRoot;
 
+                req.grupos = _usuario.grupos;
                 
 
                 next();

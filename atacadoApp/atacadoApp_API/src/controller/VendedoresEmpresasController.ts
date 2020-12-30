@@ -8,6 +8,10 @@ export class VendedoresEmpresasController extends BaseController<VendedoresEmpre
     }
 
     async save(request: Request) {
+        if ((!this._func.Permissao(request, "Vendedores", "A") || (!this._func.Permissao(request, "Vendedores","I")) 
+                    || (!this._func.Permissao(request, "Empresas", "A")) || (!this._func.Permissao(request, "Empresas", "I")))) {
+                        return {status: 400, errors: ["Você não tem permissão para vincular empresas a produtos"]}
+                    }
         let {empresa, vendedor} = request.body;
 
         super.isRequired(empresa,"Deve ser informado uma ou mais 'Empresas'");
