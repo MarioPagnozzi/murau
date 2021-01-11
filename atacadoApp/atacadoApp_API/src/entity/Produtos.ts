@@ -5,6 +5,7 @@ import {  OneToMany } from 'typeorm';
 import { Column } from 'typeorm';
 import { Entity } from 'typeorm';
 import { BaseEntity } from './BaseEntity';
+import { ItemPedido } from './ItemPedido';
 @Entity({name: "produtos"})
 export class Produtos extends BaseEntity {
 
@@ -37,5 +38,8 @@ export class Produtos extends BaseEntity {
 
     @OneToMany (type => ImagensProduto, imagem => imagem.produto, {eager: true})
     imagens: ImagensProduto[]
+
+    @OneToMany (type => ItemPedido,  itemPedido => itemPedido.produto)
+    pedidos: ItemPedido[]
 
 }

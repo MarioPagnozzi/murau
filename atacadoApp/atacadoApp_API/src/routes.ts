@@ -4,6 +4,7 @@ import { ProdutosController } from './controller/ProdutosController';
 import { HomeController } from './controller/HomeController';
 import {UserController} from "./controller/UserController";
 import { ClientesController } from './controller/ClientesController';
+import { PedidosController } from './controller/PedidosController';
 
 export const Routes = [
 
@@ -61,6 +62,12 @@ export const Routes = [
     {method: "get", route: "/clientes/:id", controller: ClientesController, action: "one"},
     {method: "get", route: "/clientes/:filtro/:valor/filtro", controller: ClientesController, action: "filtro"},
     {method: "post", route: "/clientes",controller: ClientesController, action: "save"},
-    {method: "delete", route: "/clientes/:id", controller: ClientesController, action: "remove"}
+    {method: "delete", route: "/clientes/:id", controller: ClientesController, action: "remove"},
+
+    //Rota privada Peidos
+    {method: "delete", route: "/pedidos/:id", controller: PedidosController, action: "remove"},
+    {method: "post", route: "/pedidos", controller: PedidosController, action: "save"},
+    {method: "get", route: "/pedidos/:filtro/:valor", controller: PedidosController, action: "filtro"},
+    {method: "get", route: "/pedidos", controller: PedidosController, action: "all"}
 
 ];

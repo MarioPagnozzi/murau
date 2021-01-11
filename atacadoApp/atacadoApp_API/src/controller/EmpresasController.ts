@@ -9,7 +9,9 @@ export class EmpresasController extends BaseController<Empresas> {
     }
     async save(request: Request) {
         let _empresa = <Empresas>request.body;
-
+        if (!this._func.Permissao(request, "Empresas", _empresa.uid ? "A" : "I")) {
+            return {status: 400, errors: ["Você não tem permissão para altarar ou inserir registros"]}
+        }
         super.isRequired(_empresa.razao_social, "Informe uma 'Razão Social' para esta empresa");
         super.isRequired(_empresa.nome_fantasia, "'Nome Fantasia' deve ser informado");
         super.isCPFCNPJ(_empresa.cnpj, "'CNPJ' da empresa é inválido");
@@ -34,21 +36,33 @@ export class EmpresasController extends BaseController<Empresas> {
         return super.save(_empresa);
     }
     async one(request: Request) {
+        if (!this._func.Permissao(request, "Empresas", "V")) {
+            return {status: 400, errors: ["Você não tem permissão para acessar os resgistros"]}
+        }
         return this._repEmpresa.findOne({where: {codigo: request.params.codigo}});
     }
     async oneClientes(request: Request) {
+        if (!this._func.Permissao(request, "Empresas", "V")) {
+            return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
+        }
         return this._repEmpresa.createQueryBuilder("empresas")
                                .leftJoinAndSelect("empresas.clientes", "clientes")
                                .where("empresas.codigo = :codigo", {codigo: request.params.codigo})
                                .getOne();
     }
     async oneVendedores(request: Request) {
+        if (!this._func.Permissao(request, "Empresas", "V")) {
+            return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
+        }
         return this._repEmpresa.createQueryBuilder("empresas")
                                .leftJoinAndSelect("empresas.vendedores", "vendedores")
                                .where("empresas.codigo = :codigo", {codigo: request.params.codigo})
                                .getOne();
     }
     async oneProdutos(request: Request) {
+        if (!this._func.Permissao(request, "Empresas", "V")) {
+            return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
+        }
         return this._repEmpresa.createQueryBuilder("empresas").addSelect("empresas.*")
                                .innerJoin("empresas.produtosempresas","prodemp").addSelect(["prodemp.valor","prodemp.estoque"])
                                .innerJoin("prodemp.produto","prod").addSelect([

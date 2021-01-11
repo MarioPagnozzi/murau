@@ -20,37 +20,38 @@ export default async (req: Request, res: Response, next: NextFunction) => {
         fun.atualizaProduto(token);
     });
     var rule = new cron.RecurrenceRule();
-    rule.hour = 17;
+    rule.hour = 20;
     rule.minute = 30;
     rule.dayOfWeek = new cron.Range(1,5);
 
     var job_insere = await cron.scheduleJob(rule, async function () {
         let fun = new functions();
         let token = await fun.geraToken();
-        let maxCodigo = await _repProdutos.createQueryBuilder("produtos")
-                                        .select("max(cast(prod.codigo as unsigned integer))","maxCodigo")
-                                        .from(Produtos, "prod")
-                                        .getRawOne();
+        let _repParametros: Repository<Configuracoes> = getRepository(Configuracoes);
+        let ultimoNumero = await _repParametros.findOne({where: {nome_parametro: "cod_prod_busca"}}); 
+        if (ultimoNumero.valor == "0") {
+            let maxCodigo = await _repProdutos.createQueryBuilder("produtos")
+            .select("max(cast(prod.codigo as unsigned integer))","maxCodigo")
+            .from(Produtos, "prod")
+            .getRawOne();
+            ultimoNumero.valor = (+maxCodigo["maxCodigo"] + 1).toString();
+        }
+       
 
-        let _cdProd = +maxCodigo["maxCodigo"] + 1;    
+        let _cdProd = +ultimoNumero.valor;
+        console.log(_cdProd);
         let i = 0;
         let produtoExiste: boolean = true;
-        let _repParametros: Repository<Configuracoes> = getRepository(Configuracoes);
+        
 
-        while (produtoExiste && _cdProd <= 1000) {
-
-            produtoExiste = await fun.insereNovoProduto(_cdProd, token);
-            if (!produtoExiste) {                
-                let ultimoNumero = await _repParametros.findOne({where: {nome_parametro: "cod_prod_busca"}});
-                if (ultimoNumero.valor !== "0") {
-                    _cdProd = +ultimoNumero.valor;
-                    produtoExiste = await fun.insereNovoProduto(_cdProd, token);
-                }
-            }
+        while (produtoExiste && i <= 100) {
             _cdProd = +_cdProd + 1;
+            produtoExiste = await fun.insereNovoProduto(_cdProd, token);
+            i = i + 1;
         }
-        let ultimoNumero = await _repParametros.findOne({where: {nome_parametro: "cod_prod_busca"}});
-        console.log("Erro aqui: " + _cdProd.toString());
+
+        ultimoNumero = await _repParametros.findOne({where: {nome_parametro: "cod_prod_busca"}});
+      
         ultimoNumero.valor = _cdProd.toString();
         _repParametros.save(ultimoNumero).then(() => {
             console.log("Atualializado parametro 'cod_prod_busca");

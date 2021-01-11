@@ -3,12 +3,10 @@ import { Request } from 'express';
 import { getRepository, Like, Repository } from 'typeorm';
 import { Clientes } from './../entity/Clientes';
 import { BaseController } from "./BaseController";
-import {functions} from "./../configuracao/functions/globalFunctions";
 import { Produtos } from '../entity/Produtos';
 import { ImagensProduto } from '../entity/imagesProduto';
 export class ClientesController extends BaseController<Clientes> {
-    private _repClientes: Repository<Clientes> = getRepository(Clientes);
-    
+    private _repClientes: Repository<Clientes> = getRepository(Clientes);  
     constructor(){
         super(Clientes);
     }
@@ -91,22 +89,25 @@ export class ClientesController extends BaseController<Clientes> {
             }
             i = +i + 1;
         }
-        console.log(html)
         const mensagem = {
             from: "atendimento@murau.com",
             to: _cliente.email,
             subject: "Confirmação de Cadastro",
             html: html
-        }
-        let fun = new functions();
-        let sendMail = fun.Email(mensagem);
+        }       
+        let sendMail = this._func.Email(mensagem);
         let retornoEmail = await sendMail;
         console.log(retornoEmail)
         return _cliente;
 
-    }
+    } 
     async filtro(request: Request) {
-        let filtro = request.params.filtro;        
+
+        if (!this._func.Permissao(request, "Clientes", "V")) {
+            return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
+        }
+
+        let filtro = request.params.filtro;
         let valor = request.params.valor;
 
         if (filtro == "nome") {
@@ -150,6 +151,10 @@ export class ClientesController extends BaseController<Clientes> {
     }
     async save(request: Request) {
         let _cliente = <Clientes>request.body;
+
+        if (!this._func.Permissao(request, "Clientes", _cliente.uid ? "A" : "I")) {
+            return {status: 400, errors: ["Você não tem permissão para alterar ou inserir registros"]}
+        }
 
         super.isRequired(_cliente.razao_social, "A 'Razão Social' deve ser informada");
         super.isRequired(_cliente.nome_fantasia, "O 'Nome Fantasia' dever ser informado");        

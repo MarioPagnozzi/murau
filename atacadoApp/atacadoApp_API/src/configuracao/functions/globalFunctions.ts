@@ -276,17 +276,13 @@ export class functions {
 
         let requestProduto = this.apiRequest(options, obj, 6000);
         let body = await requestProduto;
-
         if (body) {
             let classificacoes = JSON.parse(body);
-
-            produoExiste = false;
-    
-            for (let el in classificacoes) {
-    
+            for (let el in classificacoes) {    
                 let {cdTpClassificacao, cdClassificacao, cdBarra, cdProduto, dsProduto, dsCor, dsTamanho, cdNivel, dsErro} = classificacoes[el];
+               
                 if (dsErro) {
-                    return false;
+                    return produoExiste;
                 }
                 if (cdTpClassificacao == 4 && cdClassificacao == "003") {
                     produoExiste = true;
@@ -329,10 +325,11 @@ export class functions {
                     this.atualizaEstoqueProduto(cdBarra, _token);
                     await this.sleep(3000);
                     this.atualizaImagemProduto(cdProduto);
+                    return produoExiste;
                 }
             }
         }
-         return produoExiste;
+        return produoExiste;
     }
     
     async atualizaPrecoProduto(cdBarra, _token) {
@@ -622,5 +619,72 @@ export class functions {
             });
         })
     
+    }
+    Permissao(req: Request, tabela, acao) {
+        let permitido: boolean = false;
+        req.grupos.forEach((grupo) => {
+            let {permissoes} = grupo;
+            if (grupo.excluido == false && grupo.ativo == true) {
+                for (let p in permissoes) {
+                    if (permissoes[p].tabela == tabela) {
+                        if (acao == "V") {
+                            if (permissoes[p].visualizar)
+                            permitido = true;
+                        }
+                        if (acao == "I") {
+                            if (permissoes[p].inserir)
+                            permitido = true;
+                        }
+                        if (acao == "A") {
+                            if (permissoes[p].alterar) 
+                            permitido = true;
+                        }
+                        if (acao == "E") {
+                            if (permissoes[p].excluir)
+                            permitido = true;
+                        }
+                    }
+                }
+            }
+           
+        })
+        return permitido;
+    }
+    Tabela(request: Request) {
+        let url = request.url.split("/");
+        let rota = url[1];
+
+        switch (rota) {
+            case "users": return "Usuarios";
+            case "produtos": return "Produtos";
+            case "vendedores": return "Vendedores";
+            case "empresas": return "Empresas";
+            case "clientes": return "Clientes";
+            case "pedidos": return "Pedidos";
+            case "grupos": return "Grupo";
+            case "permissoes": return "Permissoes";
+        } 
+    }
+    ValidaDat(valor) {
+        let date = valor;
+        let ardt = new Array;
+        let ExpReg = new RegExp("(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])/[12][0-9]{3}");
+        ardt=date.split("/");
+        let erro=false;
+        if ( date.search(ExpReg)==-1){
+            erro = true;
+            }
+        else if (((ardt[1]==4)||(ardt[1]==6)||(ardt[1]==9)||(ardt[1]==11))&&(ardt[0]>30))
+            erro = true;
+        else if ( ardt[1]==2) {
+            if ((ardt[0]>28)&&((ardt[2]%4)!=0))
+                erro = true;
+            if ((ardt[0]>29)&&((ardt[2]%4)==0))
+                erro = true;
+        }
+        if (erro) {            
+            return erro;
+        }
+        return erro;
     }
 }

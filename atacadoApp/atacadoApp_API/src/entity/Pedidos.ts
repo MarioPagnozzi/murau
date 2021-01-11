@@ -5,6 +5,7 @@ import { Vendedores } from './Vendedores';
 import { Column, Entity, ManyToOne, OneToMany } from "typeorm";
 import { BaseEntity } from "./BaseEntity";
 import { statusPedido } from './enum/statusPedido';
+import { HistoricoPedido } from './HistoricoPedido';
 
 @Entity({name: "pedidos"})
 export class Pedidos extends BaseEntity {
@@ -29,5 +30,8 @@ export class Pedidos extends BaseEntity {
 
     @OneToMany(type => ItemPedido, item => item.pedido, {eager: true})
     itens: ItemPedido[]
+
+    @OneToMany(type => HistoricoPedido, historico => historico.pedido, {eager: true})
+    historico: HistoricoPedido[]
 
 }
