@@ -17,6 +17,6 @@ export class ItemPedido extends BaseEntity {
 
     @ManyToOne(type => Pedidos, pedido => pedido.itens)
     pedido: Pedidos
-    @ManyToOne(type => Produtos, produto => produto.pedidos)
+    @ManyToOne(type => Produtos, produto => produto.pedidos, {eager: true})
     produto: Produtos
 }

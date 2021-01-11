@@ -1,3 +1,4 @@
+import { HistoricoPedido } from './../entity/HistoricoPedido';
 import { VendedoresEmpresas } from './../entity/VendedoresEmpresas';
 import { ProdutosEmpresas } from './../entity/ProdutosEmpresas';
 import { Configuracoes } from './../entity/Configuracoes';
@@ -45,7 +46,8 @@ export default {
                 ImagensProduto,
                 Tabelas,
                 Configuracoes,
-                ProdutosEmpresas
+                ProdutosEmpresas,
+                HistoricoPedido
             ]
         });
         console.log("Database connected");

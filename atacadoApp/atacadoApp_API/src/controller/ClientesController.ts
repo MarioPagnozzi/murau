@@ -89,7 +89,6 @@ export class ClientesController extends BaseController<Clientes> {
             }
             i = +i + 1;
         }
-        console.log(html)
         const mensagem = {
             from: "atendimento@murau.com",
             to: _cliente.email,

@@ -78,7 +78,7 @@ export class ProdutosController extends BaseController<Produtos> {
         return {status: 400, errors: "Parâmetros fornecidos não satisfazem a pesquisa."};
     }
     async insereNovo(request: Request) {
-        if (this._func.Permissao(request, "Produtos", "I")) {
+        if (!this._func.Permissao(request, "Produtos", "I")) {
             return {status: 400, errors: ["Você não tem permissão para inserir novos produtos"]}
         }
         let cdProduto = request.params.codigo;
@@ -92,7 +92,7 @@ export class ProdutosController extends BaseController<Produtos> {
         catch (err) {
             return {status: err.status, errors: err.errors}
         }
-        return {status: 400, errors: "Produto não encontrado para este código"}
+        return {status: 400, errors: ["Produto não encontrado para este código"]}
     }
     async uploadFotos(request: Request, response: Response, next: NextFunction) {
         
