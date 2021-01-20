@@ -1,5 +1,71 @@
-.murau__toobar {
-    background-color: rgba(233, 150, 122, 0.5);
-    color: black;
+.murau__container_body {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    font-family: "Lato", sans-serif !important;
+    color: #4b2e28;
+}
+
+.murau__sidenav_container {
+    flex: 2;
+    margin-top: 58px;
+}
+
+.murau__toolbar {
+    background-color: white; // rgba(75, 46, 40, 0.15);
+    color: #4b2e28;
     font-weight: bold;
+    border-bottom: 2px solid #4b2e28;
+    font-family: "Lato", sans-serif !important;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.10) !important;
+    position: fixed;
+    z-index: 2;
+}
+
+.murau__toolbar h1 {
+    font-family: "Lato", sans-serif !important;
+    margin-left: 15px;
+}
+
+.murau__logo {
+    background-color: transparent;
+    color: #4b2e28;
+    text-decoration: none;
+    width: 25px;
+    height: 2;
+    margin-top: 0;
+}
+
+.murau__div_card_avatar {
+    position: relative;
+    z-index: 3;
+}
+
+.murau__avatar_user {
+    background-color: white;
+}
+
+.murau__avatar {
+    border: 2px;
+    color: #4b2e28;
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    border: 2px solid #4b2e28;
+    background-color: #4b2e28;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.10) !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    padding: 0;
+    margin: 0;
 }
