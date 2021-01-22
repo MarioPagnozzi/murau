@@ -32,6 +32,7 @@ import {MultiSelectModule} from 'primeng/multiselect';
 import {DropdownModule} from 'primeng/dropdown';
 import {ProgressBarModule} from 'primeng/progressbar';
 import {InputTextModule} from 'primeng/inputtext';
+
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
@@ -47,6 +48,7 @@ import {AgendaService} from "./components/agenda/agendaService";
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import { DashbordPrincipalComponent } from './components/dashbord-principal/dashbord-principal.component';
 registerLocaleData(localePt);
 
 FullCalendarModule.registerPlugins([
@@ -62,7 +64,8 @@ export function TranslationLoaderFactory(http: HttpClient) {
   declarations: [
     AppComponent,
     ClientesPendentesComponent,
-    AgendaComponent
+    AgendaComponent,
+    DashbordPrincipalComponent
   ],
   imports: [
     BrowserModule,

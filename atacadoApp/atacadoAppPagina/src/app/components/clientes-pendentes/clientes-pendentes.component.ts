@@ -1,13 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import {Clientes, Vendedores} from './clientes_pendentes';
 import {ClientesPendentesService} from './clientes_pendentes_service';
 import {TranslateService} from "@ngx-translate/core";
-
+import { MessageService } from "primeng/api";
+import { Table } from "primeng/table"
 
 @Component({
   selector: 'app-clientes-pendentes',
   templateUrl: './clientes-pendentes.component.html',
-  styleUrls: ['./clientes-pendentes.component.scss']
+  styleUrls: ['./clientes-pendentes.component.scss'],
+  providers: [MessageService]
 })
 
 export class ClientesPendentesComponent {
@@ -23,9 +25,8 @@ export class ClientesPendentesComponent {
 
   activityValues: number[] = [0, 100];
 
-
-
-  constructor(private customerService: ClientesPendentesService, private translate: TranslateService)
+  
+  constructor(private customerService: ClientesPendentesService, private translate: TranslateService, private el: ElementRef)
   {
 
   }
@@ -45,8 +46,7 @@ export class ClientesPendentesComponent {
 
 
     });
-
-
+   
     this.representatives = [
       { name: "Amy Elsner", image: "amyelsner.png" },
       { name: "Anna Fali", image: "annafali.png" },
@@ -68,5 +68,10 @@ export class ClientesPendentesComponent {
       { label: "Renewal", value: "renewal" },
       { label: "Proposal", value: "proposal" }
     ];
+  }
+  @ViewChild("dt1") public dt1: any;
+  applyFilterGlobal($event: Event, stringVal: any) {
+     
+     this.dt1.filterGlobal(($event.target as HTMLInputElement).value, 'contains');
   }
 }

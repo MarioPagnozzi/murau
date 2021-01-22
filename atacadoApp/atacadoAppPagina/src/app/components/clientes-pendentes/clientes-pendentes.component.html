@@ -2,12 +2,12 @@
     <h1>Clientes Novos</h1>
     <p>Clientes aguardando aprovação do cadastro.</p>
     <p-table #dt1 [value]="customers" dataKey="id" [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[5,10,50]" [loading]="loading" styleClass="p-datatable-customers p-datatable-gridlines" [paginator]="true" currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} registros"
-        [globalFilterFields]="['name','country.name','representative.name','status']" [responsive]="true">
+       [globalFilterFields]="['name','country.name','representative.name','status']" [responsive]="true">
         <ng-template pTemplate="caption">
             <div class="p-d-flex">
                 <span class="p-input-icon-left p-ml-auto">
                   <i class="pi pi-search"></i>
-                  <input pInputText type="text" (input)="dt1.filterGlobal($event.target.value, 'contains')" placeholder="Pesquisar" />
+                  <input pInputText type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Pesquisar" />
               </span>
             </div>
         </ng-template>
