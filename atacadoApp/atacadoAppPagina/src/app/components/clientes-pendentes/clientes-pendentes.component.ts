@@ -1,72 +1,106 @@
-import { Component } from '@angular/core';
-import {Clientes, Vendedores} from './clientes_pendentes';
-import {ClientesPendentesService} from './clientes_pendentes_service';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {ClienteService} from './../../services/cliente.service';
+import { ICliente } from './../../interfaces/IClientes';
 import {TranslateService} from "@ngx-translate/core";
-
+import { MessageService } from "primeng/api";
+import { Table } from "primeng/table"
+import { BaseStatus } from 'src/app/enum/status';
+import { VendedoresService } from 'src/app/services/vendedores.service';
+import { IVendedores } from 'src/app/interfaces/IVendedores';
 
 @Component({
   selector: 'app-clientes-pendentes',
   templateUrl: './clientes-pendentes.component.html',
-  styleUrls: ['./clientes-pendentes.component.scss']
+  styleUrls: ['./clientes-pendentes.component.scss'],
+  providers: [MessageService]
 })
 
-export class ClientesPendentesComponent {
+export class ClientesPendentesComponent implements OnInit {
 
-  customers: Clientes[] = [];
-
-  representatives: Vendedores[] = [];
-
-  statuses: any[] = [];
-
+  cli: ICliente[] = [];
+  _clientes: ICliente[] = [];
   // tslint:disable-next-line: no-inferrable-types
   loading: boolean = true;
-
   activityValues: number[] = [0, 100];
 
 
-
-  constructor(private customerService: ClientesPendentesService, private translate: TranslateService)
+  vendedores: IVendedores[] = [];
+  status: any[] = [];
+  
+  constructor(
+    private clienteService: ClienteService, 
+    private translate: TranslateService, 
+    private el: ElementRef,
+    private vencedoresService: VendedoresService)
   {
 
   }
-  ngOnInit() {
-
-
+  async ngOnInit() {
     this.translate.setDefaultLang("pt-BR");
 
-    this.customerService.getClientesPendentes().then(customers => {
-
-      this.customers = customers;
-      this.loading = false;
-
-      this.customers.forEach(
-        customer => (customer.date = new Date(customer.date ? customer.date : Date.now()))
-      );
-
-
-    });
-
-
-    this.representatives = [
-      { name: "Amy Elsner", image: "amyelsner.png" },
-      { name: "Anna Fali", image: "annafali.png" },
-      { name: "Asiya Javayant", image: "asiyajavayant.png" },
-      { name: "Bernardo Dominic", image: "bernardodominic.png" },
-      { name: "Elwin Sharvill", image: "elwinsharvill.png" },
-      { name: "Ioni Bowcher", image: "ionibowcher.png" },
-      { name: "Ivan Magalhaes", image: "ivanmagalhaes.png" },
-      { name: "Onyama Limba", image: "onyamalimba.png" },
-      { name: "Stephen Shaw", image: "stephenshaw.png" },
-      { name: "XuXue Feng", image: "xuxuefeng.png" }
+    const clientes = await this.clienteService.getAll();
+    console.log(clientes.data);
+    
+    this.cli = clientes.data.map((it: ICliente) => {
+      return {
+        codigo: it.codigo,
+        razao_social: it.razao_social,
+        nome_fantasia: it.nome_fantasia,
+        cnpj: it.cnpj,
+        cep: it.cep,
+        endereco: it.endereco,
+        numero: it.numero,
+        bairro: it.bairro,
+        cidade: it.cidade,
+        uf: it.uf,
+        email: it.email,
+        statusCliente: it.statusCliente,
+        descStatus: BaseStatus[it.statusCliente ? it.statusCliente : 1],
+        contatos: it.contatos,
+        vendedor: {
+          nome: it.vendedor ? it.vendedor.nome : "", 
+          codigo: it.vendedor ? it.vendedor.codigo : "",
+          endereco: "", 
+          numero: "", 
+          bairro: "", 
+          cidade: "", 
+          uf: "", 
+          contatos: [{ddd: "", numero: "", operadoras: ""}],
+          pedidos: [],
+          empresas: [],
+          uid: "",
+          ativo: false,
+          excluido: false,
+          data_inclusao: new Date(),
+          data_alteracao: new Date(),
+        },
+        empresa: it.empresa,
+        pedidos: it.pedidos,
+        uid: it.uid,
+        ativo: it.ativo,
+        excluido: it.excluido,
+        data_inclusao: it.data_inclusao,
+        data_alteracao: it.data_alteracao
+      }
+    })
+    this.loading = false;
+    const vend = await this.vencedoresService.getAll();
+    this.vendedores = vend.data.map((it: IVendedores) => {
+      return {
+        nome: it.nome,
+        codigo: it.codigo
+      }
+    })
+  
+    this.status = [
+      { label: "Pendente", valueapplyfilterGlobal: "Pendente" },
+      { label: "Aprovado", value: "Aprovado" }
     ];
-
-    this.statuses = [
-      { label: "Unqualified", valueapplyfilterGlobal: "unqualified" },
-      { label: "Qualified", value: "qualified" },
-      { label: "New", value: "new" },
-      { label: "Negotiation", value: "negotiation" },
-      { label: "Renewal", value: "renewal" },
-      { label: "Proposal", value: "proposal" }
-    ];
+  }
+  
+  @ViewChild("dt1") public dt1: any;
+  applyFilterGlobal($event: Event, stringVal: any) {
+     
+     this.dt1.filterGlobal(($event.target as HTMLInputElement).value, 'contains');
   }
 }

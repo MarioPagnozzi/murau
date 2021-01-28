@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import * as express from "express";
 import * as bodyParser from "body-parser";
+//import * as cors from "cors";
 import {Request, Response} from "express";
 import {Routes} from "./routes";
 import config from "./configuracao/config";
@@ -9,14 +10,17 @@ import conexao from "./configuracao/conexao";
 import { Setup } from "./configuracao/inicializa";
 import cron_job from "./middleware/cron_job";
 
+
 var multer = require("multer");
 //var upload = multer();S
 
 // create express app
 const app = express();
+app.use(require('cors')());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 //app.use(upload.array());
+
 app.use(auth);
 
 // register express routes from defined application routes

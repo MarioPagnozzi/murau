@@ -1,11 +1,12 @@
-import { ClientesPendentesService } from './components/clientes-pendentes/clientes_pendentes_service';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import {FormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule} from "@angular/router";
 import { AppRoutingModule } from './app-routing.module';
+
+
 
 import { AppComponent } from './app.component';
 import { NodeService } from './nodeservice';
@@ -17,6 +18,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatListModule} from '@angular/material/list';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatCardModule} from '@angular/material/card';
+
 
 import {TreeModule} from 'primeng/tree';
 import {ToastModule} from 'primeng/toast';
@@ -32,6 +34,13 @@ import {MultiSelectModule} from 'primeng/multiselect';
 import {DropdownModule} from 'primeng/dropdown';
 import {ProgressBarModule} from 'primeng/progressbar';
 import {InputTextModule} from 'primeng/inputtext';
+
+import {CheckboxModule} from 'primeng/checkbox';
+import {RadioButtonModule} from 'primeng/radiobutton';
+import {RippleModule} from 'primeng/ripple';
+import {TabViewModule} from 'primeng/tabview';
+import {PanelModule} from 'primeng/panel';
+
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
 import { TranslateLoader, TranslateModule, TranslateService, TranslateStore } from '@ngx-translate/core';
@@ -47,6 +56,35 @@ import {AgendaService} from "./components/agenda/agendaService";
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import { DashbordPrincipalComponent } from './components/dashbord-principal/dashbord-principal.component';
+import { PerfilComponent } from './components/perfil/perfil.component';
+
+import { NgxSpinnerModule } from "ngx-spinner";
+import { HomeComponent } from './components/home/home.component';
+import { HomeAdminComponent } from './components/home-admin/home-admin.component';
+import { HomeVendedoresComponent } from './components/home-vendedores/home-vendedores.component';
+import { HomeClientesComponent } from './components/home-clientes/home-clientes.component';
+import { HomeUsuariosComponent } from './components/home-usuarios/home-usuarios.component';
+import { PanelComponent } from './components/panel/panel.component';
+import { ClientesComponent } from './components/clientes/clientes.component';
+import { ClienteComponent } from './components/cliente/cliente.component';
+import { GruposComponent } from './components/grupos/grupos.component';
+import { GrupoComponent } from './components/grupo/grupo.component';
+import { EmpresasComponent } from './components/empresas/empresas.component';
+import { EmpresaComponent } from './components/empresa/empresa.component';
+import { ConfiguracaoComponent } from './components/configuracao/configuracao.component';
+import { ConfiguracoesComponent } from './components/configuracoes/configuracoes.component';
+import { PedidosComponent } from './components/pedidos/pedidos.component';
+import { PedidoComponent } from './components/pedido/pedido.component';
+import { PermissaoComponent } from './components/permissao/permissao.component';
+import { PermissoesComponent } from './components/permissoes/permissoes.component';
+import { ProdutoComponent } from './components/produto/produto.component';
+import { ProdutosComponent } from './components/produtos/produtos.component';
+import { UsuarioComponent } from './components/usuario/usuario.component';
+import { UsuariosComponent } from './components/usuarios/usuarios.component';
+import { VendedorComponent } from './components/vendedor/vendedor.component';
+import { VendedoresComponent } from './components/vendedores/vendedores.component';
+
 registerLocaleData(localePt);
 
 FullCalendarModule.registerPlugins([
@@ -62,7 +100,33 @@ export function TranslationLoaderFactory(http: HttpClient) {
   declarations: [
     AppComponent,
     ClientesPendentesComponent,
-    AgendaComponent
+    AgendaComponent,
+    DashbordPrincipalComponent,
+    PerfilComponent,
+    HomeComponent,
+    HomeAdminComponent,
+    HomeVendedoresComponent,
+    HomeClientesComponent,
+    HomeUsuariosComponent,
+    PanelComponent,
+    ClientesComponent,
+    ClienteComponent,
+    GruposComponent,
+    GrupoComponent,
+    EmpresasComponent,
+    EmpresaComponent,
+    ConfiguracaoComponent,
+    ConfiguracoesComponent,
+    PedidosComponent,
+    PedidoComponent,
+    PermissaoComponent,
+    PermissoesComponent,
+    ProdutoComponent,
+    ProdutosComponent,
+    UsuarioComponent,
+    UsuariosComponent,
+    VendedorComponent,
+    VendedoresComponent
   ],
   imports: [
     BrowserModule,
@@ -84,6 +148,8 @@ export function TranslationLoaderFactory(http: HttpClient) {
     AvatarGroupModule,
     MatDividerModule,
     MatCardModule,
+    PanelModule,
+    TabViewModule,
     TableModule,
     CalendarModule,
     SliderModule,
@@ -92,13 +158,19 @@ export function TranslationLoaderFactory(http: HttpClient) {
     ProgressBarModule,
     InputTextModule,
     FullCalendarModule,
+    CheckboxModule,
+    RadioButtonModule,
+    RippleModule,
+    RouterModule,
+    ReactiveFormsModule,
+    NgxSpinnerModule,
     TranslateModule.forRoot(
       {loader: {provide: TranslateLoader, useFactory: TranslationLoaderFactory, deps: [HttpClient]}},
     )
 
   ],
   bootstrap: [AppComponent],
-  providers: [NodeService, ClientesPendentesService, TranslateService, AgendaService]
+  providers: [NodeService, TranslateService, AgendaService]
 
 })
 export class AppModule {
