@@ -148,6 +148,10 @@ export class ClientesController extends BaseController<Clientes> {
                                     .where("pedidos.num_pedido = :num_pedido", {num_pedido: valor})
                                     .getMany();
         }
+
+        if (filtro == "novos") {
+            return this._repClientes.find({where: {data_inclusao: new Date()}})
+        }
     }
     async save(request: Request) {
         let _cliente = <Clientes>request.body;

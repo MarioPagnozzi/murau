@@ -31,7 +31,7 @@ export const Routes = [
     {method: "get", route: "/produtos/:id", controller: ProdutosController, action: "one"}, 
     {method: "post", route: "/produtos", controller: ProdutosController, action: "save"},
     {method: "delete",route: "/produtos/:id", controller: ProdutosController, action: "remove"},
-    {method: "get", route: "/produtos/:valor/:filtro", controller: ProdutosController, action: "filtro"},
+    {method: "get", route: "/produtos/:valor/:filtro/filtro", controller: ProdutosController, action: "filtro"},
     {method: "post", route: "/produtos/:codigo/novo", controller: ProdutosController,action: "insereNovo"},
     {method: "post", route: "/produtos/uploadfotos", controller: ProdutosController,action: "uploadFotos"},
     {method: "post", route: "/produtos/empresas", controller: ProdutosController,action: "vinculaEmpresas"},
@@ -67,7 +67,7 @@ export const Routes = [
     //Rota privada Peidos
     {method: "delete", route: "/pedidos/:id", controller: PedidosController, action: "remove"},
     {method: "post", route: "/pedidos", controller: PedidosController, action: "save"},
-    {method: "get", route: "/pedidos/:filtro/:valor", controller: PedidosController, action: "filtro"},
+    {method: "get", route: "/pedidos/:filtro/:valor/filtro", controller: PedidosController, action: "filtro"},
     {method: "get", route: "/pedidos", controller: PedidosController, action: "all"}
 
 ];

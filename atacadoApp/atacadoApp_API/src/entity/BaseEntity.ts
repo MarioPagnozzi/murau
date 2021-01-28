@@ -2,7 +2,7 @@ import { Column, CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn } fr
 
 export abstract class BaseEntity {
     @PrimaryGeneratedColumn("uuid")
-    uid: number;
+    uid: string;
 
     @Column({default: true})
     ativo: boolean;
