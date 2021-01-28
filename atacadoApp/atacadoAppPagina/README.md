@@ -28,3 +28,4 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## To do List
 20/01/2021 | Atividade #36 - Layout | Desenv. Mário
+28/01/2021 | Atividade #29 - Login  | Desenv. Mário
