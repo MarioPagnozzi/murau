@@ -38,6 +38,7 @@
     width: 25px;
     height: 2;
     margin-top: 0;
+    cursor: pointer;
 }
 
 .murau__div_card_avatar {
@@ -73,4 +74,30 @@ h6 {
 .perfil {
     font-size: 12px;
     text-align: center;
+}
+
+.linkLogin {
+    flex-direction: row;
+    padding: 0 16px;
+    width: 100%;   
+    align-items: center;
+    align-content: center;
+    text-align: right;
+    white-space: nowrap;
+    text-decoration: none;
+    a {
+        cursor: pointer;
+        font-size:12px;
+        border: 0 !important;
+        background-color: transparent !important;
+        text-decoration: none !important;
+        margin-right: 10px;
+        color: #4b2e28;
+    }
+}
+
+.router-link-active {
+    border: 0 !important;
+    color: gray !important;
+    text-decoration: none !important;
 }

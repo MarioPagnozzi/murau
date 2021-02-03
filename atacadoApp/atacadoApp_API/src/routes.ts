@@ -5,6 +5,7 @@ import { HomeController } from './controller/HomeController';
 import {UserController} from "./controller/UserController";
 import { ClientesController } from './controller/ClientesController';
 import { PedidosController } from './controller/PedidosController';
+import { GrupoController } from './controller/GrupoController';
 
 export const Routes = [
 
@@ -68,6 +69,12 @@ export const Routes = [
     {method: "delete", route: "/pedidos/:id", controller: PedidosController, action: "remove"},
     {method: "post", route: "/pedidos", controller: PedidosController, action: "save"},
     {method: "get", route: "/pedidos/:filtro/:valor/filtro", controller: PedidosController, action: "filtro"},
-    {method: "get", route: "/pedidos", controller: PedidosController, action: "all"}
+    {method: "get", route: "/pedidos", controller: PedidosController, action: "all"},
+
+    //Rota de Grupos
+    {method: "post", route: "/grupos", controller: GrupoController, action: "save"},
+    {method: "get", route: "/grupos", controller: GrupoController, action: "all"},
+    {method: "get", route: "/grupos/:id", controller: GrupoController, action: "one"},
+    {method: "get", route: "/grupos/usuarios/:user", controller: GrupoController, action: "usuarios"}
 
 ];

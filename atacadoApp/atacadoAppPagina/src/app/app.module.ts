@@ -18,6 +18,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatListModule} from '@angular/material/list';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatCardModule} from '@angular/material/card';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 
 import {TreeModule} from 'primeng/tree';
@@ -34,12 +35,14 @@ import {MultiSelectModule} from 'primeng/multiselect';
 import {DropdownModule} from 'primeng/dropdown';
 import {ProgressBarModule} from 'primeng/progressbar';
 import {InputTextModule} from 'primeng/inputtext';
+import {DataViewModule} from 'primeng/dataview';
 
 import {CheckboxModule} from 'primeng/checkbox';
 import {RadioButtonModule} from 'primeng/radiobutton';
 import {RippleModule} from 'primeng/ripple';
 import {TabViewModule} from 'primeng/tabview';
 import {PanelModule} from 'primeng/panel';
+import {CardModule} from 'primeng/card';
 
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -61,10 +64,6 @@ import { PerfilComponent } from './components/perfil/perfil.component';
 
 import { NgxSpinnerModule } from "ngx-spinner";
 import { HomeComponent } from './components/home/home.component';
-import { HomeAdminComponent } from './components/home-admin/home-admin.component';
-import { HomeVendedoresComponent } from './components/home-vendedores/home-vendedores.component';
-import { HomeClientesComponent } from './components/home-clientes/home-clientes.component';
-import { HomeUsuariosComponent } from './components/home-usuarios/home-usuarios.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { ClientesComponent } from './components/clientes/clientes.component';
 import { ClienteComponent } from './components/cliente/cliente.component';
@@ -84,6 +83,7 @@ import { UsuarioComponent } from './components/usuario/usuario.component';
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { VendedorComponent } from './components/vendedor/vendedor.component';
 import { VendedoresComponent } from './components/vendedores/vendedores.component';
+import { LoginComponent } from './components/login/login.component';
 
 registerLocaleData(localePt);
 
@@ -103,11 +103,7 @@ export function TranslationLoaderFactory(http: HttpClient) {
     AgendaComponent,
     DashbordPrincipalComponent,
     PerfilComponent,
-    HomeComponent,
-    HomeAdminComponent,
-    HomeVendedoresComponent,
-    HomeClientesComponent,
-    HomeUsuariosComponent,
+    HomeComponent,   
     PanelComponent,
     ClientesComponent,
     ClienteComponent,
@@ -126,9 +122,12 @@ export function TranslationLoaderFactory(http: HttpClient) {
     UsuarioComponent,
     UsuariosComponent,
     VendedorComponent,
-    VendedoresComponent
+    VendedoresComponent,
+    LoginComponent  
   ],
   imports: [
+    FormsModule,
+    ReactiveFormsModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
@@ -164,6 +163,9 @@ export function TranslationLoaderFactory(http: HttpClient) {
     RouterModule,
     ReactiveFormsModule,
     NgxSpinnerModule,
+    CardModule,
+    DataViewModule,
+    MatSnackBarModule,
     TranslateModule.forRoot(
       {loader: {provide: TranslateLoader, useFactory: TranslationLoaderFactory, deps: [HttpClient]}},
     )

@@ -1,0 +1,29 @@
+<div class="container">
+    <p-card subheader="Utilize seu e-mail e senha para ter acesso ao seu painel" styleClass="p-card-subheader">
+        <ng-template pTemplate="header">
+            Login
+        </ng-template>
+
+        <div class="p-grid p-fluid full-width padding-left padding-top">
+            <div class="p-field full-width">
+                <div class="p-inputgroup">
+                    <span class="p-inputgroup-addon"><i class="pi pi-user"></i></span>
+                    <input type="text" [(ngModel)]="form.email" pInputText placeholder="Utilize seu E-mail" class="ng-invalid ng-dirty full-width" required>
+                </div>
+            </div>
+        </div>
+        <div class="p-grid p-fluid full-width padding-left padding-top">
+            <div class="p-field full-width">
+                <div class="p-inputgroup">
+                    <span class="p-inputgroup-addon"><i class="pi pi-key"></i></span>
+                    <input type="password" [(ngModel)]="form.senha" pInputText class="ng-invalid ng-dirty full-width" required>
+                </div>
+            </div>
+        </div>
+        <ng-template pTemplate="footer">
+                <div class="p-grid p-fluid">
+                    <button pButton class="p-button-outlined" label="Acessar" icon="pi pi-check" type="button" (click)="login()"></button>
+                </div>
+        </ng-template>
+    </p-card>
+</div>

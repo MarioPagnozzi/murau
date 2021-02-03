@@ -7,6 +7,7 @@ import { Table } from "primeng/table"
 import { BaseStatus } from 'src/app/enum/status';
 import { VendedoresService } from 'src/app/services/vendedores.service';
 import { IVendedores } from 'src/app/interfaces/IVendedores';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-clientes-pendentes',
@@ -38,9 +39,8 @@ export class ClientesPendentesComponent implements OnInit {
   async ngOnInit() {
     this.translate.setDefaultLang("pt-BR");
 
-    const clientes = await this.clienteService.getAll();
-    console.log(clientes.data);
-    
+    const clientes = await this.clienteService.filtro("novos", Date.now);
+
     this.cli = clientes.data.map((it: ICliente) => {
       return {
         codigo: it.codigo,

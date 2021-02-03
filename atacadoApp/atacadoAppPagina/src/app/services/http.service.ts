@@ -16,9 +16,9 @@ export class HttpService {
     header = header.append("Content-Type", "application/json");
     header = header.append("Accept", "application/json");
 
-    const token = "";
+    const token = localStorage.getItem("murau:token");
     if (token) {
-      header = header.append("x-access-token", token);
+      header = header.append("x-token-access", token);
     }
     return header;
   }
@@ -48,9 +48,10 @@ export class HttpService {
   public post(url: string, model: any): Promise<IResult> {
     return new Promise<IResult>(async (resolve) => {
       const header = this.createHeader();
+      const body = JSON.stringify(model);
       try {
         this.spinner.show();
-        const res = await this.http.post(url, model, {headers: header});
+        const res = await this.http.post(url, body, {headers: header}).toPromise();
         resolve({success: true, data: res, error: undefined});
         this.spinner.hide();
 
@@ -66,7 +67,7 @@ export class HttpService {
       const header = this.createHeader();
       try {
         this.spinner.show();
-        const res = await this.http.delete(url, {headers: header});
+        const res = await this.http.delete(url, {headers: header}).toPromise();
         resolve({success: true, data: res, error: undefined});
         this.spinner.hide();
 

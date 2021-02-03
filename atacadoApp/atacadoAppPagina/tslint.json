@@ -148,6 +148,7 @@
     "unified-signatures": false,
     "no-trailing-whitespace": false,
     "no-misused-new": false,
+    "object-literal-shorthand": false,
     "component-selector": [
       true,
       "element",
