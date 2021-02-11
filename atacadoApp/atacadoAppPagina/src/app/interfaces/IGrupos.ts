@@ -1,5 +1,6 @@
 import { IInterface } from "./IInterface";
 import { IPermissao } from "./IPermissao";
+import { IUsuarios } from "./IUsuarios";
 
 export interface IGrupos extends IInterface {
 

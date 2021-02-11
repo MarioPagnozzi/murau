@@ -3,6 +3,6 @@ import { IProdutos } from "./IProdutos";
 
 export interface IImagesProduto extends IInterface {
 
-    caminho?: string
+    caminho: string
     produto?: IProdutos
 }

@@ -42,6 +42,12 @@ export class ProdutosController extends BaseController<Produtos> {
 
         return super.save(_produto);
     }
+    async produtosDia(request: Request) {
+        if (!this._func.Permissao(request,"Produtos", "V")) {
+            return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
+        }
+        return this._repProdutos.find({where: {data_inclusao: new Date}});
+    }
     async filtro(request: Request) {
 
         if (!this._func.Permissao(request,"Produtos", "V")) {

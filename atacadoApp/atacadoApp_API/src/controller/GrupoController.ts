@@ -1,11 +1,14 @@
 import { Request } from 'express';
 import { getRepository, Repository } from 'typeorm';
 import { Permissao } from '../entity/Permissao';
+import { User } from '../entity/User';
 import { Grupos } from './../entity/Grupos';
 import { BaseController } from "./BaseController";
 
 export class GrupoController extends BaseController<Grupos> {
 
+    private _repGrupos: Repository<Grupos> = getRepository(Grupos);
+    private _repUsuario: Repository<User> = getRepository(User);
     constructor () {
         super(Grupos);
     }
@@ -35,5 +38,11 @@ export class GrupoController extends BaseController<Grupos> {
                 _repPermissao.save(perm);
             })
         });
+    }
+    async usuarios(request: Request) {
+        const usuarioId = request.params.user;
+        let usuario = await this._repUsuario.findOne({where: {uid: usuarioId}});
+        
+        return usuario.grupos;
     }
 }

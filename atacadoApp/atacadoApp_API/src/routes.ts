@@ -5,6 +5,7 @@ import { HomeController } from './controller/HomeController';
 import {UserController} from "./controller/UserController";
 import { ClientesController } from './controller/ClientesController';
 import { PedidosController } from './controller/PedidosController';
+import { GrupoController } from './controller/GrupoController';
 
 export const Routes = [
 
@@ -35,6 +36,7 @@ export const Routes = [
     {method: "post", route: "/produtos/:codigo/novo", controller: ProdutosController,action: "insereNovo"},
     {method: "post", route: "/produtos/uploadfotos", controller: ProdutosController,action: "uploadFotos"},
     {method: "post", route: "/produtos/empresas", controller: ProdutosController,action: "vinculaEmpresas"},
+    {method: "get", route: "produtos/proddia", controller: ProdutosController,action: "produtosDia"},
 
     //roteamentos restritos: Vendedores
     {method: "get", route: "/vendedores", controller: VendedoresController, action: "all"}, 
@@ -63,11 +65,19 @@ export const Routes = [
     {method: "get", route: "/clientes/:filtro/:valor/filtro", controller: ClientesController, action: "filtro"},
     {method: "post", route: "/clientes",controller: ClientesController, action: "save"},
     {method: "delete", route: "/clientes/:id", controller: ClientesController, action: "remove"},
+    {method: "get", route: "/clientes/clidia", controller: ClientesController, action: "clientesDia"},
 
     //Rota privada Peidos
     {method: "delete", route: "/pedidos/:id", controller: PedidosController, action: "remove"},
     {method: "post", route: "/pedidos", controller: PedidosController, action: "save"},
     {method: "get", route: "/pedidos/:filtro/:valor/filtro", controller: PedidosController, action: "filtro"},
-    {method: "get", route: "/pedidos", controller: PedidosController, action: "all"}
+    {method: "get", route: "/pedidos", controller: PedidosController, action: "all"},
+    {method: "get", route: "/pedidos/peddia", controller: PedidosController, action: "pedidosDia"},
+
+    //Rota de Grupos
+    {method: "post", route: "/grupos", controller: GrupoController, action: "save"},
+    {method: "get", route: "/grupos", controller: GrupoController, action: "all"},
+    {method: "get", route: "/grupos/:id", controller: GrupoController, action: "one"},
+    {method: "get", route: "/grupos/usuarios/:user", controller: GrupoController, action: "usuarios"}
 
 ];

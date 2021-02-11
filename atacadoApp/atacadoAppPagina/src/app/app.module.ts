@@ -6,6 +6,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule} from "@angular/router";
 import { AppRoutingModule } from './app-routing.module';
 
+import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
 
 
 import { AppComponent } from './app.component';
@@ -18,6 +20,7 @@ import {MatSidenavModule} from '@angular/material/sidenav';
 import {MatListModule} from '@angular/material/list';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatCardModule} from '@angular/material/card';
+import {MatSnackBarModule} from '@angular/material/snack-bar';
 
 
 import {TreeModule} from 'primeng/tree';
@@ -34,12 +37,16 @@ import {MultiSelectModule} from 'primeng/multiselect';
 import {DropdownModule} from 'primeng/dropdown';
 import {ProgressBarModule} from 'primeng/progressbar';
 import {InputTextModule} from 'primeng/inputtext';
+import {DataViewModule} from 'primeng/dataview';
 
 import {CheckboxModule} from 'primeng/checkbox';
 import {RadioButtonModule} from 'primeng/radiobutton';
 import {RippleModule} from 'primeng/ripple';
 import {TabViewModule} from 'primeng/tabview';
 import {PanelModule} from 'primeng/panel';
+import {CardModule} from 'primeng/card';
+import {SplitButtonModule} from 'primeng/splitbutton';
+
 
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -61,10 +68,6 @@ import { PerfilComponent } from './components/perfil/perfil.component';
 
 import { NgxSpinnerModule } from "ngx-spinner";
 import { HomeComponent } from './components/home/home.component';
-import { HomeAdminComponent } from './components/home-admin/home-admin.component';
-import { HomeVendedoresComponent } from './components/home-vendedores/home-vendedores.component';
-import { HomeClientesComponent } from './components/home-clientes/home-clientes.component';
-import { HomeUsuariosComponent } from './components/home-usuarios/home-usuarios.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { ClientesComponent } from './components/clientes/clientes.component';
 import { ClienteComponent } from './components/cliente/cliente.component';
@@ -84,7 +87,16 @@ import { UsuarioComponent } from './components/usuario/usuario.component';
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { VendedorComponent } from './components/vendedor/vendedor.component';
 import { VendedoresComponent } from './components/vendedores/vendedores.component';
+import { LoginComponent } from './components/login/login.component';
 
+
+import {GMapModule} from 'primeng/gmap';
+import {AgmCoreModule} from '@agm/core';
+
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faUser, faBars, faCog, faCartPlus, faChartArea, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { faFacebook, faTwitter, faGoogle, faLinkedin, faInstagram } from '@fortawesome/free-brands-svg-icons';
 registerLocaleData(localePt);
 
 FullCalendarModule.registerPlugins([
@@ -103,11 +115,7 @@ export function TranslationLoaderFactory(http: HttpClient) {
     AgendaComponent,
     DashbordPrincipalComponent,
     PerfilComponent,
-    HomeComponent,
-    HomeAdminComponent,
-    HomeVendedoresComponent,
-    HomeClientesComponent,
-    HomeUsuariosComponent,
+    HomeComponent,   
     PanelComponent,
     ClientesComponent,
     ClienteComponent,
@@ -126,9 +134,12 @@ export function TranslationLoaderFactory(http: HttpClient) {
     UsuarioComponent,
     UsuariosComponent,
     VendedorComponent,
-    VendedoresComponent
+    VendedoresComponent,
+    LoginComponent  
   ],
   imports: [
+    FormsModule,
+    ReactiveFormsModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
@@ -164,6 +175,15 @@ export function TranslationLoaderFactory(http: HttpClient) {
     RouterModule,
     ReactiveFormsModule,
     NgxSpinnerModule,
+    CardModule,
+    DataViewModule,
+    MatSnackBarModule,
+    FontAwesomeModule,
+    SplitButtonModule,
+    AgmCoreModule.forRoot({
+      apiKey: "AIzaSyDlDAx0Arx9LHCWagPDw2IeYiu8oD7GF6s",
+      libraries: ["places"]
+    }),   
     TranslateModule.forRoot(
       {loader: {provide: TranslateLoader, useFactory: TranslationLoaderFactory, deps: [HttpClient]}},
     )
@@ -174,7 +194,7 @@ export function TranslationLoaderFactory(http: HttpClient) {
 
 })
 export class AppModule {
-  constructor(public config: PrimeNGConfig) {
+  constructor(public config: PrimeNGConfig, public library: FaIconLibrary) {
     this.config.setTranslation({
       addRule: "Adicionar Regras",
       startsWith: "Iniciado Com",
@@ -210,6 +230,19 @@ export class AppModule {
       weekHeader: "Cabeçalho da Semana",
       upload: "Upload"
 
-    })
+    });
+    library.addIcons(
+      faBars, 
+      faUser, 
+      faFacebook, 
+      faInstagram, 
+      faTwitter, 
+      faGoogle, 
+      faLinkedin,
+      faCog,
+      faCartPlus,
+      faChartArea,
+      faSignOutAlt
+    )
   }
 }

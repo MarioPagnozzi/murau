@@ -1,10 +1,13 @@
+import { AdminGuard } from './shared/admin.guard';
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { ClientesComponent } from './components/clientes/clientes.component';
 import { EmpresaComponent } from './components/empresa/empresa.component';
 import { EmpresasComponent } from './components/empresas/empresas.component';
 import { GrupoComponent } from './components/grupo/grupo.component';
 import { GruposComponent } from './components/grupos/grupos.component';
 import { HomeComponent } from './components/home/home.component';
+import { LoginComponent } from './components/login/login.component';
 import { PanelComponent } from './components/panel/panel.component';
 import { PermissaoComponent } from './components/permissao/permissao.component';
 import { PermissoesComponent } from './components/permissoes/permissoes.component';
@@ -16,21 +19,24 @@ import { VendedorComponent } from './components/vendedor/vendedor.component';
 import { VendedoresComponent } from './components/vendedores/vendedores.component';
 
 const routes: Routes = [
-  { path: '', component: HomeComponent, pathMatch: 'full' },
-  { path: 'panel', component: PanelComponent },
-  { path: 'perfil/:user', component: PanelComponent },
-  { path: 'empresa/:cod', component: EmpresaComponent },
-  { path: 'empresas', component: EmpresasComponent},
-  { path: 'grupo/:uid', component: GrupoComponent },
-  { path: 'grupos', component: GruposComponent },
-  { path: 'permissao/:uid', component: PermissaoComponent },
-  { path: 'permissoes', component: PermissoesComponent },
-  { path: 'produto/:cod', component: ProdutoComponent },
-  { path: 'produtos', component: ProdutosComponent },
-  { path: 'usuario/:uid', component: UsuarioComponent },
-  { path: 'usuarios', component: UsuariosComponent },
-  { path: 'vendedor/:cod', component: VendedorComponent },
-  { path: 'vendedores', component: VendedoresComponent }
+  { path: '', pathMatch: 'full', redirectTo: '/home' },
+  { path: 'home', component: HomeComponent},
+  { path: 'login', component: LoginComponent},
+  { path: 'panel', component: PanelComponent, canActivate: [AdminGuard] },
+  { path: 'perfil/:user', component: PanelComponent, canActivate: [AdminGuard] },
+  { path: 'empresa/:cod', component: EmpresaComponent, canActivate: [AdminGuard] },
+  { path: 'empresas', component: EmpresasComponent, canActivate: [AdminGuard] },
+  { path: 'grupo/:uid', component: GrupoComponent, canActivate: [AdminGuard] },
+  { path: 'grupos', component: GruposComponent, canActivate: [AdminGuard] },
+  { path: 'permissao/:uid', component: PermissaoComponent, canActivate: [AdminGuard] },
+  { path: 'permissoes', component: PermissoesComponent, canActivate: [AdminGuard] },
+  { path: 'produto/:cod', component: ProdutoComponent, canActivate: [AdminGuard] },
+  { path: 'produtos', component: ProdutosComponent, canActivate: [AdminGuard] },
+  { path: 'usuario/:uid', component: UsuarioComponent, canActivate: [AdminGuard] },
+  { path: 'usuarios', component: UsuariosComponent, canActivate: [AdminGuard] },
+  { path: 'vendedor/:cod', component: VendedorComponent, canActivate: [AdminGuard] },
+  { path: 'vendedores', component: VendedoresComponent, canActivate: [AdminGuard] },
+  { path: 'clientes', component: ClientesComponent, canActivate: [AdminGuard] }
 ];
 
 @NgModule({

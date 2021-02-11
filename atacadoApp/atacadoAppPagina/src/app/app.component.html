@@ -1,17 +1,21 @@
 <div class="murau__container_body">
     <mat-toolbar class="murau__toolbar">
         <mat-toolbar-row>
-            <button mat-icon-button color="dark" (click)="sidenav.toggle()">
-          <mat-icon>menu</mat-icon>
-       </button>
+            <button mat-icon-button color="dark" (click)="sidenav.toggle()" *ngIf="isLogged">
+                <fa-icon [icon]="['fas','bars']"></fa-icon>
+            </button>
             <span></span>
-            <div class="murau__logo">
+            <a class="murau__logo" routerLink="/home">
                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2930 3040" preserveAspectRatio="xMidYMid meet">
-                <path fill="black" stroke="none" d="M2085 3021 c-173 -62 -322 -194 -430 -382 l-45 -79 -53 21 c-224 90 -416 114 -560 69 -113 -35 -231 -138 -295 -258 -35 -66 -87 -215 -97 -282 l-8 -45 45 41 c74 69 193 104 418 124 189 16 320 53 426 118 26 17 49 30 50 29 1 -1 -9 -42 -22 -92 -28 -104 -74 -369 -74 -424 0 -55 -9 -56 -42 -6 -58 88 -135 136 -285 181 -252 74 -502 26 -645 -124 -47 -49 -60 -71 -79 -133 -59 -193 -8 -329 156 -416 70 -37 118 -54 235 -83 120 -30 116 -27 96 -49 -16 -18 -19 -18 -76 0 -239 74 -424 61 -597 -43 -70 -42 -147 -118 -174 -171 -31 -59 -36 -152 -14 -233 34 -128 137 -228 289 -282 65 -24 85 -26 236 -26 153 -1 170 1 230 25 81 31 152 78 255 169 123 108 125 84 4 -47 -95 -102 -103 -119 -103 -228 0 -80 3 -96 28 -144 60 -116 185 -205 331 -236 101 -21 255 -19 349 5 170 43 313 135 361 231 52 101 29 214 -73 366 -21 32 -49 75 -62 97 -22 36 -22 38 -3 28 11 -6 32 -27 46 -45 54 -71 206 -160 327 -192 85 -23 252 -23 340 -1 143 36 275 124 330 220 28 47 30 59 30 152 0 87 -3 107 -25 151 -46 91 -158 186 -270 229 -76 29 -292 27 -448 -5 -111 -22 -143 -23 -121 -1 5 5 58 20 118 35 60 14 134 39 166 56 73 39 163 119 195 172 46 81 51 227 10 307 -25 48 -85 110 -140 145 -258 162 -626 132 -809 -66 -35 -38 -60 -76 -71 -109 -9 -27 -18 -50 -19 -50 -5 0 4 97 20 220 50 385 195 681 423 862 74 59 172 114 244 138 l39 12 -33 34 c-37 38 -53 40 -124 15z m-403 -1613 c240 -235 270 -278 272 -382 2 -145 -156 -242 -319 -196 -53 15 -127 76 -145 120 -15 36 -26 38 -35 8 -24 -77 -120 -138 -219 -138 -84 0 -131 15 -177 57 -54 48 -69 81 -69 146 0 107 47 169 348 461 67 65 122 123 122 127 0 5 1 9 3 9 1 0 100 -96 219 -212z"></path>
-            </svg>
-            </div>
+                    <path fill="black" stroke="none" d="M2085 3021 c-173 -62 -322 -194 -430 -382 l-45 -79 -53 21 c-224 90 -416 114 -560 69 -113 -35 -231 -138 -295 -258 -35 -66 -87 -215 -97 -282 l-8 -45 45 41 c74 69 193 104 418 124 189 16 320 53 426 118 26 17 49 30 50 29 1 -1 -9 -42 -22 -92 -28 -104 -74 -369 -74 -424 0 -55 -9 -56 -42 -6 -58 88 -135 136 -285 181 -252 74 -502 26 -645 -124 -47 -49 -60 -71 -79 -133 -59 -193 -8 -329 156 -416 70 -37 118 -54 235 -83 120 -30 116 -27 96 -49 -16 -18 -19 -18 -76 0 -239 74 -424 61 -597 -43 -70 -42 -147 -118 -174 -171 -31 -59 -36 -152 -14 -233 34 -128 137 -228 289 -282 65 -24 85 -26 236 -26 153 -1 170 1 230 25 81 31 152 78 255 169 123 108 125 84 4 -47 -95 -102 -103 -119 -103 -228 0 -80 3 -96 28 -144 60 -116 185 -205 331 -236 101 -21 255 -19 349 5 170 43 313 135 361 231 52 101 29 214 -73 366 -21 32 -49 75 -62 97 -22 36 -22 38 -3 28 11 -6 32 -27 46 -45 54 -71 206 -160 327 -192 85 -23 252 -23 340 -1 143 36 275 124 330 220 28 47 30 59 30 152 0 87 -3 107 -25 151 -46 91 -158 186 -270 229 -76 29 -292 27 -448 -5 -111 -22 -143 -23 -121 -1 5 5 58 20 118 35 60 14 134 39 166 56 73 39 163 119 195 172 46 81 51 227 10 307 -25 48 -85 110 -140 145 -258 162 -626 132 -809 -66 -35 -38 -60 -76 -71 -109 -9 -27 -18 -50 -19 -50 -5 0 4 97 20 220 50 385 195 681 423 862 74 59 172 114 244 138 l39 12 -33 34 c-37 38 -53 40 -124 15z m-403 -1613 c240 -235 270 -278 272 -382 2 -145 -156 -242 -319 -196 -53 15 -127 76 -145 120 -15 36 -26 38 -35 8 -24 -77 -120 -138 -219 -138 -84 0 -131 15 -177 57 -54 48 -69 81 -69 146 0 107 47 169 348 461 67 65 122 123 122 127 0 5 1 9 3 9 1 0 100 -96 219 -212z"></path>
+                </svg>
+            </a>
             <span></span>
             <h1>Atacado Murau</h1>
+            <div class="linkLogin" *ngIf="!isLogged">
+                <a type="button" [routerLink]="['/login']" routerLinkActive="router-link-active">Login</a>
+                <a type="button" [routerLink]="['/home']" routerLinkActive="router-link-active">Cadastrar</a>
+            </div>
         </mat-toolbar-row>
     </mat-toolbar>
     <mat-sidenav-container class="murau__sidenav_container">
@@ -23,28 +27,88 @@
                     <mat-card-content>
                         <div align="center" class="perfil">
                             <img class="murau__avatar" src="assets/images/eu.jpg">
-                            <p><a href="/">Editar</a></p>
+                            <p (click)="sidenav.toggle()"><a href="/">Editar</a></p>
                         </div>
                     </mat-card-content>
                     <mat-card-footer>
-                        <h3 align="center">Mário Antonio</h3>
-                        <h5 align="center">Administrador</h5>
+                        <h3 align="center">{{usuario.nome}}</h3>
+                        <h5 align="center">{{usuario.email}}</h5>
+                        <p-splitButton label="Grupos - Usuário" icon="pi pi-users" [model]="itGrupos"></p-splitButton>
                     </mat-card-footer>
                 </mat-card>
             </div>
             <p-tree [value]="files" selectionMode="single" [(selection)]="selectedFile">
                 <ng-template let-node pTemplate="url">
-                    <a [href]="node.data">{{node.label}}</a>
+                    <a [routerLink]="[node.data]" routerLinkActive="router-link-active" (click)="sidenav.toggle()">{{node.label}}</a>
                 </ng-template>
                 <ng-template let-node pTemplate="default">
                     <b>{{node.label}}</b>
                 </ng-template>
             </p-tree>
+            <hr />
+            <mat-nav-list>
+                <a mat-list-item *ngIf="isRoot" routerLink="/configuracao" routerLinkActive="router-link-active" (click)="sidenav.toggle()">
+                    <fa-icon [icon]="['fas','cog']"></fa-icon>
+                    &nbsp;<strong>Configurações</strong>
+                </a>
+                <a mat-list-item routerLink="/pedidos" *ngIf="permissao('Pedidos','V')" routerLinkActive="router-link-active" (click)="sidenav.toggle()">
+                    <fa-icon [icon]="['fas','cart-plus']"></fa-icon>
+                    &nbsp;<strong>Pedidos</strong>
+                </a>
+                <a mat-list-item routerLink="/panel" routerLinkActive="router-link-active" (click)="sidenav.toggle()">
+                    <fa-icon [icon]="['fas','chart-area']"></fa-icon>
+                    &nbsp;<strong>Meu Painel</strong>
+                </a>
+                <a mat-list-item (click)="logout(); sidenav.toggle()">
+                    <fa-icon [icon]="['fas','sign-out-alt']"></fa-icon>
+                    &nbsp;<strong>Sair</strong>
+                </a>
+            </mat-nav-list>
         </mat-sidenav>
         <mat-sidenav-content>
-            <app-clientes-pendentes></app-clientes-pendentes>
-            
             <router-outlet></router-outlet>
+            <div class="container-map">
+                <agm-map [latitude]="lat" [longitude]="lng" [zoom]="zoom" >
+                  <agm-marker [latitude]="lat" [longitude]="lng"
+                    iconUrl="./assets/images/logo.png"
+                    [markerDraggable]="true"
+                      >
+                      <agm-info-window [disableAutoPan]="true">
+                        <h6>Endereço: {{endereco}}</h6>
+                        <h6>Telefone: +55 17 9 9000 - 0000</h6>
+                      </agm-info-window>
+                    </agm-marker>
+                </agm-map>
+            </div>
+             <!-- footer -->
+            <footer class="page-footer">
+                
+                <div class="container">
+                    <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12" align="center">
+                      <div class="col-md-12 flex-center">
+                           <a class="col-md col-sm">
+                                <fa-icon [icon]="['fab','facebook']"></fa-icon>
+                            </a>
+                            <a class="col-md col-sm">
+                                <fa-icon [icon]="['fab', 'linkedin']"></fa-icon>
+                            </a>
+                            <a class="col-md col-sm">
+                                <fa-icon [icon]="['fab', 'twitter']"></fa-icon>
+                            </a>
+                            <a class="col-md col-sm">
+                                <fa-icon [icon]="['fab', 'instagram']"></fa-icon>
+                            </a> 
+                      </div>
+                    </div>
+                </div>
+                <div class="copy-right">
+                    <div class="col-md-12 flex-center">
+                        <span>&copy; Copy Right - </span>
+                    <a>&nbsp;MAP X Soluções em TI</a>
+                    </div>
+                </div>
+            </footer>
         </mat-sidenav-content>
     </mat-sidenav-container>
+   
 </div>

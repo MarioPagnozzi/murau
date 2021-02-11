@@ -289,6 +289,12 @@ export class PedidosController extends BaseController<Pedidos> {
        
 
     }
+    async pedidosDia(request: Request) {
+        if (!this._func.Permissao(request, "Pedidos", "V")) {
+            return { status: 400, errors: ["Você não tem permissão para acessar os registros"]}
+        }
+        return this._repPedido.find({where: {data_inclusao: new Date}});
+    }
     async filtro(request: Request) {
         if (!this._func.Permissao(request, "Pedidos", "V")) {
             return { status: 400, errors: ["Você não tem permissão para acessar os registros"]}

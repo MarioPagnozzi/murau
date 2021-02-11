@@ -17,7 +17,7 @@ export class UserController extends BaseController<User> {
    async auth(request: Request) {
        let {email, senha} = request.body;
        if (!email || !senha) 
-           return {status: 400, message: "informe um e-mail e uma senha para logar"};
+           return {status: 400, erros: ["informe um e-mail e uma senha para logar"]};
         let user = await this.repositorio.findOne({email: email, senha: md5(senha)});
         if(user) {
             let _payload = {
@@ -38,7 +38,7 @@ export class UserController extends BaseController<User> {
             }
         
        } else 
-            return { status: 404, message: "e-mail ou senha inválidos"}
+            return { status: 404, errors: ["e-mail ou senha inválidos"]}
    }
 
    async createUser(request: Request) {
