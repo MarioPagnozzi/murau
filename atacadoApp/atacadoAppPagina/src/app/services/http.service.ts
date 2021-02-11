@@ -23,10 +23,10 @@ export class HttpService {
     return header;
   }
   public get(url: string): Promise<IResult> {
-    return new Promise<IResult>((resolve) => {
+    return new Promise<IResult>(async (resolve) => {
       const header = this.createHeader();
       this.spinner.show();
-      this.http.get(url, { headers: header })
+      /*this.http.get(url, { headers: header })
                .subscribe( 
                  
                  res => {
@@ -40,8 +40,16 @@ export class HttpService {
                       this.spinner.hide();
                       resolve({success: false, data: undefined, error: err})
                  
-                });
-                
+                 });*/
+       try {
+        this.spinner.show();
+        const res = await this.http.get(url, { headers: header }).toPromise();
+        resolve({success: true, data: res, error: undefined});
+        this.spinner.hide();
+       } catch (error) {
+        this.spinner.hide();
+        resolve({success: false, data: undefined, error: error})
+       }
     });
     
   }

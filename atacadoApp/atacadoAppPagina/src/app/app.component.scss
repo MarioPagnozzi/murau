@@ -1,5 +1,5 @@
 .murau__container_body {
-    display: flex;
+    display: flex ;
     flex-direction: column;
     position: absolute;
     top: 0;
@@ -24,6 +24,7 @@
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.10) !important;
     position: fixed;
     z-index: 2;
+    font-size: 16px !important;
 }
 
 .murau__toolbar h1 {
@@ -101,3 +102,49 @@ h6 {
     color: gray !important;
     text-decoration: none !important;
 }
+.page-footer {
+    height: 350px;
+    background-color: rgba(75,46,40,0.80);
+    font-size: 50px;
+    align-content: center;
+    a {
+        margin-top: 150px;
+        color: white !important;
+    }
+    .col-md-12 {
+        display: flex !important;
+    }
+
+}
+.copy-right {
+    display: flex;
+    background-color: #4b2e28;
+    font-size: 12px !important;   
+    height: 50px;
+    justify-content: center;
+    position: absolute;
+    width: -webkit-fill-available;
+    align-items: center;
+    margin-top: 150px;
+    a {
+        margin: 0 !important;
+    }
+    .col-md-12 {
+        justify-content:center;
+    }
+}
+agm-map {
+    height: 300px;
+  }
+  
+  
+  * {
+    font-family: Lato;
+  }
+  
+  a {
+    color: darkblue;
+  }
+  .container-map {
+      width: -webkit-fill-available;
+  }

@@ -14,7 +14,7 @@ export interface IProdutos extends IInterface {
     estoque?: number
     preco?: number
     produtosEmpresas?: IEmpresas[]
-    imagens?: IImagesProduto[]
+    imagens: IImagesProduto[]
     pedidos?: IPedidos[]
 
 }

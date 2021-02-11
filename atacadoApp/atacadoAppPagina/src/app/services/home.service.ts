@@ -11,4 +11,5 @@ export class HomeService extends BaseService<IProdutos>{
   constructor(public http: HttpService) {
     super("home", http);
    }
+  
 }

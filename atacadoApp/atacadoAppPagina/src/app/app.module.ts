@@ -6,6 +6,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterModule} from "@angular/router";
 import { AppRoutingModule } from './app-routing.module';
 
+import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+
 
 
 import { AppComponent } from './app.component';
@@ -43,6 +45,8 @@ import {RippleModule} from 'primeng/ripple';
 import {TabViewModule} from 'primeng/tabview';
 import {PanelModule} from 'primeng/panel';
 import {CardModule} from 'primeng/card';
+import {SplitButtonModule} from 'primeng/splitbutton';
+
 
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -85,6 +89,14 @@ import { VendedorComponent } from './components/vendedor/vendedor.component';
 import { VendedoresComponent } from './components/vendedores/vendedores.component';
 import { LoginComponent } from './components/login/login.component';
 
+
+import {GMapModule} from 'primeng/gmap';
+import {AgmCoreModule} from '@agm/core';
+
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { faUser, faBars, faCog, faCartPlus, faChartArea, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { far } from '@fortawesome/free-regular-svg-icons';
+import { faFacebook, faTwitter, faGoogle, faLinkedin, faInstagram } from '@fortawesome/free-brands-svg-icons';
 registerLocaleData(localePt);
 
 FullCalendarModule.registerPlugins([
@@ -166,6 +178,12 @@ export function TranslationLoaderFactory(http: HttpClient) {
     CardModule,
     DataViewModule,
     MatSnackBarModule,
+    FontAwesomeModule,
+    SplitButtonModule,
+    AgmCoreModule.forRoot({
+      apiKey: "AIzaSyDlDAx0Arx9LHCWagPDw2IeYiu8oD7GF6s",
+      libraries: ["places"]
+    }),   
     TranslateModule.forRoot(
       {loader: {provide: TranslateLoader, useFactory: TranslationLoaderFactory, deps: [HttpClient]}},
     )
@@ -176,7 +194,7 @@ export function TranslationLoaderFactory(http: HttpClient) {
 
 })
 export class AppModule {
-  constructor(public config: PrimeNGConfig) {
+  constructor(public config: PrimeNGConfig, public library: FaIconLibrary) {
     this.config.setTranslation({
       addRule: "Adicionar Regras",
       startsWith: "Iniciado Com",
@@ -212,6 +230,19 @@ export class AppModule {
       weekHeader: "Cabeçalho da Semana",
       upload: "Upload"
 
-    })
+    });
+    library.addIcons(
+      faBars, 
+      faUser, 
+      faFacebook, 
+      faInstagram, 
+      faTwitter, 
+      faGoogle, 
+      faLinkedin,
+      faCog,
+      faCartPlus,
+      faChartArea,
+      faSignOutAlt
+    )
   }
 }

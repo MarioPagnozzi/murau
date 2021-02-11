@@ -2,8 +2,8 @@
     <mat-toolbar class="murau__toolbar">
         <mat-toolbar-row>
             <button mat-icon-button color="dark" (click)="sidenav.toggle()" *ngIf="isLogged">
-          <mat-icon>menu</mat-icon>
-       </button>
+                <fa-icon [icon]="['fas','bars']"></fa-icon>
+            </button>
             <span></span>
             <a class="murau__logo" routerLink="/home">
                 <svg version="1.0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2930 3040" preserveAspectRatio="xMidYMid meet">
@@ -31,8 +31,9 @@
                         </div>
                     </mat-card-content>
                     <mat-card-footer>
-                        <h3 align="center">Mário Antonio</h3>
-                        <h5 align="center">Administrador</h5>
+                        <h3 align="center">{{usuario.nome}}</h3>
+                        <h5 align="center">{{usuario.email}}</h5>
+                        <p-splitButton label="Grupos - Usuário" icon="pi pi-users" [model]="itGrupos"></p-splitButton>
                     </mat-card-footer>
                 </mat-card>
             </div>
@@ -46,26 +47,68 @@
             </p-tree>
             <hr />
             <mat-nav-list>
-                <a mat-list-item routerLink="./configuracao" routerLinkActive="router-link-active">
-                    <mat-icon>settings_suggest</mat-icon>
-                    &nbsp;Configurações
+                <a mat-list-item *ngIf="isRoot" routerLink="/configuracao" routerLinkActive="router-link-active" (click)="sidenav.toggle()">
+                    <fa-icon [icon]="['fas','cog']"></fa-icon>
+                    &nbsp;<strong>Configurações</strong>
                 </a>
-                <a mat-list-item routerLink="./pedidos" *ngIf="permissao('Pedidos','V')" routerLinkActive="router-link-active">
-                    <mat-icon>local_grocery_store</mat-icon>
-                    &nbsp;Pedidos
+                <a mat-list-item routerLink="/pedidos" *ngIf="permissao('Pedidos','V')" routerLinkActive="router-link-active" (click)="sidenav.toggle()">
+                    <fa-icon [icon]="['fas','cart-plus']"></fa-icon>
+                    &nbsp;<strong>Pedidos</strong>
                 </a>
-                <a mat-list-item routerLink="./panel" routerLinkActive="router-link-active">
-                    <mat-icon>admin_panel_settings</mat-icon>
-                    &nbsp;Meu Painel
+                <a mat-list-item routerLink="/panel" routerLinkActive="router-link-active" (click)="sidenav.toggle()">
+                    <fa-icon [icon]="['fas','chart-area']"></fa-icon>
+                    &nbsp;<strong>Meu Painel</strong>
                 </a>
                 <a mat-list-item (click)="logout(); sidenav.toggle()">
-                    <mat-icon>logout</mat-icon>
-                    &nbsp;Sair
+                    <fa-icon [icon]="['fas','sign-out-alt']"></fa-icon>
+                    &nbsp;<strong>Sair</strong>
                 </a>
             </mat-nav-list>
         </mat-sidenav>
         <mat-sidenav-content>
             <router-outlet></router-outlet>
+            <div class="container-map">
+                <agm-map [latitude]="lat" [longitude]="lng" [zoom]="zoom" >
+                  <agm-marker [latitude]="lat" [longitude]="lng"
+                    iconUrl="./assets/images/logo.png"
+                    [markerDraggable]="true"
+                      >
+                      <agm-info-window [disableAutoPan]="true">
+                        <h6>Endereço: {{endereco}}</h6>
+                        <h6>Telefone: +55 17 9 9000 - 0000</h6>
+                      </agm-info-window>
+                    </agm-marker>
+                </agm-map>
+            </div>
+             <!-- footer -->
+            <footer class="page-footer">
+                
+                <div class="container">
+                    <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12" align="center">
+                      <div class="col-md-12 flex-center">
+                           <a class="col-md col-sm">
+                                <fa-icon [icon]="['fab','facebook']"></fa-icon>
+                            </a>
+                            <a class="col-md col-sm">
+                                <fa-icon [icon]="['fab', 'linkedin']"></fa-icon>
+                            </a>
+                            <a class="col-md col-sm">
+                                <fa-icon [icon]="['fab', 'twitter']"></fa-icon>
+                            </a>
+                            <a class="col-md col-sm">
+                                <fa-icon [icon]="['fab', 'instagram']"></fa-icon>
+                            </a> 
+                      </div>
+                    </div>
+                </div>
+                <div class="copy-right">
+                    <div class="col-md-12 flex-center">
+                        <span>&copy; Copy Right - </span>
+                    <a>&nbsp;MAP X Soluções em TI</a>
+                    </div>
+                </div>
+            </footer>
         </mat-sidenav-content>
     </mat-sidenav-container>
+   
 </div>

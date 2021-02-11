@@ -622,6 +622,9 @@ export class functions {
     }
     Permissao(req: Request, tabela, acao) {
         let permitido: boolean = false;
+        if (!req.grupos || req.grupos.length <= 0) {
+            return false;
+        }
         req.grupos.forEach((grupo) => {
             let {permissoes} = grupo;
             if (grupo.excluido == false && grupo.ativo == true) {

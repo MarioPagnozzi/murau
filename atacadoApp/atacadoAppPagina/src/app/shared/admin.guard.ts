@@ -20,7 +20,7 @@ export class AdminGuard implements CanActivate {
     canActivate(
         next: ActivatedRouteSnapshot,
         state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-            if (this.userService.isStaticLogged) {
+            if (this.userService.isStaticLogged) {               
                 const tbl: string | undefined = (this.tabela?.toString().substring(1, this.tabela?.toString().length).toString());
                 return String(tbl) !== "panel" ? Permissao(String(tbl), "V") : true;
             } else {

@@ -100,7 +100,13 @@ export class ClientesController extends BaseController<Clientes> {
         console.log(retornoEmail)
         return _cliente;
 
-    } 
+    }
+    async clientesDia(request: Request) {
+        if (!this._func.Permissao(request, "Clientes", "V")) {
+            return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
+        }
+        return this._repClientes.find({where: {data_inclusao: new Date}})
+    }
     async filtro(request: Request) {
 
         if (!this._func.Permissao(request, "Clientes", "V")) {

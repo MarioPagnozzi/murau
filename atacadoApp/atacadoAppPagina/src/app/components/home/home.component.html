@@ -1,1 +1,67 @@
-<p>home works!</p>
+<div class="card">
+  <p-dataView #dv
+    [value]="produtos"
+    [paginator]="true"
+    [rows]="12"
+    filterBy="nome,referencia,codigo"
+    [sortField]="sortField"
+    [sortOrder]="sortOrdem"
+    layout="grid"
+  >
+    <ng-template pTemplate="header">
+      <div class="p-d-flex p-flex-column p-flex-md-row p-jc-md-between">
+        <span class="p-input-icon-left p-mb-2 p-mb-md-0">
+          <i class="pi pi-search"></i>
+          <input type="search" pInputText size="50" placeholder="Buscar por Nome, Referência ou Código" (input)="dv.filter($event.target.value)">
+        </span>
+        <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
+      </div>
+    </ng-template>
+    <ng-template let-produto pTemplate="listItem">
+      <div class="p-col-12">
+        <div class="product-list-item">
+          <span class="product-image">
+            <img *ngIf="produto.imagens.length > 0" src="{{produto.imagens[0].caminho}}"/>
+            <img *ngIf="produto.imagens.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
+          </span>
+          <div class="product-list-detail">
+            
+            <div class="product-name">
+              {{produto.nome}}
+            </div>
+            <div class="product-description">
+              {{produto.descricao}}
+            </div>
+            <i class="pi pi-tag product-category-icon"></i>
+            <span class="product-category">
+              {{produto.referencia}}
+            </span>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+    <ng-template let-produto pTemplate="gridItem">
+      <div class="p-col-12 p-md-4">
+          <div class="product-grid-item card">
+              <div class="product-grid-item-top">
+                  <div>
+                      <i class="pi pi-tag product-category-icon"></i>
+                      <span class="product-category">{{produto.referencia}}</span>
+                  </div>
+              </div>
+              <div class="product-grid-item-content">
+                  <div class="product-image">
+                    <img *ngIf="produto.imagens.length > 0" src="{{produto.imagens[0].caminho}}" width="85%" />
+                    <img *ngIf="produto.imagens.length <= 0" src="./../../assets/images/img_nao_disp.jpg" width="85%" />
+                  </div>
+                  <div class="product-name">{{produto.nome}}</div>
+                  <div class="product-description">{{produto.descricao}}</div>
+              </div>
+          </div>
+      </div>
+  </ng-template>
+  </p-dataView>
+</div>
+
+
+

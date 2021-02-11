@@ -1,6 +1,34 @@
 import { IGrupos } from "../interfaces/IGrupos";
-import { IPermissao } from "../interfaces/IPermissao";
 
+declare var google: any;
+export function RetornaDadosUsuario() {
+    if (localStorage.getItem("murau:user") == null) {
+        return false;
+    }
+    const usuario = JSON.parse(localStorage.getItem("murau:user") as string);
+   /* const usuario: IUsuarios = json.map((u: IUsuarios) => {
+       return {
+           uid: u.uid,
+           nome: u.nome,
+           email: u.email,
+           foto: u.foto
+       }
+    });*/
+    return usuario;
+}
+export function RetornaGruposUsuario() {
+    if (localStorage.getItem("murau:grupo") == null) {
+        return [];
+    }
+    const json = JSON.parse(localStorage.getItem("murau:grupo") as string);
+    const grupos: IGrupos[] = json.map((g: IGrupos) => {
+        return {
+            nome_grupo: g.nome_grupo
+        }
+        
+    });
+    return grupos;
+}
 export function Permissao(tabela: string, acao: string): boolean {
     if (localStorage.getItem("murau:grupo") == null) {
         return false;
@@ -284,3 +312,36 @@ export function montaMenu() {
    return menu;
 
 }
+export function getAddress(latitude: number, longitude: number): Promise<Array<any>> {
+   const geoCoder = new google.maps.Geocoder();
+  return new Promise<Array<any>>( async (resolve, reject) => {       
+       geoCoder.geocode({ "location" : { lat: latitude, lng: longitude } }, (results: any, status: any) => {
+            if (status === 'OK') {
+                if (results[0]) {
+                    resolve(results);
+                } else {
+                    reject();
+                }
+            } else {
+                reject();
+            }
+        });
+    });
+  }
+
+  export function getLatLong(endereco: string): Promise<Array<any>> {
+      const geoCoder = new google.maps.Geocoder();
+      return new Promise<Array<any>>( async (resolve, reject) => {
+          geoCoder.geocode({"address" : endereco}, (results: any, status: any) => {
+              if (status === 'OK') {
+                  if (results[0]) {
+                      resolve(results);
+                  } else {
+                      reject();
+                  }
+              } else {
+                  reject();
+              }
+          });
+      });
+  }

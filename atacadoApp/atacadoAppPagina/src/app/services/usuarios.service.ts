@@ -11,6 +11,9 @@ import { Router } from '@angular/router';
   providedIn: 'root'
 })
 export class UsuariosService extends BaseService<IUsuarios> {
+  totalClienteDia(): any {
+    throw new Error('Method not implemented.');
+  }
 
   private loginSubject = new Subject<boolean>();
 
@@ -31,6 +34,8 @@ export class UsuariosService extends BaseService<IUsuarios> {
      if (grupos.data) {
         localStorage.setItem('murau:grupo', JSON.stringify(grupos.data));
      }
+     const usuarios = await this.http.get(`${environment.url_api}/users/${user.uid}`);
+     localStorage.setItem('murau:isroot', usuarios.data.isRoot);
      this.loginSubject.next(this.isStaticLogged);
    }
    get isLogged(): Observable<boolean> {
@@ -43,6 +48,7 @@ export class UsuariosService extends BaseService<IUsuarios> {
     localStorage.removeItem("murau:token");
     localStorage.removeItem("murau:grupo");
     localStorage.removeItem("murau:user");
-    this.loginSubject.next(this.isStaticLogged);   
-   }
+    localStorage.removeItem("murau:isroot");
+    this.loginSubject.next(this.isStaticLogged);
+   } 
 }
