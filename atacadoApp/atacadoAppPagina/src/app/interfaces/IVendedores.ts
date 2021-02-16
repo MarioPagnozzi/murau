@@ -2,6 +2,7 @@ import { IInterface } from "./IInterface";
 import {ICliente} from "./IClientes";
 import { IEmpresas } from "./IEmpresas";
 import { IPedidos } from "./IPedidos";
+import { IContatos } from "./IContatos";
 
 export interface IVendedores extends IInterface {
     
@@ -12,7 +13,7 @@ export interface IVendedores extends IInterface {
     bairro?: string
     cidade?: string
     uf?: string
-    contatos?: [{ddd?: string, numero?: string, operadoras?: string}]   
+    contatos?: IContatos[]
     pedidos?: IPedidos[]
     empresas?: IEmpresas[],
     cliente?: ICliente[]

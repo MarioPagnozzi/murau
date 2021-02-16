@@ -2,7 +2,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { IResult } from '../interfaces/IResult';
-
+import Swal from 'sweetalert2';
 @Injectable({
   providedIn: 'root'
 })
@@ -66,6 +66,16 @@ export class HttpService {
       }
       catch (error) {
         this.spinner.hide();
+        if (error.status === 400) {
+          let txtErro = '<ul>';
+          if (Array.isArray(error.error)) {
+            error.error.forEach((element: any) => {
+              txtErro += `<li style='text-align: left'>${element.message || element}</li>`;
+            });
+            txtErro += '</ul>';
+            Swal.fire('Atenção', txtErro, 'warning');
+          }
+        }
         resolve({success: false, data: undefined, error});
       }
     })

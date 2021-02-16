@@ -39,7 +39,7 @@ export class ClientesPendentesComponent implements OnInit {
   async ngOnInit() {
     this.translate.setDefaultLang("pt-BR");
 
-    const clientes = await this.clienteService.filtro("novos", Date.now);
+    const clientes = await this.clienteService.filtro("novo", "0");
 
     this.cli = clientes.data.map((it: ICliente) => {
       return {
@@ -83,6 +83,7 @@ export class ClientesPendentesComponent implements OnInit {
         data_alteracao: it.data_alteracao
       }
     })
+    console.log(this.cli)
     this.loading = false;
     const vend = await this.vencedoresService.getAll();
     this.vendedores = vend.data.map((it: IVendedores) => {

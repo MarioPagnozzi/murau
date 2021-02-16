@@ -12,7 +12,7 @@ export class ClientesController extends BaseController<Clientes> {
     }
     async createCliente(request: Request) {
         let {razao_social, nome_fantasia, cnpj, cep, endereco, 
-            numero, bairro, cidade, uf, email, contatos  } = request.body;
+            numero, bairro, cidade, uf, email, contatos, complemento  } = request.body;
         
         super.isRequired(razao_social, "A 'Razão Social' deve ser informada");
         super.isRequired(nome_fantasia, "O 'Nome Fantasia' dever ser informado");        
@@ -29,16 +29,17 @@ export class ClientesController extends BaseController<Clientes> {
 
         let _cliente: Clientes = new Clientes();
 
-        _cliente.razao_social = razao_social;
-        _cliente.nome_fantasia = nome_fantasia;
-        _cliente.cnpj = cnpj;
-        _cliente.cep = cep;
-        _cliente.endereco = endereco;
-        _cliente.numero = numero;
-        _cliente.bairro = bairro;
-        _cliente.cidade = cidade;
-        _cliente.uf = uf;
-        _cliente.email = email;       
+        _cliente.razao_social = razao_social.toUpperCase();
+        _cliente.nome_fantasia = nome_fantasia.toUpperCase();
+        _cliente.cnpj = cnpj.toUpperCase();
+        _cliente.cep = cep.toUpperCase();
+        _cliente.endereco = endereco.toUpperCase();
+        _cliente.numero = numero.toUpperCase();
+        _cliente.bairro = bairro.toUpperCase();
+        _cliente.cidade = cidade.toUpperCase();
+        _cliente.uf = uf.toUpperCase();
+        _cliente.email = email.toUpperCase();
+        _cliente.complemento = complemento.toUpperCase();
         _cliente.ativo = false;
         _cliente.statusCliente = 1;
 
@@ -105,7 +106,11 @@ export class ClientesController extends BaseController<Clientes> {
         if (!this._func.Permissao(request, "Clientes", "V")) {
             return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
         }
-        return this._repClientes.find({where: {data_inclusao: new Date}})
+        const dataAtual = new Date();
+        console.log("passou dia")
+        return this._repClientes.createQueryBuilder("clientes")
+                                .where("date_format(clientes.data_inclusao, '%d/%m/%Y') = date_format(:data,'%d/%m/%Y')",{data: dataAtual.toISOString()})
+                                .getMany();
     }
     async filtro(request: Request) {
 
@@ -148,15 +153,18 @@ export class ClientesController extends BaseController<Clientes> {
             return this._repClientes.find({where: {email: Like("%" + valor + "%")}});
         }
 
-        if (filtro == "pedidos") {
+        if (filtro == "pedidos") {         
             return this._repClientes.createQueryBuilder("clientes")
                                     .innerJoinAndSelect("clientes.pedidos", "pedidos")
                                     .where("pedidos.num_pedido = :num_pedido", {num_pedido: valor})
                                     .getMany();
         }
 
-        if (filtro == "novos") {
-            return this._repClientes.find({where: {data_inclusao: new Date()}})
+        if (filtro == "novo") {
+            const dataAtual = new Date();
+            return this._repClientes.createQueryBuilder("clientes")
+                                    .where("date_format(clientes.data_inclusao, '%d/%m/%Y') = date_format(:data,'%d/%m/%Y')",{data: dataAtual.toISOString()})
+                                    .getMany();//find({where: {data_inclusao: dataAtual.toISOString()}})
         }
     }
     async save(request: Request) {

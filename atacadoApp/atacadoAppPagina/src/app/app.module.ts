@@ -46,7 +46,8 @@ import {TabViewModule} from 'primeng/tabview';
 import {PanelModule} from 'primeng/panel';
 import {CardModule} from 'primeng/card';
 import {SplitButtonModule} from 'primeng/splitbutton';
-
+import {InputMaskModule} from 'primeng/inputmask';
+import {ToolbarModule} from 'primeng/toolbar';
 
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -97,6 +98,8 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faUser, faBars, faCog, faCartPlus, faChartArea, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { faFacebook, faTwitter, faGoogle, faLinkedin, faInstagram } from '@fortawesome/free-brands-svg-icons';
+import { CreateClienteComponent } from './components/create-cliente/create-cliente.component';
+import { AppCepValidateDirective, AppCnpjValidateDirective, AppEmailValidateDirective, AppNomeValidateDirective, AppUfValidateDirective } from './diretivas/diretivaValidacoes';
 registerLocaleData(localePt);
 
 FullCalendarModule.registerPlugins([
@@ -135,7 +138,13 @@ export function TranslationLoaderFactory(http: HttpClient) {
     UsuariosComponent,
     VendedorComponent,
     VendedoresComponent,
-    LoginComponent  
+    LoginComponent,
+    CreateClienteComponent,
+    AppNomeValidateDirective,
+    AppCnpjValidateDirective,
+    AppCepValidateDirective,
+    AppUfValidateDirective,
+    AppEmailValidateDirective
   ],
   imports: [
     FormsModule,
@@ -180,6 +189,8 @@ export function TranslationLoaderFactory(http: HttpClient) {
     MatSnackBarModule,
     FontAwesomeModule,
     SplitButtonModule,
+    InputMaskModule,
+    ToolbarModule,
     AgmCoreModule.forRoot({
       apiKey: "AIzaSyDlDAx0Arx9LHCWagPDw2IeYiu8oD7GF6s",
       libraries: ["places"]
@@ -190,7 +201,7 @@ export function TranslationLoaderFactory(http: HttpClient) {
 
   ],
   bootstrap: [AppComponent],
-  providers: [NodeService, TranslateService, AgendaService]
+  providers: [NodeService, TranslateService, AgendaService, AppNomeValidateDirective, AppCnpjValidateDirective, AppCepValidateDirective, AppUfValidateDirective, AppEmailValidateDirective]
 
 })
 export class AppModule {
