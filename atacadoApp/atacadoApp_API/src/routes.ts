@@ -65,7 +65,7 @@ export const Routes = [
     {method: "get", route: "/clientes/:filtro/:valor/filtro", controller: ClientesController, action: "filtro"},
     {method: "post", route: "/clientes",controller: ClientesController, action: "save"},
     {method: "delete", route: "/clientes/:id", controller: ClientesController, action: "remove"},
-    {method: "get", route: "/clientes/clidia", controller: ClientesController, action: "clientesDia"},
+    {method: "get", route: "/clientes/clientesdia/hoje", controller: ClientesController, action: "clientesDia"},
 
     //Rota privada Peidos
     {method: "delete", route: "/pedidos/:id", controller: PedidosController, action: "remove"},

@@ -1,4 +1,5 @@
 import { BaseStatus } from './../enum/status';
+import { IContatos } from './IContatos';
 import { IEmpresas } from './IEmpresas';
 import { IInterface } from "./IInterface";
 import { IPedidos } from './IPedidos';
@@ -12,13 +13,14 @@ export interface ICliente extends IInterface {
    cnpj?: string
    cep?: string
    endereco?: string
+   complemento?: string
    numero?: string
    bairro?: string
    cidade?: string
    uf?: string
    email?: string
    statusCliente?: BaseStatus
-   contatos?: [{ddd?: string, numero?: string, operadoras?: string}]
+   contatos?: IContatos[]
    vendedor?: IVendedores
    empresa?: IEmpresas
    pedidos?: IPedidos[]

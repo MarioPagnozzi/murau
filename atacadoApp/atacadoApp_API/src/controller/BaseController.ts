@@ -53,7 +53,7 @@ export abstract class BaseController<T> extends BaseNotificacao {
         else
             return {
                 status: 400,
-                errors: this.allNotifications
+                errors: [this.allNotifications]
             }
     }
 

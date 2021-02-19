@@ -12,7 +12,7 @@ export class ClientesController extends BaseController<Clientes> {
     }
     async createCliente(request: Request) {
         let {razao_social, nome_fantasia, cnpj, cep, endereco, 
-            numero, bairro, cidade, uf, email, contatos  } = request.body;
+            numero, bairro, cidade, uf, email, contatos, complemento  } = request.body;
         
         super.isRequired(razao_social, "A 'Razão Social' deve ser informada");
         super.isRequired(nome_fantasia, "O 'Nome Fantasia' dever ser informado");        
@@ -38,7 +38,8 @@ export class ClientesController extends BaseController<Clientes> {
         _cliente.bairro = bairro;
         _cliente.cidade = cidade;
         _cliente.uf = uf;
-        _cliente.email = email;       
+        _cliente.email = email;
+        _cliente.complemento = complemento;
         _cliente.ativo = false;
         _cliente.statusCliente = 1;
 
@@ -48,64 +49,65 @@ export class ClientesController extends BaseController<Clientes> {
                          .getRawOne();
 
         _cliente.codigo =  +codigo["maxCodigo"] + 1;
+       if (super.valid()) {
+            contatos.forEach(async (contato) => {
+                let _contato: ContatosClientes = new ContatosClientes();
+                _contato.ddd = contato.ddd;
+                _contato.numero = contato.numero;
+                _contato.operadoras = contato.operadoras;
+                _contato.cliente = _cliente;
 
-        super.save(_cliente);
+                let _repContatoClientes: Repository<ContatosClientes> = getRepository(ContatosClientes);
+                _repContatoClientes.save(_contato);
+            });
+            let fs = require("fs");
+            let path = require("path");
+            const arqHtml = path.join(path.dirname(__dirname),"templates") + "/email_cadastro.html";
+            const imgFb = path.join(path.dirname(__dirname), "templates" ) + "/images/005-facebook.png";
+            let html = fs.readFileSync(arqHtml);
+            html = html.toString().replace("NomeCliente", _cliente.razao_social);
 
-        
-        
-        contatos.forEach(async (contato) => {
-            let _contato: ContatosClientes = new ContatosClientes();
-            _contato.ddd = contato.ddd;
-            _contato.numero = contato.numero;
-            _contato.operadoras = contato.operadoras;
-            _contato.cliente = _cliente;
-
-            let _repContatoClientes: Repository<ContatosClientes> = getRepository(ContatosClientes);
-            _repContatoClientes.save(_contato);
-        });
-        let fs = require("fs");
-        let path = require("path");
-        const arqHtml = path.join(path.dirname(__dirname),"templates") + "/email_cadastro.html";
-        const imgFb = path.join(path.dirname(__dirname), "templates" ) + "/images/005-facebook.png";
-        let html = fs.readFileSync(arqHtml);
-        html = html.toString().replace("NomeCliente", _cliente.razao_social);
-
-        let _repProdutos: Repository<Produtos> = getRepository(Produtos);
-        
-        let produtos = await _repProdutos.find({order: {data_inclusao: "DESC"}, take: 6});
-        let _repImagensProduto: Repository<ImagensProduto> = getRepository(ImagensProduto);
-        let i = 1;
-        for (let prod in produtos) {
+            let _repProdutos: Repository<Produtos> = getRepository(Produtos);
             
-            html = html.toString().replace("nomeProduto" + i.toString(), produtos[prod].nome);
-            html = html.toString().replace("DescricaoProduto" + i.toString(), produtos[prod].descricao);
+            let produtos = await _repProdutos.find({order: {data_inclusao: "DESC"}, take: 6});
+            let _repImagensProduto: Repository<ImagensProduto> = getRepository(ImagensProduto);
+            let i = 1;
+            for (let prod in produtos) {
+                
+                html = html.toString().replace("nomeProduto" + i.toString(), produtos[prod].nome);
+                html = html.toString().replace("DescricaoProduto" + i.toString(), produtos[prod].descricao);
 
-            let imagem = await _repImagensProduto.find({where: {produto: produtos[prod]}, take: 1});
-            if (imagem.length > 0) {
-                html = html.toString().replace("Linkimage" + i.toString(), imagem[0].caminho);
+                let imagem = await _repImagensProduto.find({where: {produto: produtos[prod]}, take: 1});
+                if (imagem.length > 0) {
+                    html = html.toString().replace("Linkimage" + i.toString(), imagem[0].caminho);
+                }
+                else {
+                    html = html.toString().replace("LinkImage" + i.toString(), "https://i.ibb.co/qs4w265/sem-foto.jpg")
+                }
+                i = +i + 1;
             }
-            else {
-                html = html.toString().replace("LinkImage" + i.toString(), "https://i.ibb.co/qs4w265/sem-foto.jpg")
-            }
-            i = +i + 1;
-        }
-        const mensagem = {
-            from: "atendimento@murau.com",
-            to: _cliente.email,
-            subject: "Confirmação de Cadastro",
-            html: html
-        }       
-        let sendMail = this._func.Email(mensagem);
-        let retornoEmail = await sendMail;
-        console.log(retornoEmail)
-        return _cliente;
+            const mensagem = {
+                from: "atendimento@murau.com",
+                to: _cliente.email,
+                subject: "Confirmação de Cadastro",
+                html: html
+            }       
+            let sendMail = this._func.Email(mensagem);
+            let retornoEmail = await sendMail;
+            console.log(retornoEmail);       
+       }
+       return super.save(_cliente);
 
     }
     async clientesDia(request: Request) {
         if (!this._func.Permissao(request, "Clientes", "V")) {
             return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
         }
-        return this._repClientes.find({where: {data_inclusao: new Date}})
+        const dataAtual = new Date();
+        console.log("passou dia")
+        return this._repClientes.createQueryBuilder("clientes")
+                                .where("date_format(clientes.data_inclusao, '%d/%m/%Y') = date_format(:data,'%d/%m/%Y')",{data: dataAtual.toISOString()})
+                                .getMany();
     }
     async filtro(request: Request) {
 
@@ -148,15 +150,18 @@ export class ClientesController extends BaseController<Clientes> {
             return this._repClientes.find({where: {email: Like("%" + valor + "%")}});
         }
 
-        if (filtro == "pedidos") {
+        if (filtro == "pedidos") {         
             return this._repClientes.createQueryBuilder("clientes")
                                     .innerJoinAndSelect("clientes.pedidos", "pedidos")
                                     .where("pedidos.num_pedido = :num_pedido", {num_pedido: valor})
                                     .getMany();
         }
 
-        if (filtro == "novos") {
-            return this._repClientes.find({where: {data_inclusao: new Date()}})
+        if (filtro == "pendentes") {
+            const dataAtual = new Date();
+            return this._repClientes.createQueryBuilder("clientes")
+                                    .where("clientes.ativo = :status",{status: valor})
+                                    .getMany();//find({where: {data_inclusao: dataAtual.toISOString()}})
         }
     }
     async save(request: Request) {
@@ -188,7 +193,7 @@ export class ClientesController extends BaseController<Clientes> {
             let sugestao = +maxCodigo["maxCodigo"] + 1;
             return {status: 400, errors: ["Este código já está sendo usado por outro cliente. Sugestão: " + sugestao]};
         }
-        super.save(_cliente).then((cliente) => {
+        return super.save(_cliente).then((cliente) => {
             _cliente.contatos.forEach(async (contato) => {
                 let _contato: ContatosClientes = new ContatosClientes();
                 _contato.ddd = contato.ddd;
@@ -200,6 +205,6 @@ export class ClientesController extends BaseController<Clientes> {
                 _repContatoClientes.save(_contato);
             });
         });
-        return _cliente;
+        //return _cliente;
     }
 }

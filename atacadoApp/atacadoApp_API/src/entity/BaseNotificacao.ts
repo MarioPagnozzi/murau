@@ -42,7 +42,10 @@ export abstract class BaseNotificacao {
   }
 
   isCPFCNPJ (value, message) {
-    if (value.length == 14) {
+    if (!value) {
+      this.notifications.push({ message: message });
+    }
+    if (value && value.length == 14) {
       let cpf = value.trim();
       cpf = cpf.replace(/\./g,'');
       cpf = cpf.replace('-','');
@@ -87,7 +90,7 @@ export abstract class BaseNotificacao {
       if (v2 != cpf[10]) {
         this.notifications.push({ message: message });
       }
-    } else if (value.length == 18) {
+    } else if (value && value.length == 18) {
       let cnpj = value.trim();
       cnpj = cnpj.replace(/\./g,'');
       cnpj = cnpj.replace('-','');
@@ -159,7 +162,7 @@ export abstract class BaseNotificacao {
   }
 
   valid(): boolean {
-    return this.notifications.length == 0;
+    return this.notifications.length === 0;
   }
 
 }

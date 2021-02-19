@@ -21,7 +21,8 @@ import {MatListModule} from '@angular/material/list';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatCardModule} from '@angular/material/card';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
-
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 import {TreeModule} from 'primeng/tree';
 import {ToastModule} from 'primeng/toast';
@@ -46,7 +47,8 @@ import {TabViewModule} from 'primeng/tabview';
 import {PanelModule} from 'primeng/panel';
 import {CardModule} from 'primeng/card';
 import {SplitButtonModule} from 'primeng/splitbutton';
-
+import {InputMaskModule} from 'primeng/inputmask';
+import {ToolbarModule} from 'primeng/toolbar';
 
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -94,9 +96,11 @@ import {GMapModule} from 'primeng/gmap';
 import {AgmCoreModule} from '@agm/core';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faUser, faBars, faCog, faCartPlus, faChartArea, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faEdit, faBars, faCog, faCartPlus, faChartArea, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { faFacebook, faTwitter, faGoogle, faLinkedin, faInstagram } from '@fortawesome/free-brands-svg-icons';
+import { CreateClienteComponent } from './components/create-cliente/create-cliente.component';
+import { AppCepValidateDirective, AppCnpjValidateDirective, AppEmailValidateDirective, AppNomeValidateDirective, AppUfValidateDirective } from './diretivas/diretivaValidacoes';
 registerLocaleData(localePt);
 
 FullCalendarModule.registerPlugins([
@@ -135,7 +139,13 @@ export function TranslationLoaderFactory(http: HttpClient) {
     UsuariosComponent,
     VendedorComponent,
     VendedoresComponent,
-    LoginComponent  
+    LoginComponent,
+    CreateClienteComponent,
+    AppNomeValidateDirective,
+    AppCnpjValidateDirective,
+    AppCepValidateDirective,
+    AppUfValidateDirective,
+    AppEmailValidateDirective
   ],
   imports: [
     FormsModule,
@@ -180,6 +190,10 @@ export function TranslationLoaderFactory(http: HttpClient) {
     MatSnackBarModule,
     FontAwesomeModule,
     SplitButtonModule,
+    InputMaskModule,
+    ToolbarModule,
+    MatTabsModule,
+    MatSlideToggleModule,
     AgmCoreModule.forRoot({
       apiKey: "AIzaSyDlDAx0Arx9LHCWagPDw2IeYiu8oD7GF6s",
       libraries: ["places"]
@@ -190,7 +204,7 @@ export function TranslationLoaderFactory(http: HttpClient) {
 
   ],
   bootstrap: [AppComponent],
-  providers: [NodeService, TranslateService, AgendaService]
+  providers: [NodeService, TranslateService, AgendaService, AppNomeValidateDirective, AppCnpjValidateDirective, AppCepValidateDirective, AppUfValidateDirective, AppEmailValidateDirective]
 
 })
 export class AppModule {
@@ -242,7 +256,8 @@ export class AppModule {
       faCog,
       faCartPlus,
       faChartArea,
-      faSignOutAlt
+      faSignOutAlt,
+      faEdit
     )
   }
 }

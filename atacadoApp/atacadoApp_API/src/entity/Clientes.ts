@@ -26,6 +26,9 @@ export class Clientes extends BaseEntity {
     @Column({type: "varchar", length: 200})
     endereco: string
 
+    @Column({type: "varchar", length: 100})
+    complemento: string
+
     @Column({type: "varchar", length: 10})
     numero: string
 
