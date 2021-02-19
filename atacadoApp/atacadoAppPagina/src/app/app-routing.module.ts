@@ -18,6 +18,7 @@ import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { VendedorComponent } from './components/vendedor/vendedor.component';
 import { VendedoresComponent } from './components/vendedores/vendedores.component';
 import { CreateClienteComponent } from './components/create-cliente/create-cliente.component';
+import { ClienteComponent } from './components/cliente/cliente.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '/home' },
@@ -38,6 +39,7 @@ const routes: Routes = [
   { path: 'vendedor/:cod', component: VendedorComponent, canActivate: [AdminGuard] },
   { path: 'vendedores', component: VendedoresComponent, canActivate: [AdminGuard] },
   { path: 'clientes', component: ClientesComponent, canActivate: [AdminGuard] },
+  { path: 'cliente/:cod', component: ClienteComponent, canActivate: [AdminGuard] },
 
   { path: 'cadastro', component: CreateClienteComponent}
 ];

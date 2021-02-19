@@ -1,5 +1,5 @@
 import { ContatosModel } from './../../models/contatosModel';
-import { Component, Injectable, OnInit } from '@angular/core';
+import { Component, Injectable, OnInit, ViewChild } from '@angular/core';
 import { ClienteService } from 'src/app/services/cliente.service';
 import { ClienteModel } from 'src/app/models/clienteModel';
 import { ViaCepService } from 'src/app/services/via-cep.service';
@@ -19,7 +19,7 @@ export class CreateClienteComponent implements OnInit {
     
   cliente: ClienteModel = new ClienteModel();
   contatos: ContatosModel[] = [];
-  operadoras: {} = [];
+  operadoras: IOperadora[] = [];
   constructor(
     private clienteService: ClienteService,
     private viaCepService: ViaCepService,
@@ -28,6 +28,7 @@ export class CreateClienteComponent implements OnInit {
 
   async ngOnInit() {
     this.operadoras = [
+      {valor: 0, label: "Operadoras" },
       {valor: 41, label: "Tim" },
       {valor: 21, label: "Claro"},
       {valor: 15, label: "Vivo"},
@@ -39,6 +40,14 @@ export class CreateClienteComponent implements OnInit {
   }
   async gravar() {
     this.cliente.contatos = this.contatos;
+    this.cliente.razao_social = this.cliente.razao_social?.toUpperCase();
+    this.cliente.nome_fantasia = this.cliente.nome_fantasia?.toUpperCase();
+    this.cliente.endereco = this.cliente.endereco?.toUpperCase();
+    this.cliente.bairro = this.cliente.bairro?.toUpperCase();
+    this.cliente.complemento = this.cliente.complemento?.toUpperCase();
+    this.cliente.cidade = this.cliente.cidade?.toUpperCase();
+    this.cliente.uf = this.cliente.uf?.toUpperCase();
+    this.cliente.email = this.cliente.email?.toLowerCase();
     const result = await this.clienteService.createCliente(this.cliente);
     if (result.success) {
       const snack = this.matSnack.open("Registro Salvo com Sucesso", undefined, {duration: 3000, verticalPosition: 'top', horizontalPosition: 'center', panelClass: ['style_ok']});
@@ -46,10 +55,10 @@ export class CreateClienteComponent implements OnInit {
         this.router.navigateByUrl("/home");
       })
     }
-
   }
-  async retornaCep(cep: any) {
-    console.log(cep);
+  
+  async retornaCep($event: Event) {
+    const cep = ($event.target as HTMLInputElement).value;
     const dataCep = await this.viaCepService.buscaCep(cep);
     const {logradouro, bairro, localidade, uf} = JSON.parse(JSON.stringify(dataCep));
     console.log(dataCep);
@@ -60,6 +69,7 @@ export class CreateClienteComponent implements OnInit {
   }
   addNewContato() {
     const newContato = new ContatosModel();
+    newContato.operadoras = 0;
     this.contatos.push(newContato);
     
   }
@@ -67,4 +77,14 @@ export class CreateClienteComponent implements OnInit {
     const index = this.contatos.indexOf(contato);
     this.contatos.splice(index, 1);
   }
+  upperCase($event: Event) {
+    ($event.target as HTMLInputElement).value = ($event.target as HTMLInputElement).value.toUpperCase();
+  }
+  lowerCase($event: Event) {
+    ($event.target as HTMLInputElement).value = ($event.target as HTMLInputElement).value.toLowerCase();
+  }
+}
+export interface IOperadora {
+  valor: number
+  label: string
 }

@@ -12,8 +12,8 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$atacadoAppPagina-primary: mat-palette($mat-indigo);
-$atacadoAppPagina-accent: mat-palette($mat-pink, A200, A100, A400);
+$atacadoAppPagina-primary: mat-palette($mat-brown);
+$atacadoAppPagina-accent: mat-palette($mat-blue-grey, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
 $atacadoAppPagina-warn: mat-palette($mat-red);
@@ -43,7 +43,7 @@ body {
 
 body {
     margin: 0;
-    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-family: "Lato", "Helvetica Neue", sans-serif;
 }
 
 html,
@@ -53,10 +53,10 @@ body {
 
 body {
     margin: 0;
-    font-family: Roboto, "Helvetica Neue", sans-serif;
+    font-family: "Lato", "Helvetica Neue", sans-serif;
 }
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { margin: 0; font-family: "Lato", "Helvetica Neue", sans-serif; }
 
 .murau__container {
   width: calc(100% - 40px);

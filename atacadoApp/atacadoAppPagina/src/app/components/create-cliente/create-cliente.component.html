@@ -9,9 +9,22 @@
                
                     <div class="p-field m-razaosocial">
                         <label for="razaosocial">Razão Social</label>
-                        <input id="razaosocial" type="text" onkeyup="this.value = this.value.toUpperCase();" (focusout)="$event.target.value = $event.target.value.toUpperCase();" class="form-control" [(ngModel)]="cliente.razao_social" placeholder="Informe a Razão Social da Empresa" name="razaosocial" [class.is-invalid]="clienteModel.errors?.nomeInvalid && (clienteModel.touched || clienteModel.dirty)" #clienteModel="ngModel" pInputText  nomeValidateDirective required/>
-                        <small id="razaosocial-help" class="invalid-feedback" *ngIf="(clienteModel.touched || clienteModel.dirty) && clienteModel.errors?.nomeInvalid">
-                            Razão Social é de Preenchimento Obrigatório de deve conter mais de 10 caracteres.
+                        <input id="razaosocial" 
+                               type="text" 
+                               onkeyup="this.value = this.value.toUpperCase();" 
+                               (focusout)="upperCase($event);" 
+                               class="form-control" 
+                               [(ngModel)]="cliente.razao_social" 
+                               placeholder="Informe a Razão Social da Empresa" 
+                               name="razaosocial" 
+                               [class.is-invalid]="clienteModel.errors?.nomeInvalid && (clienteModel.touched || clienteModel.dirty)" 
+                               #clienteModel="ngModel" 
+                               pInputText  
+                               nomeValidateDirective required/>
+                        <small id="razaosocial-help" 
+                               class="invalid-feedback" 
+                               *ngIf="(clienteModel.touched || clienteModel.dirty) && clienteModel.errors?.nomeInvalid">
+                            Razão Social é de Preenchimento Obrigatório e deve conter mais de 10 caracteres.
                         </small>
                         
   
@@ -22,8 +35,19 @@
           
                     <div class="p-field m-cnpj">
                         <label for="cnpj">CNPJ</label>
-                        <p-inputMask id="cnpj" mask="99.999.999/9999-99" [(ngModel)]="cliente.cnpj" name="cnpj" [class.is-invalid]="clienteCnpjModel.errors?.cnpjInvalid && (clienteCnpjModel.touched || clienteCnpjModel.dirty)" #clienteCnpjModel='ngModel' cnpjValidateDirective required></p-inputMask>
-                        <small id="cnpj-help" class="invalid-feedback" *ngIf="(clienteCnpjModel.touched || clienteCnpjModel.dirty) && clienteCnpjModel.errors?.cnpjInvalid">CNPJ deve ser informado.</small>
+                        <p-inputMask 
+                        id="cnpj" 
+                        mask="99.999.999/9999-99" 
+                        [(ngModel)]="cliente.cnpj" 
+                        name="cnpj" 
+                        [class.is-invalid]="clienteCnpjModel.errors?.cnpjInvalid && (clienteCnpjModel.touched || clienteCnpjModel.dirty)" 
+                        #clienteCnpjModel='ngModel' 
+                        cnpjValidateDirective></p-inputMask>
+                        <small id="cnpj-help" 
+                               class="invalid-feedback" 
+                               *ngIf="(clienteCnpjModel.touched || clienteCnpjModel.dirty) && clienteCnpjModel.errors?.cnpjInvalid">
+                               CNPJ deve ser informado.
+                        </small>
 
                     </div>
                 
@@ -35,8 +59,19 @@
                
                     <div class="p-field m-razaosocial">
                         <label for="nomefantasia">Nome Fantasia</label>
-                        <input id="nomefantasia" type="text" (focusout)="$event.target.value = $event.target.value.toUpperCase();" onkeyup="this.value = this.value.toUpperCase();" class="form-control" [(ngModel)]="cliente.nome_fantasia" placeholder="Informe o Nome Fantasia da Empresa" name="nomefantasia" [class.is-invalid]="clienteNomeFantasiaModel.errors?.nomeInvalid && (clienteNomeFantasiaModel.touched || clienteNomeFantasiaModel.dirty)" #clienteNomeFantasiaModel="ngModel" pInputText  nomeValidateDirective required/>
-                        <small id="nomefantasia-help" class="invalid-feedback" *ngIf="(clienteNomeFantasiaModel.touched || clienteNomeFantasiaModel.dirty) && clienteNomeFantasiaModel.errors?.nomeInvalid">
+                        <input id="nomefantasia" 
+                               type="text" 
+                               (focusout)="upperCase($event);" 
+                               onkeyup="this.value = this.value.toUpperCase();" 
+                               class="form-control" 
+                               [(ngModel)]="cliente.nome_fantasia" 
+                               placeholder="Informe o Nome Fantasia da Empresa" 
+                               name="nomefantasia" [class.is-invalid]="clienteNomeFantasiaModel.errors?.nomeInvalid && (clienteNomeFantasiaModel.touched || clienteNomeFantasiaModel.dirty)" 
+                               #clienteNomeFantasiaModel="ngModel" 
+                               pInputText  
+                               nomeValidateDirective required/>
+                        <small id="nomefantasia-help" class="invalid-feedback" 
+                               *ngIf="(clienteNomeFantasiaModel.touched || clienteNomeFantasiaModel.dirty) && clienteNomeFantasiaModel.errors?.nomeInvalid">
                             Nome Fantasia é de Preenchimento Obrigatório de deve conter mais de 10 caracteres.
                         </small>
   
@@ -47,8 +82,19 @@
           
                     <div class="p-field m-cnpj">
                         <label for="cep">CEP</label>
-                        <p-inputMask id="cep" mask="99999-999" (focusout)="retornaCep($event.target.value)" [(ngModel)]="cliente.cep" name="cep" [class.is-invalid]="clienteCepModel.errors?.cepInvalid && (clienteCepModel.touched || clienteCepModel.dirty)" #clienteCepModel='ngModel' cepValidateDirective required></p-inputMask>
-                        <small id="cep-help" class="invalid-feedback" *ngIf="(clienteCepModel.touched || clienteCepModel.dirty) && clienteCepModel.errors?.cepInvalid">CEP deve ser informado.</small>
+                        <p-inputMask id="cep" 
+                                     mask="99999-999" 
+                                     (focusout)="retornaCep($event)" 
+                                     [(ngModel)]="cliente.cep" 
+                                     name="cep" 
+                                     [class.is-invalid]="clienteCepModel.errors?.cepInvalid && (clienteCepModel.touched || clienteCepModel.dirty)" 
+                                     #clienteCepModel='ngModel' 
+                                     cepValidateDirective></p-inputMask>
+                        <small id="cep-help" 
+                               class="invalid-feedback" 
+                               *ngIf="(clienteCepModel.touched || clienteCepModel.dirty) && clienteCepModel.errors?.cepInvalid">
+                               CEP deve ser informado.
+                        </small>
 
                     </div>
                 
@@ -58,8 +104,21 @@
             <div class="col-sm-6">
                 <div class="p-field m-razaosocial">
                     <label for="endereco">Endereço</label>
-                    <input id="endereco" type="text" placeholder="Informe o Endereço" (focusout)="$event.target.value = $event.target.value.toUpperCase();" onkeyup="this.value = this.value.toUpperCase();" class="form-control" [(ngModel)]="cliente.endereco" name="endereco" [class.is-invalid]="clienteEndModel.errors?.nomeInvalid && (clienteEndModel.touched || clienteEndModel.dirty)" #clienteEndModel='ngModel' pInputText nomeValidateDirective required />
-                    <small id="endereco-help" class="invalid-feedback" *ngIf="(clienteEndModel.touched || clienteEndModel.dirty) && clienteEndModel.errors?.nomeInvalid">
+                    <input id="endereco" 
+                           type="text" 
+                           placeholder="Informe o Endereço" 
+                           (focusout)="upperCase($event);" 
+                           onkeyup="this.value = this.value.toUpperCase();" 
+                           class="form-control" 
+                           [(ngModel)]="cliente.endereco" 
+                           name="endereco" 
+                           [class.is-invalid]="clienteEndModel.errors?.nomeInvalid && (clienteEndModel.touched || clienteEndModel.dirty)" 
+                           #clienteEndModel='ngModel' 
+                           pInputText 
+                           nomeValidateDirective required />
+                    <small id="endereco-help" 
+                           class="invalid-feedback" 
+                           *ngIf="(clienteEndModel.touched || clienteEndModel.dirty) && clienteEndModel.errors?.nomeInvalid">
                         Endereço é de preencimento obrigatório e deve conter mais de 10 caracteres
                     </small>
                 </div>
@@ -67,13 +126,26 @@
             <div class="col-sm-2">
                 <div class="p-field m-cnpj">
                     <label for="numero">Número</label>
-                    <input type="text" class="form-control" id="numero" (focusout)="$event.target.value = $event.target.value.toUpperCase();" onkeyup="this.value = this.value.toUpperCase();" [(ngModel)]="cliente.numero" name="numero" pInputText required/>
+                    <input type="text" 
+                           class="form-control" 
+                           id="numero" 
+                           (focusout)="upperCase($event);" 
+                           [(ngModel)]="cliente.numero" 
+                           name="numero" 
+                           pInputText required/>
                 </div>
             </div>
             <div class="col-sm-4">
                 <div class="p-field m-complemento">
                     <label for="complemento">Complemento</label>
-                    <input type="text" class="form-control" id="complemento" (focusout)="$event.target.value = $event.target.value.toUpperCase();" onkeyup="this.value = this.value.toUpperCase();" [(ngModel)]="cliente.complemento" name="complemento" pInputText required/>
+                    <input type="text" 
+                           class="form-control" 
+                           id="complemento" 
+                           (focusout)="upperCase($event);" 
+                           onkeyup="this.value = this.value.toUpperCase();" 
+                           [(ngModel)]="cliente.complemento" n
+                           ame="complemento" 
+                           pInputText required/>
                 </div>
             </div>
         </div>
@@ -81,7 +153,17 @@
             <div class="col-sm-4">
                 <div class="p-field m-cnpj">
                     <label for="bairro">Bairro</label>
-                    <input type="text" class="form-control" id="bairro" placeholder="Informe o bairro" (focusout)="$event.target.value = $event.target.value.toUpperCase();" onkeyup="this.value = this.value.toUpperCase();" [(ngModel)]="cliente.bairro" name="bairro" [class.is-invalid]="clienteBairroModel.errors?.nomeInvalid && (clienteBairroModel.touched || clienteBairroModel.dirty)" #clienteBairroModel='ngModel' pInputText  nomeValidateDirective required/>
+                    <input type="text" 
+                           class="form-control" 
+                           id="bairro" 
+                           placeholder="Informe o bairro" 
+                           (focusout)="upperCase($event);" 
+                           onkeyup="this.value = this.value.toUpperCase();" 
+                           [(ngModel)]="cliente.bairro" name="bairro" 
+                           [class.is-invalid]="clienteBairroModel.errors?.nomeInvalid && (clienteBairroModel.touched || clienteBairroModel.dirty)" 
+                           #clienteBairroModel='ngModel' 
+                           pInputText  
+                           nomeValidateDirective required/>
                     <small class="invalid-feedback" id="bairro-help" *ngIf="clienteBairroModel.errors?.nomeInvalid && (clienteBairroModel.touched || clienteBairroModel.dirty)">
                         Bairro é de preenchimento obrigatório
                     </small>
@@ -90,7 +172,17 @@
             <div class="col-sm-5">
                 <div class="p-field m-cnpj">
                     <label for="cidade">Cidade</label>
-                    <input type="text" class="form-control" id="cidade" (focusout)="$event.target.value = $event.target.value.toUpperCase();" placeholder="Informe a cidade" onkeyup="this.value = this.value.toUpperCase();" [(ngModel)]="cliente.cidade" name="cidade" [class.is-invalid]="clienteCidadeModel.errors?.nomeInvalid && (clienteCidadeModel.touched || clienteCidadeModel.dirty)" #clienteCidadeModel='ngModel' pInputText  nomeValidateDirective required/>
+                    <input type="text" 
+                           class="form-control" 
+                           id="cidade" 
+                           (focusout)="upperCase($event);" 
+                           placeholder="Informe a cidade" 
+                           onkeyup="this.value = this.value.toUpperCase();" 
+                           [(ngModel)]="cliente.cidade" name="cidade" 
+                           [class.is-invalid]="clienteCidadeModel.errors?.nomeInvalid && (clienteCidadeModel.touched || clienteCidadeModel.dirty)" 
+                           #clienteCidadeModel='ngModel' 
+                           pInputText  
+                           nomeValidateDirective required/>
                     <small class="invalid-feedback" id="cidade-help" *ngIf="clienteCidadeModel.errors?.nomeInvalid && (clienteCidadeModel.touched || clienteCidadeModel.dirty)">
                         Cidade é de preenchimento obrigatório
                     </small>
@@ -99,7 +191,19 @@
             <div class="col-sm-2">
                 <div class="p-field m-uf">
                     <label for="uf">UF</label>
-                    <input type="text" class="form-control" (focusout)="$event.target.value = $event.target.value.toUpperCase();" id="uf" maxlength="2" placeholder="Informe a UF" onkeyup="this.value = this.value.toUpperCase();" [(ngModel)]="cliente.uf" name="uf" [class.is-invalid]="clienteUfModel.errors?.ufInvalid && (clienteUfModel.touched || clienteUfModel.dirty)" #clienteUfModel='ngModel' pInputText  ufValidateDirective required/>
+                    <input type="text" 
+                           class="form-control" 
+                           (focusout)="upperCase($event);" 
+                           id="uf" 
+                           maxlength="2" 
+                           placeholder="Informe a UF" 
+                           onkeyup="this.value = this.value.toUpperCase();" 
+                           [(ngModel)]="cliente.uf" 
+                           name="uf" 
+                           [class.is-invalid]="clienteUfModel.errors?.ufInvalid && (clienteUfModel.touched || clienteUfModel.dirty)" 
+                           #clienteUfModel='ngModel' 
+                           pInputText  
+                           ufValidateDirective required/>
                     <small class="invalid-feedback" id="cidade-help" *ngIf="clienteUfModel.errors?.nomeInvalid && (clienteUfModel.touched || clienteUfModel.dirty)">
                         UF é de preenchimento obrigatório
                     </small>
@@ -110,7 +214,15 @@
             <div class="col-sm">
                 <div class="p-field m-email">
                     <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" (focusout)="$event.target.value = $event.target.value.toLowerCase();" name="email" placeholder="Informe o e-mail para contato" onkeyup="this.value = this.value.toLowerCase();" [(ngModel)]="cliente.email" [class.is-invalid]="clienteEmailModel.errors?.emailInvalid && (clienteEmailModel.touched || clienteEmailModel.dirty)" #clienteEmailModel='ngModel' pInputText emailValidateDirective required />
+                    <input type="email" 
+                           class="form-control" 
+                           id="email" 
+                           (focusout)="lowerCase($event);" 
+                           [(ngModel)]="cliente.email" 
+                           [class.is-invalid]="clienteEmailModel.errors?.emailInvalid && (clienteEmailModel.touched || clienteEmailModel.dirty)" 
+                           #clienteEmailModel='ngModel' 
+                           pInputText 
+                           emailValidateDirective required />
                     <small class="invalid-feedback" id="email-help" *ngIf="clienteEmailModel.errors?.emailInvalid && (clienteEmailModel.touched || clienteEmailModel.dirty)">
                         E-mail é de preenchimento obrigatório e deve ser um E-mail Válido
                     </small>
@@ -130,14 +242,12 @@
             <div class="row">
                 <div class="col-sm-24">
                     <section *ngFor="let contato of contatos">
-            
-                        <p-inputMask [(ngModel)]="contato.ddd" mask="99" placeholder="ddd" size="5"></p-inputMask>
+                        <p-inputMask [(ngModel)]="contato.ddd" mask="99" placeholder="ddd"></p-inputMask>
                         &nbsp;
-                        <p-inputMask [(ngModel)]="contato.numero" placeholder=""mask="99999-9999" placeholder="número telefone" size="30"></p-inputMask>
+                        <p-inputMask [(ngModel)]="contato.numero" placeholder=""mask="99999-9999" placeholder="número telefone"></p-inputMask>
                         &nbsp;
                         <select class="custom-select" [(ngModel)]="contato.operadoras" style="width: 150px; margin-bottom: 5px;">
-                            <option [ngValue]="null" selected>Operadoras</option>
-                            <option *ngFor="let operadora of operadoras" [ngValue]="operadora.valor" >{{operadora.label}}</option> 
+                            <option *ngFor="let operadora of operadoras" [ngValue]="operadora.valor" [disabled]="operadora.valor === 0">{{operadora.label}}</option> 
                         </select>
                         &nbsp;
                         <span (click)="removeContato(contato)" class="pi pi-trash m-trash"></span>
@@ -147,7 +257,6 @@
             </div>
             <p-toolbar>
                 <div class="p-toolbar-group-left">
-                    
                 </div>
                 <div class="p-toolbar-group-right">
                     <button pButton (click)="gravar()" label="Salvar" icon="pi pi-save" class="p-button-outlined"></button>

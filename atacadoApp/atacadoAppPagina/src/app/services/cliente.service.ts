@@ -7,13 +7,27 @@ import { ClienteModel } from '../models/clienteModel';
 import { ICliente } from './../interfaces/IClientes';
 import { HttpService } from './http.service';
 import Swal from 'sweetalert2';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ClienteService extends BaseService<ICliente | ClienteModel> {
 
-  constructor(public http: HttpService, private spinner: NgxSpinnerService) { 
+  private createHeader(header?: HttpHeaders) {
+    if (!header) {header = new HttpHeaders()}
+
+    header = header.append("Content-Type", "application/json");
+    header = header.append("Accept", "application/json");
+
+    const token = localStorage.getItem("murau:token");
+    if (token) {
+      header = header.append("x-token-access", token);
+    }
+    return header;
+  }
+  
+  constructor(public http: HttpService, public httpCli: HttpClient, private spinner: NgxSpinnerService) { 
     super("clientes", http);
    }
    async TotalClienteDia(): Promise<number> {
@@ -28,23 +42,29 @@ export class ClienteService extends BaseService<ICliente | ClienteModel> {
   }
   async createCliente(cliente: ClienteModel): Promise<IResult> {
     return new Promise<IResult>(async (resolve) => {
-      const body = cliente;
+      const body = JSON.stringify(cliente);
       console.log(body);
       try {
+        const header = this.createHeader()
         this.spinner.show();
-        const res = await this.http.post(`${environment.url_api}/clientes/createCliente`, body);
+        const res = await this.httpCli.post(`${environment.url_api}/clientes/createCliente`, body, { headers: header}).toPromise();
         resolve({success: true, data: res, error: undefined});
         this.spinner.hide();
       }
-      catch (error) {
+      catch (error) {       
         this.spinner.hide();
         if (error.status === 400) {
+          console.log(error.error)
           let txtErro = '<ul>';
           if (Array.isArray(error.error)) {
             error.error.forEach((element: any) => {
-              txtErro += `<li style='text-align: left'>${element.message || element}</li>`;
+              element.forEach((el: any) => {
+                txtErro = txtErro + `<li style='text-align: left'>${el.message || el}</li>`;
+              })
+              
+             
             });
-            txtErro += '</ul>';
+            txtErro = txtErro + '</ul>';
             Swal.fire('Atenção', txtErro, 'warning');
           }
         }

@@ -108,6 +108,6 @@ https.createServer({
         console.error("database not connected", error);
     }   
     console.log(`API atacado App Rodando inicializada na porta ${config.port}`);
-    cron_job.call(this);
+   // cron_job.call(this);
 });
 

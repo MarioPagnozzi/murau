@@ -21,7 +21,8 @@ import {MatListModule} from '@angular/material/list';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatCardModule} from '@angular/material/card';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
-
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 
 import {TreeModule} from 'primeng/tree';
 import {ToastModule} from 'primeng/toast';
@@ -95,7 +96,7 @@ import {GMapModule} from 'primeng/gmap';
 import {AgmCoreModule} from '@agm/core';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faUser, faBars, faCog, faCartPlus, faChartArea, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faEdit, faBars, faCog, faCartPlus, faChartArea, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { faFacebook, faTwitter, faGoogle, faLinkedin, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import { CreateClienteComponent } from './components/create-cliente/create-cliente.component';
@@ -191,6 +192,8 @@ export function TranslationLoaderFactory(http: HttpClient) {
     SplitButtonModule,
     InputMaskModule,
     ToolbarModule,
+    MatTabsModule,
+    MatSlideToggleModule,
     AgmCoreModule.forRoot({
       apiKey: "AIzaSyDlDAx0Arx9LHCWagPDw2IeYiu8oD7GF6s",
       libraries: ["places"]
@@ -253,7 +256,8 @@ export class AppModule {
       faCog,
       faCartPlus,
       faChartArea,
-      faSignOutAlt
+      faSignOutAlt,
+      faEdit
     )
   }
 }

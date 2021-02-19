@@ -1,1 +1,79 @@
-<p>cliente works!</p>
+<div class="murau__container">
+    <h1>Cadastro de Clientes</h1>
+    <h5>Tela de cadastro e manutenção de clientes</h5>
+    <mat-tab-group mat-align-tabs="start">
+        <mat-tab label="Dados">
+           
+                <div class="row murau__container">
+                    <div class="col-sm-4">
+                        <div class="p-field m-razaosocial">
+                            <label for="razaosocial">Razão Social</label>
+                            <input id="razaosocial"
+                                   type="text"
+                                   onkeyup="this.value = this.value.toUpperCase();"
+                                   (focusout)="upperCase($event);"
+                                   class="form-control"
+                                   [(ngModel)]="cliente.razao_social"
+                                   placeholder="Informe a Razão Social da Empresa"
+                                   name="razaosocial"
+                                   #clienteRazaoModel="ngModel"
+                                   [class.is-invalid]="clienteRazaoModel.errors?.nomeInvalid && (clienteRazaoModel.touched || clienteRazaoModel.dirty)"
+                                   p-InputText nomeValidateDirective required />
+                            <small id="razaosocial-help" class="invalid-feedback" *ngIf="(clienteRazaoModel.touched || clienteRazaoModel.dirty) && clienteRazaoModel.errors?.nomeInvalid">
+                                Razão Social é de preenchimento obrigatório e deve conter mais de 10 caracteres
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-4">
+                        <div class="p-field m-razaosocial">
+                            <label for="nomefantasia">Mome Fantasia</label>
+                            <input id="nomefantasia"
+                                   type="text"
+                                   onkeyup="this.value = this.value.toUpperCase();"
+                                   (focusout)="upperCase($event);"
+                                   class="form-control"
+                                   [(ngModel)]="cliente.nome_fantasia"
+                                   placeholder="Informe o Nome Fantasia da Empresa"
+                                   name="nomefantasia"
+                                   #clienteNomeModel="ngModel"
+                                   [class.is-invalid]="clienteNomeModel.errors?.nomeInvalid && (clienteNomeModel.touched || clienteNomeModel.dirty)"
+                                   p-InputText nomeValidateDirective required />
+                            <small id="nomefantasia-help" class="invalid-feedback" *ngIf="(clienteNomeModel.touched || clienteNomeModel.dirty) && clienteNomeModel.errors?.nomeInvalid">
+                                Nome Fantasia é de preenchimento obrigatório e deve conter mais de 10 caracteres
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <div class="p-field m-cnpj">
+                            <label for="cnpj">Mome Fantasia</label>
+                            <p-inputMask id="cnpj"
+                                   mask="99.999.999/9999-99" 
+                                   [(ngModel)]="cliente.cnpj"
+                                   placeholder="Informe o Nome Fantasia da Empresa"
+                                   name="cnpj"
+                                   #clienteCnpjModel="ngModel"
+                                   [class.is-invalid]="clienteCnpjModel.errors?.cnpjInvalid && (clienteCnpjModel.touched || clienteCnpjModel.dirty)"
+                                   cnpjValidateDirective></p-inputMask>
+                            <small id="nomefantasia-help" class="invalid-feedback" *ngIf="(clienteCnpjModel.touched || clienteCnpjModel.dirty) && clienteCnpjModel.errors?.nomeInvalid">
+                                CNPJ é de preenchimento obrigatório
+                            </small>
+                        </div>
+                    </div>
+
+                    <div class="col-sm-2">
+                        <mat-slide-toggle id="ativo" color="primary" [(ngModel)]="cliente.ativo">{{ativo}}</mat-slide-toggle>
+                    </div>
+                </div>
+           
+        </mat-tab>  
+        <mat-tab label="Telefones">
+            formulário telefones
+        </mat-tab>
+        <mat-tab label="Pedidos">
+            formulário telefones
+        </mat-tab>
+    </mat-tab-group>
+</div>
+

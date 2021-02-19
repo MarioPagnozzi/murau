@@ -8,6 +8,7 @@ import { BaseStatus } from 'src/app/enum/status';
 import { VendedoresService } from 'src/app/services/vendedores.service';
 import { IVendedores } from 'src/app/interfaces/IVendedores';
 import { environment } from 'src/environments/environment';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-clientes-pendentes',
@@ -32,14 +33,15 @@ export class ClientesPendentesComponent implements OnInit {
     private clienteService: ClienteService, 
     private translate: TranslateService, 
     private el: ElementRef,
-    private vencedoresService: VendedoresService)
+    private vencedoresService: VendedoresService,
+    private router: Router)
   {
 
   }
   async ngOnInit() {
     this.translate.setDefaultLang("pt-BR");
 
-    const clientes = await this.clienteService.filtro("novo", "0");
+    const clientes = await this.clienteService.filtro("pendentes", "false");
 
     this.cli = clientes.data.map((it: ICliente) => {
       return {
