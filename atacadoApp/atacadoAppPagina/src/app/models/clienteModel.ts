@@ -1,3 +1,6 @@
+import { EmpresasModel } from './empresasModel';
+import { PedidosModel } from './pedidosModel';
+import { VendedoresModel } from './vendedoresModel';
 import { BaseStatus } from "../enum/status";
 import { IEmpresas } from "../interfaces/IEmpresas";
 import { IPedidos } from "../interfaces/IPedidos";
@@ -21,7 +24,7 @@ export class ClienteModel extends BaseModel {
    email?: string
    statusCliente?: BaseStatus
    contatos?: ContatosModel[]
-   vendedor?: IVendedores
-   empresa?: IEmpresas
-   pedidos?: IPedidos[]
+   vendedor?: VendedoresModel
+   empresa?: EmpresasModel
+   pedidos?: PedidosModel[]
 }

@@ -159,10 +159,18 @@ export class ClientesController extends BaseController<Clientes> {
 
         if (filtro == "pendentes") {
             const dataAtual = new Date();
-            return this._repClientes.createQueryBuilder("clientes")
-                                    .where("clientes.ativo = :status",{status: valor})
-                                    .getMany();//find({where: {data_inclusao: dataAtual.toISOString()}})
+            return this._repClientes.find({where: {ativo: valor}});
         }
+    }
+    async removeContato(request: Request) {
+        if (!this._func.Permissao(request, "Clientes", "A")) {
+            return {status: 400, errors: ["Você não tem permissão para alterar ou inserir registros"]}
+        }
+        let _repContatoClientes: Repository<ContatosClientes> = getRepository(ContatosClientes);
+        let _contato = await _repContatoClientes.findOne(request.params.id);
+        let _cliente = await this._repClientes.findOne({where: {uid: request.params.cli}});
+        _repContatoClientes.remove(_contato);
+        return _repContatoClientes.find({where: {cliente: _cliente}});
     }
     async save(request: Request) {
         let _cliente = <Clientes>request.body;

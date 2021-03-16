@@ -23,6 +23,10 @@ import {MatCardModule} from '@angular/material/card';
 import {MatSnackBarModule} from '@angular/material/snack-bar';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatSlideToggleModule} from '@angular/material/slide-toggle';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectModule} from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 
 import {TreeModule} from 'primeng/tree';
 import {ToastModule} from 'primeng/toast';
@@ -49,6 +53,7 @@ import {CardModule} from 'primeng/card';
 import {SplitButtonModule} from 'primeng/splitbutton';
 import {InputMaskModule} from 'primeng/inputmask';
 import {ToolbarModule} from 'primeng/toolbar';
+import {ConfirmDialogModule} from 'primeng/confirmdialog';
 
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -58,7 +63,7 @@ import {FullCalendarModule} from "@fullcalendar/angular";
 
 
 import { ClientesPendentesComponent } from './components/clientes-pendentes/clientes-pendentes.component';
-import { PrimeNGConfig } from 'primeng/api';
+import { ConfirmationService, MessageService, PrimeNGConfig } from 'primeng/api';
 import { AgendaComponent } from './components/agenda/agenda.component';
 import {AgendaService} from "./components/agenda/agendaService";
 
@@ -91,12 +96,14 @@ import { VendedorComponent } from './components/vendedor/vendedor.component';
 import { VendedoresComponent } from './components/vendedores/vendedores.component';
 import { LoginComponent } from './components/login/login.component';
 
+import { NgxMaskModule, IConfig } from 'ngx-mask';
+import { CurrencyMaskConfig, CurrencyMaskModule, CURRENCY_MASK_CONFIG } from "ng2-currency-mask";
 
 import {GMapModule} from 'primeng/gmap';
 import {AgmCoreModule} from '@agm/core';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faUser, faEdit, faBars, faCog, faCartPlus, faChartArea, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faEdit, faBars, faCog, faCartPlus, faChartArea, faSignOutAlt, faSearchPlus } from '@fortawesome/free-solid-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { faFacebook, faTwitter, faGoogle, faLinkedin, faInstagram } from '@fortawesome/free-brands-svg-icons';
 import { CreateClienteComponent } from './components/create-cliente/create-cliente.component';
@@ -112,6 +119,31 @@ FullCalendarModule.registerPlugins([
 export function TranslationLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
 }
+
+export const MY_DATE_FORMATS = {
+  parse: {
+    dateInput: 'DD/MM/YYYY',
+  },
+  display: {
+    dateInput: 'MMM DD, YYYY',
+    monthYearLabel: 'MMMM YYYY',
+    dateA11yLabel: 'LL',
+    monthYearA11yLabel: 'MMMM YYYY'
+  },
+};
+
+const maskConfig: Partial<IConfig> = {
+  validation: false,
+};
+export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
+  align: "right",
+  allowNegative: true,
+  decimal: ",",
+  precision: 2,
+  prefix: "R$ ",
+  suffix: "",
+  thousands: "."
+};
 @NgModule({
   declarations: [
     AppComponent,
@@ -193,6 +225,8 @@ export function TranslationLoaderFactory(http: HttpClient) {
     InputMaskModule,
     ToolbarModule,
     MatTabsModule,
+    MatSelectModule,
+    MatInputModule,
     MatSlideToggleModule,
     AgmCoreModule.forRoot({
       apiKey: "AIzaSyDlDAx0Arx9LHCWagPDw2IeYiu8oD7GF6s",
@@ -200,11 +234,29 @@ export function TranslationLoaderFactory(http: HttpClient) {
     }),   
     TranslateModule.forRoot(
       {loader: {provide: TranslateLoader, useFactory: TranslationLoaderFactory, deps: [HttpClient]}},
-    )
+    ),
+    MatDatepickerModule,
+    MatNativeDateModule,
+    NgxMaskModule.forRoot(maskConfig),
+    CurrencyMaskModule,
+    ConfirmDialogModule
+    
 
   ],
   bootstrap: [AppComponent],
-  providers: [NodeService, TranslateService, AgendaService, AppNomeValidateDirective, AppCnpjValidateDirective, AppCepValidateDirective, AppUfValidateDirective, AppEmailValidateDirective]
+  providers: [NodeService, 
+              TranslateService, 
+              AgendaService, 
+              AppNomeValidateDirective, 
+              AppCnpjValidateDirective, 
+              AppCepValidateDirective, 
+              AppUfValidateDirective, 
+              AppEmailValidateDirective,
+              MessageService, 
+              ConfirmationService,
+              { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+              { provide: MAT_DATE_LOCALE, useValue: "pt-BR"},
+              { provide: CURRENCY_MASK_CONFIG, useValue: CustomCurrencyMaskConfig}]
 
 })
 export class AppModule {
@@ -257,7 +309,8 @@ export class AppModule {
       faCartPlus,
       faChartArea,
       faSignOutAlt,
-      faEdit
+      faEdit,
+      faSearchPlus
     )
   }
 }

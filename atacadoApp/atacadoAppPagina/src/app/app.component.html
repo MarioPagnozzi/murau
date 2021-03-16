@@ -67,7 +67,7 @@
         </mat-sidenav>
         <mat-sidenav-content>
             <router-outlet></router-outlet>
-            <div class="container-map">
+            <div class="container-map" *ngIf="!isLogged">
                 <agm-map [latitude]="lat" [longitude]="lng" [zoom]="zoom" >
                   <agm-marker [latitude]="lat" [longitude]="lng"
                     iconUrl="./assets/images/logo.png"
@@ -81,9 +81,9 @@
                 </agm-map>
             </div>
              <!-- footer -->
-            <footer class="page-footer">
+            <footer [ngClass]="{'page-footer': !isLogged, 'page-footer-logged': isLogged}">
                 
-                <div class="container">
+                <div class="container" *ngIf="!isLogged">
                     <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12" align="center">
                       <div class="col-md-12 flex-center">
                            <a class="col-md col-sm">
@@ -108,6 +108,7 @@
                     </div>
                 </div>
             </footer>
+           
         </mat-sidenav-content>
     </mat-sidenav-container>
    
