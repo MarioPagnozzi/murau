@@ -66,6 +66,7 @@ export const Routes = [
     {method: "post", route: "/clientes",controller: ClientesController, action: "save"},
     {method: "delete", route: "/clientes/:id", controller: ClientesController, action: "remove"},
     {method: "get", route: "/clientes/clientesdia/hoje", controller: ClientesController, action: "clientesDia"},
+    {method: "delete", route: "/clientes/:cli/contato/:id", controller: ClientesController, action: "removeContato"},
 
     //Rota privada Peidos
     {method: "delete", route: "/pedidos/:id", controller: PedidosController, action: "remove"},
@@ -73,6 +74,7 @@ export const Routes = [
     {method: "get", route: "/pedidos/:filtro/:valor/filtro", controller: PedidosController, action: "filtro"},
     {method: "get", route: "/pedidos", controller: PedidosController, action: "all"},
     {method: "get", route: "/pedidos/peddia", controller: PedidosController, action: "pedidosDia"},
+    {method: "get", route: "/pedidos/:id", controller: PedidosController, action: "one"},
 
     //Rota de Grupos
     {method: "post", route: "/grupos", controller: GrupoController, action: "save"},

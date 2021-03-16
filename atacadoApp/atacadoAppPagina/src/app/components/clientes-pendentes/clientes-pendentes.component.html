@@ -2,7 +2,7 @@
     <h1>Clientes Novos</h1>
     <p>Clientes aguardando aprovação do cadastro.</p>
     <p-table #dt1 [value]="cli" dataKey="uid" [rows]="10" [showCurrentPageReport]="true" [rowsPerPageOptions]="[5,10,50]" [loading]="loading" styleClass="p-datatable-customers p-datatable-gridlines" [paginator]="true" currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} registros"
-       [globalFilterFields]="['razao_social','vendedor.nome','cnpj','statusCliente']" [responsive]="true">
+       [globalFilterFields]="['razao_social','vendedor.nome','cnpj','statusCliente']" styleClass="p-datatable-resposive" [responsive]="true">
         <ng-template pTemplate="caption">
             <div class="p-d-flex">
                 <span class="p-input-icon-left p-ml-auto">
@@ -14,31 +14,31 @@
         <ng-template pTemplate="header">
             <tr>
                 <th>
-                    <div class="p-d-flex p-jc-between p-ai-center">
+                    <div class="p-d-fixed p-jc-between p-ai-center">
                         Razão Social
-                        <p-columnFilter type="text" field="name" display="menu"></p-columnFilter>
+                        <p-columnFilter type="text" field="razao_social" display="menu"></p-columnFilter>
                     </div>
                 </th>
                 <th>
-                    <div class="p-d-flex p-jc-between p-ai-center">
+                    <div class="p-d-fixed p-jc-between p-ai-center">
                         Cidade
-                        <p-columnFilter type="text" field="country.name" display="menu"></p-columnFilter>
+                        <p-columnFilter type="text" field="cidade" display="menu"></p-columnFilter>
                     </div>
                 </th>
                 <th>
-                    <div class="p-d-flex p-jc-between p-ai-center">
+                    <div class="p-d-fixed p-jc-between p-ai-center">
                         Vendedor
-                        <p-columnFilter field="vendedor.nome" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
+                        <p-columnFilter field="vendedor" matchMode="in" display="menu" [showMatchModes]="false" [showOperator]="false" [showAddButton]="false">
                             <ng-template pTemplate="header">
                                 <div class="p-px-3 p-pt-3 p-pb-0">
                                     <span class="p-text-bold">Vendedores</span>
                                 </div>
                             </ng-template>
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
-                                <p-multiSelect [ngModel]="value" [options]="vendedores" placeholder="Qualquer" (onChange)="filter($event.value)" optionLabel="name">
+                                <p-multiSelect [ngModel]="value" [options]="vendedores" placeholder="Qualquer" (onChange)="filter($event.value); show($event.value)" optionLabel="nome">
                                     <ng-template let-option pTemplate="item">
-                                        <div class="p-multiselect-representative-option">
-                                            <span class="p-ml-1">{{option.name}}</span>
+                                        <div class="p-multiselect-vendedor-option">
+                                            <span class="p-ml-1">{{option.nome}}</span>
                                         </div>
                                     </ng-template>
                                 </p-multiSelect>
@@ -47,13 +47,13 @@
                     </div>
                 </th>
                 <th>
-                    <div class="p-d-flex p-jc-between p-ai-center">
+                    <div class="p-d-fixed p-jc-between p-ai-center">
                         Data Inclusão
                         <p-columnFilter type="date" field="data_inclusao" display="menu"></p-columnFilter>
                     </div>
                 </th>
                 <th>
-                    <div class="p-d-flex p-jc-between p-ai-center">
+                    <div class="p-d-fixed p-jc-between p-ai-center">
                         Status
                         <p-columnFilter field="status.key" matchMode="equals" display="menu">
                             <ng-template pTemplate="filter" let-value let-filter="filterCallback">
@@ -67,15 +67,13 @@
                     </div>
                 </th>               
                 <th style="width: 8rem">
-                    <div class="p-d-flex p-jc-between p-ai-center">
+                    <div class="p-d-fixed p-jc-between p-ai-center">
                         Verificado
                         <p-columnFilter type="boolean" field="ativo" display="menu"></p-columnFilter>
                     </div>
                 </th>
                 <th style="width: 8rem">
-                    <div class="p-d-flex p-jc-between p-ai-center">                        
-                        <p-columnFilter type="boolean" display="menu"></p-columnFilter>
-                    </div>
+                   
                 </th>
             </tr>
         </ng-template>
@@ -88,17 +86,15 @@
                     {{cli.cidade}}
                 </td>
                 <td>
-                    <span class="image-text">{{cli.vendedor.nome}}</span>
+                    <span class="image-text"></span>
+                    {{cli.vendedor?.nome}}
                 </td>
                 <td>
                     {{cli.data_inclusao | date: 'dd/MM/yyyy'}}
                 </td>               
                 <td>
-                    <span [class]="'customer-badge status-' + cli.statusCliente.toString()">{{ cli.descStatus }}</span>
+                    <span [class]="'customer-badge status-' + cli.statusCliente.toString()">{{ (cli.statusCliente === 1 ? 'Pendente' : 'Aprovado') | uppercase }}</span>
                 </td>                
-                <td class="p-text-center">
-                    <i class="pi" [ngClass]="{'true-icon pi-check-circle': cli.ativo, 'false-icon pi-times-circle': !cli.ativo}"></i>
-                </td>
                 <td class="p-text-center">
                     <i class="pi" [ngClass]="{'true-icon pi-check-circle': cli.ativo, 'false-icon pi-times-circle': !cli.ativo}"></i>
                 </td>

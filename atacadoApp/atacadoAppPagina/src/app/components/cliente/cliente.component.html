@@ -1,6 +1,7 @@
 <div class="murau__container">
     <h1>Cadastro de Clientes</h1>
-    <h5>Tela de cadastro e manutenção de clientes</h5>
+    <h5 style="height: 3px !important;">Tela de cadastro e manutenção de clientes {{cliente.codigo ? " - Cód.: " + cliente.codigo : ""}}</h5>
+    <h5>Empresa: {{cliente.empresa?.codigo + ' - ' + cliente.empresa?.nome_fantasia}} &nbsp; Vendedor: {{cliente.vendedor?.codigo + ' - ' + cliente.vendedor?.nome}}</h5>
     <mat-tab-group mat-align-tabs="start">
         <mat-tab label="Dados">
            
@@ -47,7 +48,7 @@
 
                     <div class="col-sm-2">
                         <div class="p-field m-cnpj">
-                            <label for="cnpj">Mome Fantasia</label>
+                            <label for="cnpj">CNPJ</label>
                             <p-inputMask id="cnpj"
                                    mask="99.999.999/9999-99" 
                                    [(ngModel)]="cliente.cnpj"
@@ -63,16 +64,246 @@
                     </div>
 
                     <div class="col-sm-2">
-                        <mat-slide-toggle id="ativo" color="primary" [(ngModel)]="cliente.ativo">{{ativo}}</mat-slide-toggle>
+                        <mat-slide-toggle id="ativo" color="primary" [(ngModel)]="cliente.ativo">{{cliente.ativo ? "Ativo" : "Inativo"}}</mat-slide-toggle>
                     </div>
                 </div>
-           
+                <div class="row murau__container">
+                    <div class="col-sm-2">
+                        <div class="p-field m-cnpj">
+                            <label for="cep">CEP</label>
+                            <p-inputMask id="cep"
+                                         mask="99999-999"
+                                         [(ngModel)]="cliente.cep"
+                                         placeholder="Informe o CEP"
+                                         name="cep"
+                                         (focusout)="retornaCep($event)"
+                                         #clienteCepModel="ngModel"
+                                         [class.is-invalid]="clienteCepModel.errors?.cepInvalid && (clienteCepModel.touched || clienteCepModel.dirty)"
+                                         cepValidateDirective></p-inputMask>
+                            <small id="cep-help" class="invalid-feedback" *ngIf="(clienteCepModel.touched || clienteCepModel.dirty) && clienteCepModel.errors?.cepInvalid">
+                                Informe um CEP válido. Preenchimento Obrigatório!
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="p-field m-razaosocial">
+                            <label for="endereco">Endereço</label>
+                            <input id="endereco"
+                                   type="text"
+                                   class="form-control"
+                                   placeholder="Informe o Endereço"
+                                   [(ngModel)]="cliente.endereco"
+                                   name="endereco"
+                                   #clienteEndModel="ngModel"
+                                   [class.is-invalid]="clienteEndModel.errors?.nomeInvalid && (clienteEndModel.touched || clienteEndModel.dirty)"
+                                   nomeValidateDirective required/>
+                            <small id="endereco-help" class="invalid-feedback" *ngIf="(clienteEndModel.touched || clienteEndModel.dirty) && clienteEndModel.errors?.nomeInvalid">
+                                Endereço é de Preenchimento Obrigatório e deve ter mais de 10 caractéres.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="p-field m-cnpj">
+                            <label for="numero">Número</label>
+                            <input id="numero"
+                                   type="text"
+                                   class="form-control"
+                                   [(ngModel)]="cliente.numero"
+                                   name="numero"
+                                   (focusout)="upperCase($event)"
+                                   pInputText required />
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="p-field m-cnpj">
+                            <label for="complemento">Complemento</label>
+                            <input id="complemento"
+                                   type="text"
+                                   class="form-control"
+                                   [(ngModel)]="cliente.complemento"
+                                   name="complemento"
+                                   (focusout)="upperCase($event)"
+                                   pInputText />
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="p-field m-razaosocial">
+                            <label for="bairro">Bairro</label>
+                            <input id="bairro"
+                                   type="text"
+                                   class="form-control"
+                                   [(ngModel)]="cliente.bairro"
+                                   name="bairro"
+                                   (focusout)="upperCase($event)"
+                                   #clienteBairroModel="ngModel"
+                                   [class.is-invalid]="clienteBairroModel.errors?.nomeInvalid && (clienteBairroModel.touched || clienteBairroModel.dirty)"
+                                   nomeValidateDirective
+                                   pInputText />
+                            <small id="bairro-help" class="invalid-feedback" *ngIf="(clienteBairroModel.touched || clienteBairroModel.dirty) && (clienteBairroModel.errors?.nomeInvalid)">
+                                Bairro é de Preenchimento Obrigatório, e deve conter mais de 10 caracteres.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row murau__container">
+                    <div class="col-sm-4">
+                        <div class="p-field m-razaosocial">
+                            <label for="cidade">Cidade</label>
+                            <input type="text"
+                                   id="cidade"
+                                   name="cidade"
+                                   class="form-control"
+                                   [(ngModel)]="cliente.cidade"
+                                   (focusout)="upperCase($event)"
+                                   #clienteCidadeModel="ngModel"
+                                   [class.is-invalid]="clienteCidadeModel.errors?.nomeInvalid && (clienteCidadeModel.touched || clienteCidadeModel.dirty)"
+                                   nomeValidateDirective
+                                   pInputText required />
+                            <small id="cidade-help" class="invalid-feedback" *ngIf="(clienteCidadeModel.touched || clienteCidadeModel.dirty) && clienteCidadeModel.errors?.nomeInvalid">
+                                Cidade é de preenchimento obrigatório e deve conter mais de 10 caracteres.
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="p-field m-uf">
+                            <label for="uf">UF</label>
+                            <input type="text" 
+                                    class="form-control" 
+                                    (focusout)="upperCase($event);" 
+                                    id="uf" 
+                                    maxlength="2" 
+                                    placeholder="Informe a UF" 
+                                    onkeyup="this.value = this.value.toUpperCase();" 
+                                    [(ngModel)]="cliente.uf" 
+                                    name="uf" 
+                                    [class.is-invalid]="clienteUfModel.errors?.ufInvalid && (clienteUfModel.touched || clienteUfModel.dirty)" 
+                                    #clienteUfModel='ngModel' 
+                                    pInputText  
+                                    ufValidateDirective required/>
+                            <small class="invalid-feedback" id="cidade-help" *ngIf="clienteUfModel.errors?.nomeInvalid && (clienteUfModel.touched || clienteUfModel.dirty)">
+                                UF é de preenchimento obrigatório
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="p-field m-email">
+                            <label for="email">Email</label>
+                            <input type="email" 
+                                    class="form-control" 
+                                    id="email" 
+                                    (focusout)="lowerCase($event);" 
+                                    [(ngModel)]="cliente.email" 
+                                    [class.is-invalid]="clienteEmailModel.errors?.emailInvalid && (clienteEmailModel.touched || clienteEmailModel.dirty)" 
+                                    #clienteEmailModel='ngModel' 
+                                    pInputText 
+                                    emailValidateDirective required />
+                            <small class="invalid-feedback" id="email-help" *ngIf="clienteEmailModel.errors?.emailInvalid && (clienteEmailModel.touched || clienteEmailModel.dirty)">
+                                E-mail é de preenchimento obrigatório e deve ser um E-mail Válido
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <div class="p-field m-razaosocial">
+                            <label for="status">Status Cliente</label>
+                            <select class="custom-select d-block w-100" id="status" [(ngModel)]="cliente.statusCliente">
+                                <option *ngFor="let statu of status" [ngValue]="statu.valor">{{statu.label}}</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
         </mat-tab>  
         <mat-tab label="Telefones">
-            formulário telefones
+            <p-button (click)="addNewContato()" label="" icon="pi pi-plus"></p-button>
+
+            <div class="murau__container">
+                <table class="table table-striped table-responsive-sm">
+                    <thead>
+                        <tr>
+                            <th>ddd</th>
+                            <th>Número</th>
+                            <th>Operadora</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let contato of contatos">
+                            <td *ngIf="!contato.excluido"> <p-inputMask styleClass="inputTable" [(ngModel)]="contato.ddd" mask="99" placeholder="ddd"></p-inputMask></td>
+                            <td *ngIf="!contato.excluido"><p-inputMask [(ngModel)]="contato.numero" placeholder=""mask="99999-9999" placeholder="número telefone"></p-inputMask></td>
+                            <td *ngIf="!contato.excluido"><select class="custom-select" [(ngModel)]="contato.operadoras" style="width: 150px; margin-bottom: 5px;">
+                                    <option *ngFor="let operadora of operadoras" [ngValue]="operadora.valor" [disabled]="operadora.valor === 0">{{operadora.label}}</option> 
+                                </select>
+                            </td>
+                            <td *ngIf="!contato.excluido"><span (click)="removeContato(contato)" class="pi pi-trash m-trash"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </mat-tab>
         <mat-tab label="Pedidos">
-            formulário telefones
+            <div class="murau__container">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h3 style="height: 10px !important"><strong>Empresa</strong></h3>
+                        <h5>{{cliente.empresa?.codigo +' - '+ cliente.empresa?.nome_fantasia}}</h5>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-4">
+                        <h3 style="height: 10px !important"><strong>Vendedor</strong></h3>
+                        <h5>{{cliente.vendedor?.codigo + ' - ' + cliente.vendedor?.nome}}</h5>
+                    </div>
+                </div>
+              
+                <table class="table table-striped table-responsive-sm">
+                    <thead>
+                        <tr>
+                            <th>Núm. Pedido</th>
+                            <th>Data Realização</th>
+                            <th>Última Atualização</th>
+                            <th>Valor R$</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let pedido of pedidos">
+                            <td [ngClass]="{'pendente': pedido.status_pedido === 1, 
+                                            'aprovado': pedido.status_pedido === 2, 
+                                            'despachado': pedido.status_pedido === 3, 
+                                            'transito': pedido.status_pedido === 4, 
+                                            'entregue': pedido.status_pedido === 5}">{{pedido.num_pedido}}</td>
+                            <td [ngClass]="{'pendente': pedido.status_pedido === 1, 
+                                            'aprovado': pedido.status_pedido === 2, 
+                                            'despachado': pedido.status_pedido === 3, 
+                                            'transito': pedido.status_pedido === 4, 
+                                            'entregue': pedido.status_pedido === 5}">{{pedido.data_inclusao | date: "dd/MM/yyyy"}}</td>
+                            <td [ngClass]="{'pendente': pedido.status_pedido === 1, 
+                                            'aprovado': pedido.status_pedido === 2, 
+                                            'despachado': pedido.status_pedido === 3, 
+                                            'transito': pedido.status_pedido === 4, 
+                                            'entregue': pedido.status_pedido === 5}">{{pedido.data_alteracao | date: "dd/MM/yyyy"}}</td>
+                            <td [ngClass]="{'pendente': pedido.status_pedido === 1, 
+                                            'aprovado': pedido.status_pedido === 2, 
+                                            'despachado': pedido.status_pedido === 3, 
+                                            'transito': pedido.status_pedido === 4, 
+                                            'entregue': pedido.status_pedido === 5}">{{ (pedido.valor_pedido ? pedido.valor_pedido : 0) | number:'0.2':'pt-br'}}</td>
+                            <td>
+                                <a routerLink="/pedido/{{pedido.uid}}/{{cliente.uid}}" style="color: #4b2e28">
+                                    <fa-icon [icon]="['fas','search-plus']" ></fa-icon>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="row">
+                    
+                        <div class="pendente col-sm"><span class="square_pendente"></span><p class="txt-legenda">Pendente</p></div>
+                        <div class="aprovado col-sm"><span class="square_aprovado"></span><p class="txt-legenda">Aprovado</p></div>
+                        <div class="despachado col-sm"><span class="square_despachado"></span><p class="txt-legenda">Despachado</p></div>
+                        <div class="transito col-sm"><span class="square_transito"></span><p class="txt-legenda">Em Transito</p></div>
+                        <div class="entregue col-sm"><span class="square_entregue"></span><p class="txt-legenda">Entregue</p></div>
+                    
+                </div>
+            </div>
         </mat-tab>
     </mat-tab-group>
 </div>

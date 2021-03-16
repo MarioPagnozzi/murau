@@ -56,7 +56,9 @@ export class PedidosController extends BaseController<Pedidos> {
                     itemPedido.qtd_produto = item.qtd_produto;
                     itemPedido.valor_unitario = item.valor_unitario;
                     itemPedido.valor_total = item.valor_total;
-
+                    if (item.uid) {
+                        itemPedido.uid = item.uid;
+                    }
                     this._repItemPedido.save(itemPedido);
                 });
             }

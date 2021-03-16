@@ -1,1 +1,208 @@
-<p>pedido works!</p>
+<div class="murau__container">
+    <h1>Pedidos</h1>
+    <h5>Manutenção de Pedidos</h5>
+    <mat-tab-group mat-align-tabs="starts">
+        <mat-tab label="Cabeçalho">
+            <div class="row murau__container">
+                <div class="col-sm-2">
+                    <mat-form-field  class="m-cnpj">
+                        <mat-label>Núm. Pedidos</mat-label>
+                        <input type="text" 
+                               id="num_pedido"
+                               name="num_pedido"
+                               matInput disabled [(ngModel)]="pedido.num_pedido" />    
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-4">
+                   <mat-form-field class="m-razaosocial">
+                    <mat-label>Cliente</mat-label>
+                    <input type="text" 
+                           id="cliente"
+                           name="cliente"
+                           matInput disabled [(ngModel)]="cliente.razao_social" />
+                   </mat-form-field>
+                </div>
+                <div class="col-sm-4">
+                    <mat-form-field  class="m-razaosocial">
+                        <mat-label>Vendedor</mat-label>
+                        <input type="text"
+                               id="vendedor"
+                               name="vendedor"
+                               matInput disabled [(ngModel)]="vendedor.nome" />
+                    </mat-form-field>
+                </div>
+                <div class="col-sm">
+                    <mat-form-field appearance="fill">
+                        <mat-select [(ngModel)]="pedido.status_pedido" name="statu_pedido" id="status_pedido" [disabled]="pedido.status_pedido === 2">
+                            <mat-option *ngFor="let status_pedido of status" [value]="status_pedido.valor">{{status_pedido.label}}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                </div>
+            </div>
+            <div class="row murau__container">
+                <div class="col-sm-4">
+                    <mat-form-field  class=" m-razaosocial">
+                        <mat-label>Empresa Principal</mat-label>
+                        <input type="text"
+                               id="empresa"
+                               name="empresa"
+                               matInput disabled [(ngModel)]="empresa.nome_fantasia" />
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-2">
+                    <mat-form-field class="m-cnpj" appearance="fill">
+                        <mat-label>Data Pedido</mat-label>
+                        <input matInput
+                               [matDatepicker]="dataInclusao" 
+                               [(ngModel)]="pedido.data_inclusao"
+                               disabled />
+                        <mat-datepicker-toggle matSuffix [for]="dataInclusao"></mat-datepicker-toggle>
+                        <mat-datepicker #dataInclusao></mat-datepicker>
+                               
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-2">
+                    <mat-form-field class="m-cnpj" appearance="fill">
+                        <mat-label>Última Alteração</mat-label>
+                        <input matInput
+                               [matDatepicker]="dataAlteracao" 
+                               [(ngModel)]="pedido.data_alteracao"
+                               disabled />
+                        <mat-datepicker-toggle matSuffix [for]="dataAlteracao"></mat-datepicker-toggle>
+                        <mat-datepicker #dataAlteracao></mat-datepicker>
+                               
+                    </mat-form-field>
+                </div>
+                <div class="col-sm-2">
+                    <mat-form-field class="m-cnpj" appearance="fill">
+                        <mat-label>Valor Total</mat-label>
+                        <input matInput currencyMask
+                               class="valor_total"
+                               id="valor_total"
+                               name="valor_total"
+                               [(ngModel)]="pedido.valor_pedido"
+                               readonly />
+                    </mat-form-field>
+                </div>
+            </div>
+        </mat-tab>
+        <mat-tab label="Itens">
+            <div class="murau__container">
+                <p-toolbar styleClass="p-mb-4" *ngIf="pedido.status_pedido === 1">
+                    <ng-template pTemplate="left">
+                        <button pButton 
+                                pRipple 
+                                label="add Item" 
+                                icon="pi pi-plus"
+                                class="p-button-primary p-mr-2"
+                                (click)="addItem()"></button>
+
+                        <button pButton
+                                pRipple
+                                icon="pi pi-trash"
+                                class="p-button-danger"
+                                (click)="excluirItensSel()"
+                                [disabled]="!selItens || !selItens.length"></button>
+
+                    </ng-template>
+                    
+                </p-toolbar>
+                <p-table #dt [value]="itensPedido"
+                             [rows]="10"
+                             [paginator]="true"
+                             [globalFilterFields]="['produto.nome', 'produto.codigo', 'produto.referencia']"
+                             [(selection)]="selItens"
+                             [rowHover]="true"
+                             dataKey="uid"
+                             currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} itens"
+                             [showCurrentPageReport]="true" styleClass="p-datatable-responsive" [responsive]="true">
+                    <ng-template pTemplate="caption">
+                        <div class="p-d-flex p-ai-center p-jc-between">
+                            <h2 class="p-m-0">Itens do Pedido</h2>
+                            <span class="p-input-icon-left">
+                                <i class="pi pi-search"></i>
+                                <input pInputText type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Buscar..." />
+                            </span>
+                        </div>
+                    </ng-template>
+                    <ng-template pTemplate="header">
+                        <tr>
+                            <th style="width: 3rem" *ngIf="pedido.status_pedido === 1">
+                                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                            </th>
+                            <th pSortableColumn="produto.codigo">Código <p-sortIcon field="produto.codigo"></p-sortIcon></th>
+                            <th pSortableColumn="produto.referencia">Referência <p-sortIcon field="produto.referencia"></p-sortIcon></th>
+                            <th pSortableColumn="produto.nome">Descrição <p-sortIcon field="produto.nome"></p-sortIcon></th>
+                            <th pSortableColumn="valor_unitario">Vlr Unitário <p-sortIcon field="valor_unitario"></p-sortIcon></th>
+                            <th pSortableColumn="qtd_produto">Quantidade <p-sortIcon field="qtd_produto"></p-sortIcon></th>
+                            <th pSortableColumn="valor_total">Vlr. Total <p-sortIcon field="valor_total"></p-sortIcon></th>
+                            <th *ngIf="pedido.status_pedido === 1"></th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-item>
+                        <tr>
+                            <td *ngIf="pedido.status_pedido === 1">
+                                <p-tableCheckbox [value]="item"></p-tableCheckbox>
+                            </td>
+                            <td style="text-align: right">{{item.produto.codigo}}</td>
+                            <td>{{item.produto.referencia}}</td>
+                            <td>{{item.produto.nome}}</td>
+                            <td style="text-align: right">{{item.valor_unitario | number: '0.2-2':'pt' }}</td>
+                            <td style="text-align: right">{{item.qtd_produto}}</td>
+                            <td style="text-align: right">{{item.valor_total | number:'0.2-2':'pt'}}</td>
+                            <td *ngIf="pedido.status_pedido === 1">
+                                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-primary p-mr-2" (click)="editarItem(item)"></button>
+                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="excluirItem(item)"></button>
+                            </td>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="summary">
+                        <div class="p-d-flex p-ai-center p-jc-between">
+                            Total de Itens a serem entregues neste pedido é de: {{totalItem}} unidades
+                        </div>
+                    </ng-template>
+                </p-table>
+                
+            </div>
+        </mat-tab>
+        <mat-tab label="Histórico">
+            <table class="table table-striped table-responsive-sm">
+                <thead>
+                    <tr>
+                        <th>Localidade</th>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Situação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let rast of rastreios">
+                        <td>{{rast.cidade}}</td>
+                        <td>{{rast.data | date: 'dd/MM/yyyy'}}</td>
+                        <td>{{rast.hora}}</td>
+                        <td>{{rast.situacao}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </mat-tab>
+    </mat-tab-group>
+    <p-dialog [(visible)]="itemDialog"
+              [style]="{width: '450px'}"
+              header="Item Pedido"
+              [modal]="true"
+              (onHide)="hideDialog()"
+              styleClass="p-fluit">
+        <ng-template pTemplate="content">
+            <div class="p-field">
+                <label for="codProd">Código Produto</label>
+                <input type="text"
+                       pInputText
+                       id="codProd"
+                       [(ngModel)]="produto.codigo"
+                    autofocus [disabled]="itemPedido.uid !== undefined" />
+            </div>
+        </ng-template>
+    </p-dialog>
+    <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+</div>
+

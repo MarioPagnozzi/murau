@@ -15,6 +15,6 @@ export interface IVendedores extends IInterface {
     uf?: string
     contatos?: IContatos[]
     pedidos?: IPedidos[]
-    empresas?: IEmpresas[],
+    empresas?: IEmpresas[]
     cliente?: ICliente[]
 }
