@@ -151,7 +151,8 @@
       "app",
       "kebab-case"
     ],
-    "no-shadowed-variable": false
+    "no-shadowed-variable": false,
+    "prefer-const":false
     
   }
 }

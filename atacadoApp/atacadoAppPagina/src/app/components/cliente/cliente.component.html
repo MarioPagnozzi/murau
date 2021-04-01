@@ -1,7 +1,27 @@
 <div class="murau__container">
     <h1>Cadastro de Clientes</h1>
     <h5 style="height: 3px !important;">Tela de cadastro e manutenção de clientes {{cliente.codigo ? " - Cód.: " + cliente.codigo : ""}}</h5>
-    <h5>Empresa: {{cliente.empresa?.codigo + ' - ' + cliente.empresa?.nome_fantasia}} &nbsp; Vendedor: {{cliente.vendedor?.codigo + ' - ' + cliente.vendedor?.nome}}</h5>
+    <h5>Empresa: {{cliente.empresa?.codigo + ' - ' + cliente.empresa?.nome_fantasia}} <a class="linkClick" (click)="atribuirEmpresa()" *ngIf="alterar">[Alterar]</a> &nbsp; Vendedor: {{cliente.vendedor?.codigo + ' - ' + cliente.vendedor?.nome}} <a class="linkClick" (click)="atribuirVendedor()" *ngIf="alterar">[Alterar]</a></h5>
+    <p-toolbar styleClass="p-mb-4">
+    <ng-template pTemplate="left">
+           
+        </ng-template>
+        <ng-template pTemplate="right">
+            <button pButton
+                    *ngIf="alterar"
+                    pRipple 
+                    icon="pi pi-save"
+                    class="p-button-success p-mr-2"
+                    (click)="salvarAlteracoes()"></button> 
+
+            <button pButton
+                    pRipple
+                    icon="pi pi-sign-out"
+                    class="p-button-outlined p-button-primary"
+                    routerLink="/clientes"></button>
+    </ng-template>
+        
+    </p-toolbar>
     <mat-tab-group mat-align-tabs="start">
         <mat-tab label="Dados">
            
@@ -306,5 +326,12 @@
             </div>
         </mat-tab>
     </mat-tab-group>
+    <p-dialog [(visible)]="showDialog"
+              [style]="{width: '450px'}"
+              [header]="headerDialog"
+              [modal]="true"
+              (onHide)="hideDialog()"
+              styleClass="p-fluit">
+    </p-dialog>
 </div>
 

@@ -13,7 +13,11 @@
         }
     }
 }
-
+.linkClick {
+    color: blue;
+    text-decoration: line;
+    cursor: pointer;
+}
 ::ng-deep .style_ok {
     background-color:green;
     color:white;

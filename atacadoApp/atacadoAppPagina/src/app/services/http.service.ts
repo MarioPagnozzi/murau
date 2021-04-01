@@ -57,6 +57,8 @@ export class HttpService {
     return new Promise<IResult>(async (resolve) => {
       const header = this.createHeader();
       const body = JSON.stringify(model);
+      console.log(model);
+      console.log(header);
       try {
         this.spinner.show();
         const res = await this.http.post(url, body, {headers: header}).toPromise();
@@ -66,13 +68,20 @@ export class HttpService {
       }
       catch (error) {
         this.spinner.hide();
+        console.log(error);
         if (error.status === 400) {
           let txtErro = '<ul>';
           if (Array.isArray(error.error)) {
             error.error.forEach((element: any) => {
-              txtErro += `<li style='text-align: left'>${element.message || element}</li>`;
+              if (Array.isArray(element)) {
+                element.forEach((el: any) => {
+                  txtErro = txtErro + `<li style='text-align: left'>${el.message || el}</li>`;
+                })
+              } else {
+                txtErro = txtErro + `<li style='text-align: left'>${element.message || element}</li>`;
+              }
             });
-            txtErro += '</ul>';
+            txtErro = txtErro + '</ul>';
             Swal.fire('Atenção', txtErro, 'warning');
           }
         }

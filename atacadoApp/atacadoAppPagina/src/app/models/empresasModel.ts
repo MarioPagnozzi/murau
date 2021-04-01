@@ -1,7 +1,7 @@
 import { ClienteModel } from 'src/app/models/clienteModel';
 import { BaseModel } from "./baseModel";
 import { PedidosModel } from "./pedidosModel";
-import { ProdutosModel } from './produtosModel';
+import { ProdutosEmpresasModel } from './produtosEmpresasModel';
 import { VendedoresModel } from './vendedoresModel';
 
 export class EmpresasModel extends BaseModel {
@@ -17,7 +17,7 @@ export class EmpresasModel extends BaseModel {
     cidade?: string
     uf?: string
     pedidos?: PedidosModel[]
-    produtosempresas?: ProdutosModel[]
+    produtosempresas?: ProdutosEmpresasModel[]
     clientes?: ClienteModel[]
     vendedores?: VendedoresModel[]
 }

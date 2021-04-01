@@ -82,5 +82,9 @@ export class HomeComponent implements OnInit {
       this.sortField = value;
     }
   }
+  @ViewChild("dv") public dv: any;
+  applyFilter($event: Event) {
+     this.dv.filter(($event.target as HTMLInputElement).value);
+  }
   
 }

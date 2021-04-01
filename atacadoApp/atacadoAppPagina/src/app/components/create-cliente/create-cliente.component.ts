@@ -51,8 +51,9 @@ export class CreateClienteComponent implements OnInit {
     const result = await this.clienteService.createCliente(this.cliente);
     if (result.success) {
       const snack = this.matSnack.open("Registro Salvo com Sucesso", undefined, {duration: 3000, verticalPosition: 'top', horizontalPosition: 'center', panelClass: ['style_ok']});
+      // tslint:disable-next-line: deprecation
       snack.afterDismissed().subscribe(() => {
-        this.router.navigateByUrl("/home");
+      this.router.navigateByUrl("/home");
       })
     }
   }

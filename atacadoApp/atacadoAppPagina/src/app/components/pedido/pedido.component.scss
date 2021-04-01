@@ -30,6 +30,51 @@
   color: black;
   font-weight: bold;
 }
+.estoqueNegativo {
+  color: red;
+}
+.estoquePositivo {
+  color: black;
+}
+:host ::ng-deep .p-card {
+  width: 100%;
+  font-size: 12px;
+  font-weight: bold;
+  height: 70%;
+  .p-card-body {
+    width: 100%;
+    height: 100%;
+  }
+  .p-card-content {
+      width: 100%;
+      height: 100%;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+  }
+}
+:host ::ng-deep .p-checkbox {
+  width: 15px;
+  height: 15px;
+  .p-checkbox-box {
+    width: 15px;
+    height: 15px;
+    .p-checkbox-icon {
+      font-size: 12px;
+    }
+  }
+}
+.fotoProduto {
+  height: 300px;
+  width: 150px;
+}
+.qtdProduto.p-inputtext {
+  width: 100px !important;
+}
+.itemExcluido {
+  color: gray !important;
+}
 @media(max-width:1200px){
     
     mat-slide-toggle {
@@ -39,5 +84,9 @@
       }
       .txt-legenda {
         margin: -5px;
+    }
+    .fotoProduto {
+      height: 600px;
+      width: 100%;
     }
 }

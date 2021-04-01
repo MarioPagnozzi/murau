@@ -62,16 +62,16 @@ export const Routes = [
     //Rota privada Clientes
     {method: "get", route: "/clientes", controller: ClientesController, action: "all"},
     {method: "get", route: "/clientes/:id", controller: ClientesController, action: "one"},
-    {method: "get", route: "/clientes/:filtro/:valor/filtro", controller: ClientesController, action: "filtro"},
+    {method: "get", route: "/clientes/:valor/:filtro/filtro", controller: ClientesController, action: "filtro"},
     {method: "post", route: "/clientes",controller: ClientesController, action: "save"},
     {method: "delete", route: "/clientes/:id", controller: ClientesController, action: "remove"},
     {method: "get", route: "/clientes/clientesdia/hoje", controller: ClientesController, action: "clientesDia"},
     {method: "delete", route: "/clientes/:cli/contato/:id", controller: ClientesController, action: "removeContato"},
 
-    //Rota privada Peidos
+    //Rota privada Pedidos
     {method: "delete", route: "/pedidos/:id", controller: PedidosController, action: "remove"},
     {method: "post", route: "/pedidos", controller: PedidosController, action: "save"},
-    {method: "get", route: "/pedidos/:filtro/:valor/filtro", controller: PedidosController, action: "filtro"},
+    {method: "get", route: "/pedidos/:valor/:filtro/filtro", controller: PedidosController, action: "filtro"},
     {method: "get", route: "/pedidos", controller: PedidosController, action: "all"},
     {method: "get", route: "/pedidos/peddia", controller: PedidosController, action: "pedidosDia"},
     {method: "get", route: "/pedidos/:id", controller: PedidosController, action: "one"},

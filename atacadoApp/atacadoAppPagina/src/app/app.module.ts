@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
@@ -54,6 +54,8 @@ import {SplitButtonModule} from 'primeng/splitbutton';
 import {InputMaskModule} from 'primeng/inputmask';
 import {ToolbarModule} from 'primeng/toolbar';
 import {ConfirmDialogModule} from 'primeng/confirmdialog';
+import {FieldsetModule} from 'primeng/fieldset';
+import {TooltipModule} from 'primeng/tooltip';
 
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -239,7 +241,9 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     MatNativeDateModule,
     NgxMaskModule.forRoot(maskConfig),
     CurrencyMaskModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    FieldsetModule,
+    TooltipModule
     
 
   ],
@@ -256,7 +260,8 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
               ConfirmationService,
               { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
               { provide: MAT_DATE_LOCALE, useValue: "pt-BR"},
-              { provide: CURRENCY_MASK_CONFIG, useValue: CustomCurrencyMaskConfig}]
+              { provide: CURRENCY_MASK_CONFIG, useValue: CustomCurrencyMaskConfig}],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 
 })
 export class AppModule {

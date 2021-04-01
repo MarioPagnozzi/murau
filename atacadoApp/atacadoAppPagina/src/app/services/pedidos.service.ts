@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { BaseService } from '../base/baseService';
 import { IPedidos } from '../interfaces/IPedidos';
+import { PedidosModel } from '../models/pedidosModel';
 import { HttpService } from './http.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class PedidosService extends BaseService<IPedidos> {
+export class PedidosService extends BaseService<PedidosModel> {
 
   constructor(public http: HttpService) {
     super("pedidos", http);

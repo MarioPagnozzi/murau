@@ -1,7 +1,7 @@
 import { PedidosModel } from 'src/app/models/pedidosModel';
 import { BaseModel } from "./baseModel"
-import { EmpresasModel } from "./empresasModel"
 import { ImagesProdutoModel } from './imagesProdutoModel';
+import { ProdutosEmpresasModel } from './produtosEmpresasModel';
 
 export class ProdutosModel extends BaseModel {
     nome?: string
@@ -12,7 +12,7 @@ export class ProdutosModel extends BaseModel {
     cor?: string
     estoque?: number
     preco?: number
-    produtosEmpresas?: EmpresasModel[]
+    produtosEmpresas?: ProdutosEmpresasModel[]
     imagens?: ImagesProdutoModel[]
     pedidos?: PedidosModel[]
 }
