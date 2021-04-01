@@ -1,5 +1,5 @@
 import { EmpresasService } from './../../services/empresas.service';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { statusPedido } from 'src/app/enum/statusPedido';
 import { ClienteModel } from 'src/app/models/clienteModel';
@@ -30,7 +30,7 @@ export interface IStatus {
   templateUrl: './pedido.component.html',
   styleUrls: ['./pedido.component.scss']
 })
-export class PedidoComponent implements OnInit {
+export class PedidoComponent implements OnInit, AfterViewInit {
 
   pedido: PedidosModel = new PedidosModel();
   cliente: ClienteModel = new ClienteModel();
@@ -83,8 +83,7 @@ export class PedidoComponent implements OnInit {
   @ViewChild('btnSalvar') public btnSalvar!: ElementRef;
 
   ngOnInit(): void {
-    
-    this.spinnerServer.show();
+
     // tslint:disable-next-line: deprecation
     this.active.params.subscribe(p => this.getUid(p.cod, p.cli));
     this.status = [
@@ -112,16 +111,23 @@ export class PedidoComponent implements OnInit {
         this.isRoot = true;
       }
     }
-   setTimeout(() => {
-     this.spinnerServer.hide();
-   }, 5000)
+
+  }
+  ngAfterViewInit(): void {
+    //Called after ngAfterContentInit when the component's view has been initialized. Applies to components only.
+    //Add 'implements AfterViewInit' to the class.
+   
   }
   async salvarAlteracoes() {
+    this.spinnerServer.show();
     this.spinnerAcao = "Gravando...";
     //this.spinnerServer.show();
     const result = await this.pedidoService.post(this.pedido);
     console.log(this.pedido)
     if (result.success) {
+      
+        this.spinnerServer.hide();
+     
       //this.spinnerServer.hide();
       const snack = this.matSnack.open("Registro Salvo com Sucesso", undefined, {duration: 3000, verticalPosition: 'top', horizontalPosition: 'center', panelClass: ['style_ok']});
       // tslint:disable-next-line: deprecation
@@ -132,6 +138,7 @@ export class PedidoComponent implements OnInit {
 
   }
   async getUid(uid: string, cli: string): Promise<void> {
+    this.spinnerServer.show();
     this.spinnerAcao = "Carregando...";
     //this.spinnerServer.show();
     const cli_result = await this.clienteService.getById(cli);
@@ -149,7 +156,9 @@ export class PedidoComponent implements OnInit {
     if (uid === "novo") {
       this.pedido.cliente = this.cliente;
       this.pedido.empresa = this.empresa;
-      this.spinnerServer.hide();
+     
+        this.spinnerServer.hide();
+     
       return;
     }
 
@@ -162,7 +171,8 @@ export class PedidoComponent implements OnInit {
     this.itensPedido = this.itensPedido.filter(val => !val.excluido);
     this.totalItem = this.totalizaItens();
     this.rastreios = this.pedido.historico as HistoricoPedidoModel[];
-    //this.spinnerServer.hide();
+   
+      this.spinnerServer.hide();
   }
   addItem() {
     this.subimetted = false;

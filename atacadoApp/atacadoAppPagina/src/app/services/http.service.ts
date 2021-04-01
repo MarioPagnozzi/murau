@@ -25,7 +25,7 @@ export class HttpService {
   public get(url: string): Promise<IResult> {
     return new Promise<IResult>(async (resolve) => {
       const header = this.createHeader();
-      this.spinner.show();
+  
       /*this.http.get(url, { headers: header })
                .subscribe( 
                  
@@ -42,12 +42,12 @@ export class HttpService {
                  
                  });*/
        try {
-        this.spinner.show();
+      
         const res = await this.http.get(url, { headers: header }).toPromise();
         resolve({success: true, data: res, error: undefined});
-        this.spinner.hide();
+       
        } catch (error) {
-        this.spinner.hide();
+      
         resolve({success: false, data: undefined, error: error})
        }
     });
@@ -60,14 +60,14 @@ export class HttpService {
       console.log(model);
       console.log(header);
       try {
-        this.spinner.show();
+       
         const res = await this.http.post(url, body, {headers: header}).toPromise();
         resolve({success: true, data: res, error: undefined});
-        this.spinner.hide();
+       
 
       }
       catch (error) {
-        this.spinner.hide();
+       
         console.log(error);
         if (error.status === 400) {
           let txtErro = '<ul>';
@@ -93,14 +93,14 @@ export class HttpService {
     return new Promise<IResult>(async (resolve) => {
       const header = this.createHeader();
       try {
-        this.spinner.show();
+     
         const res = await this.http.delete(url, {headers: header}).toPromise();
         resolve({success: true, data: res, error: undefined});
-        this.spinner.hide();
+      
 
       }
       catch (error) {
-        this.spinner.hide();
+       
         resolve({success: false, data: undefined, error});
       }
     })
