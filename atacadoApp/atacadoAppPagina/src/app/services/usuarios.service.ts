@@ -6,11 +6,12 @@ import { HttpService } from './http.service';
 import { environment } from 'src/environments/environment';
 import { Observable, Subject } from 'rxjs';
 import { Router } from '@angular/router';
+import { UsuarioModel } from '../models/usuarioModel';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UsuariosService extends BaseService<IUsuarios> {
+export class UsuariosService extends BaseService<IUsuarios | UsuarioModel> {
   totalClienteDia(): any {
     throw new Error('Method not implemented.');
   }

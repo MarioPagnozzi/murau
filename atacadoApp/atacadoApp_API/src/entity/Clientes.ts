@@ -2,9 +2,10 @@ import { Pedidos } from './Pedidos';
 import { Empresas } from './Empresas';
 import { Vendedores } from './Vendedores';
 import { ContatosClientes } from './ContatosClientes';
-import { OneToMany, ManyToOne, Column, Entity } from 'typeorm';
+import { OneToMany, ManyToOne, Column, Entity, OneToOne } from 'typeorm';
 import { BaseEntity } from './BaseEntity';
 import { BaseStatus } from './enum/status';
+import { User } from './User';
 @Entity({name: "clientes"})
 export class Clientes extends BaseEntity {
 
@@ -26,7 +27,7 @@ export class Clientes extends BaseEntity {
     @Column({type: "varchar", length: 200})
     endereco: string
 
-    @Column({type: "varchar", length: 100})
+    @Column({type: "varchar", length: 100,  nullable: true})
     complemento: string
 
     @Column({type: "varchar", length: 10})
@@ -58,4 +59,7 @@ export class Clientes extends BaseEntity {
 
     @OneToMany(type => Pedidos, pedidos => pedidos.cliente, {eager: true})
     pedidos: Pedidos[]
+
+    @OneToOne(type => User, usuario => usuario.cliente)
+    usuario: User
 }

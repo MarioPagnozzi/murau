@@ -39,6 +39,8 @@ export class Empresas extends BaseEntity {
     @Column({type: "varchar", length: 2})
     uf: string
 
+    @Column({type: "varchar", length: 100, nullable: true})
+
     @OneToMany(type => Pedidos, pedidos => pedidos.empresa)
     pedidos: Pedidos[]
 

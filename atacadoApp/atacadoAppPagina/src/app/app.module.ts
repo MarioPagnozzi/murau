@@ -1,4 +1,5 @@
-import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA, DEFAULT_CURRENCY_CODE, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
@@ -59,6 +60,7 @@ import {ToolbarModule} from 'primeng/toolbar';
 import {ConfirmDialogModule} from 'primeng/confirmdialog';
 import {FieldsetModule} from 'primeng/fieldset';
 import {TooltipModule} from 'primeng/tooltip';
+import {AutoCompleteModule} from 'primeng/autocomplete';
 
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -108,11 +110,14 @@ import {GMapModule} from 'primeng/gmap';
 import {AgmCoreModule} from '@agm/core';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faUser, faEdit, faBars, faCog, faCartPlus, faChartArea, faSignOutAlt, faSearchPlus } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faEdit, faBars, faCog, faCartPlus, faCamera, faChartArea, faSignOutAlt, faSearchPlus } from '@fortawesome/free-solid-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
-import { faFacebook, faTwitter, faGoogle, faLinkedin, faInstagram } from '@fortawesome/free-brands-svg-icons';
+import { faFacebook, faTwitter, faGoogle, faLinkedin, faInstagram} from '@fortawesome/free-brands-svg-icons';
 import { CreateClienteComponent } from './components/create-cliente/create-cliente.component';
 import { AppCepValidateDirective, AppCnpjValidateDirective, AppEmailValidateDirective, AppNomeValidateDirective, AppUfValidateDirective } from './diretivas/diretivaValidacoes';
+import { InputFileComponent } from './components/input-file/input-file.component';
+import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
+import { FormUsuarioComponent } from './components/form-usuario/form-usuario.component';
 registerLocaleData(localePt);
 
 FullCalendarModule.registerPlugins([
@@ -182,7 +187,10 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     AppCnpjValidateDirective,
     AppCepValidateDirective,
     AppUfValidateDirective,
-    AppEmailValidateDirective
+    AppEmailValidateDirective,
+    InputFileComponent,
+    ToolBarComponent,
+    FormUsuarioComponent
   ],
   imports: [
     FormsModule,
@@ -246,7 +254,8 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     CurrencyMaskModule,
     ConfirmDialogModule,
     FieldsetModule,
-    TooltipModule
+    TooltipModule,
+    AutoCompleteModule
     
 
   ],
@@ -263,7 +272,9 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
               ConfirmationService,
               { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
               { provide: MAT_DATE_LOCALE, useValue: "pt-BR"},
-              { provide: CURRENCY_MASK_CONFIG, useValue: CustomCurrencyMaskConfig}],
+              { provide: CURRENCY_MASK_CONFIG, useValue: CustomCurrencyMaskConfig},
+              { provide: DEFAULT_CURRENCY_CODE, useValue: 'BRL'},
+              { provide: LOCALE_ID, useValue: 'pt-BR'}],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 
 })
@@ -318,7 +329,8 @@ export class AppModule {
       faChartArea,
       faSignOutAlt,
       faEdit,
-      faSearchPlus
+      faSearchPlus,
+      faCamera
     )
   }
 }

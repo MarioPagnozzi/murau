@@ -13,13 +13,14 @@ import { ItensPedidoModel } from 'src/app/models/itensPedidoModel';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { HistoricoPedidoModel } from 'src/app/models/historicoPedidoModel';
 import { ProdutosModel } from 'src/app/models/produtosModel';
-import { Permissao, RetornaDadosUsuario, RetornaGruposUsuario } from 'src/app/shared/funcoesGlobal';
+import { getUrl, Permissao, RetornaDadosUsuario, RetornaGruposUsuario } from 'src/app/shared/funcoesGlobal';
 import { ProdutosService } from 'src/app/services/produtos.service';
 import { ProdutosEmpresasModel } from 'src/app/models/produtosEmpresasModel';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { IPedidos } from 'src/app/interfaces/IPedidos';
 import { IGrupos } from 'src/app/interfaces/IGrupos';
 import { NgxSpinnerService } from 'ngx-spinner';
+import { CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER_FACTORY } from '@angular/cdk/overlay/overlay-directives';
 
 export interface IStatus {
   valor: number
@@ -62,6 +63,11 @@ export class PedidoComponent implements OnInit, AfterViewInit {
   alterar = false;
   isRoot = false;
   spinnerAcao = "";
+  statusPedido: statusPedido = statusPedido.Pendente;
+
+  url: string = "";
+  uid: string = "";
+
   constructor(
     private pedidoService: PedidosService,
     private route: Router,
@@ -72,8 +78,7 @@ export class PedidoComponent implements OnInit, AfterViewInit {
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private produtosService: ProdutosService,
-    private matSnack: MatSnackBar,
-    private spinnerServer: NgxSpinnerService
+    private matSnack: MatSnackBar
   ) { }
   
   @ViewChild('codProd')
@@ -85,7 +90,8 @@ export class PedidoComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
 
     // tslint:disable-next-line: deprecation
-    this.active.params.subscribe(p => this.getUid(p.cod, p.cli));
+    this.active.params.subscribe(p => this.getUid(p.cod, p.cli, p.url));
+
     this.status = [
         {valor: statusPedido.Pendente, label: statusPedido[statusPedido.Pendente].toUpperCase()},
         {valor: statusPedido.Aprovado, label: statusPedido[statusPedido.Aprovado].toUpperCase()},
@@ -119,60 +125,67 @@ export class PedidoComponent implements OnInit, AfterViewInit {
    
   }
   async salvarAlteracoes() {
-    this.spinnerServer.show();
+  
     this.spinnerAcao = "Gravando...";
+    console.log(this.pedido)
     //this.spinnerServer.show();
     const result = await this.pedidoService.post(this.pedido);
     console.log(this.pedido)
     if (result.success) {
-      
-        this.spinnerServer.hide();
      
       //this.spinnerServer.hide();
       const snack = this.matSnack.open("Registro Salvo com Sucesso", undefined, {duration: 3000, verticalPosition: 'top', horizontalPosition: 'center', panelClass: ['style_ok']});
       // tslint:disable-next-line: deprecation
-      snack.afterDismissed().subscribe(() => {        
+      snack.afterDismissed().subscribe(() => {
         this.route.navigateByUrl(`/cliente/${this.cliente.uid}`);
       })
     }
 
   }
-  async getUid(uid: string, cli: string): Promise<void> {
-    this.spinnerServer.show();
-    this.spinnerAcao = "Carregando...";
-    //this.spinnerServer.show();
+  async getUid(uid: string, cli: string, url: string): Promise<void> {
+  
+   
+    this.spinnerAcao = "Carregando..."; 
+   
     const cli_result = await this.clienteService.getById(cli);
     this.cliente = cli_result.data as ClienteModel;
 
-    const vendedor_result = await this.vendedoresService.getById(this.cliente.vendedor?.uid ? this.cliente.vendedor?.uid : "");
-    this.vendedor = vendedor_result.data as VendedoresModel;
     
+    const vendedor_result = await this.vendedoresService.getById(this.cliente.vendedor?.uid ? this.cliente.vendedor?.uid : "");
+    this.vendedor = vendedor_result.data as VendedoresModel;  
+  
+  
     const empresa_result = await this.empresaService.getById(this.cliente.empresa?.uid ? this.cliente.empresa?.uid : "");
     this.empresa = empresa_result.data as EmpresasModel;
 
-    this.cliente.vendedor = undefined;
+    if (url === "vendedor") { 
+      this.uid = this.vendedor.uid ? this.vendedor.uid : '';
+    } else {
+      this.uid = this.cliente.uid ? this.cliente.uid : '';
+    }
+    this.url = url;
+    this.cliente.vendedor = new VendedoresModel();
     this.cliente.pedidos = [];
 
     if (uid === "novo") {
       this.pedido.cliente = this.cliente;
       this.pedido.empresa = this.empresa;
-     
-        this.spinnerServer.hide();
-     
+      this.pedido.vendedor = this.vendedor;
+      this.pedido.status_pedido = statusPedido.Pendente;
+      this.pedido.previsao_entrega = 15;
       return;
     }
-
+ 
     const result = await this.pedidoService.getById(uid);
     this.pedido = result.data as PedidosModel;
     this.pedido.cliente = this.cliente;
-    this.pedido.empresa = this.empresa;
-  
+    this.pedido.previsao_entrega = this.pedido.previsao_entrega ? this.pedido.previsao_entrega : 15;
+    this.statusPedido = this.pedido.status_pedido ? this.pedido.status_pedido : statusPedido.Pendente;
     this.itensPedido = this.pedido.itens as ItensPedidoModel[];
     this.itensPedido = this.itensPedido.filter(val => !val.excluido);
     this.totalItem = this.totalizaItens();
-    this.rastreios = this.pedido.historico as HistoricoPedidoModel[];
+    this.rastreios = this.pedido.historico as HistoricoPedidoModel[];   
    
-      this.spinnerServer.hide();
   }
   addItem() {
     this.subimetted = false;
@@ -202,7 +215,7 @@ export class PedidoComponent implements OnInit, AfterViewInit {
       this.pedido.valor_pedido = this.totalPedido();
       this.produto = new ProdutosModel();
       this.message = "";
-      this.empresaPadrao = {};
+      this.empresaPadrao = new EmpresasModel();
       this.itemPedido = new ItensPedidoModel();
       if (!this.mostraExcluidos) {
         this.itensPedido = this.itensPedido.filter(val => !val.excluido);
@@ -245,7 +258,7 @@ export class PedidoComponent implements OnInit, AfterViewInit {
   }
   editarItem(item: ItensPedidoModel) {
     this.itemPedido = {...item};
-    this.produto = this.itemPedido.produto ? this.itemPedido.produto : {};
+    this.produto = this.itemPedido.produto ? this.itemPedido.produto : new ProdutosModel();
     this.itemDialog = true;  
     this.filtraEmpresaProduto();
   }
@@ -289,7 +302,7 @@ export class PedidoComponent implements OnInit, AfterViewInit {
     }
     this.produto = new ProdutosModel();
     this.message = "";
-    this.empresaPadrao = {};
+    this.empresaPadrao = new EmpresasModel();
   }
   findIndexById(id: string): number {
     let index = -1;
@@ -339,8 +352,8 @@ export class PedidoComponent implements OnInit, AfterViewInit {
   }
   async buscaProduto() {
     this.empresasVendedor = [];
-    this.empresaPadrao = {};
-    this.itemPedido = {};
+    this.empresaPadrao = new EmpresasModel();
+    this.itemPedido = new ItensPedidoModel();
     const codProd = this.produto.codigo;
     const prod = await this.produtosService.filtro("codigo", this.produto.codigo);
     if (prod.data) {
@@ -352,14 +365,14 @@ export class PedidoComponent implements OnInit, AfterViewInit {
       this.produto = new ProdutosModel(); 
       //this.produto.codigo = codProd;
       this.message = "Produto não Encontrato para este Código";
-      this.empresaPadrao = {}
+      this.empresaPadrao = new EmpresasModel();
       this.itemPedido = new ItensPedidoModel();
       this.codProd.nativeElement.focus();
     }
     
   }
   filtraEmpresaProduto() {
-    this.empresaPadrao = {};
+    this.empresaPadrao = new EmpresasModel();
     this.empresasVendedor = [];
     this.empresaPadrao = this.produto.produtosEmpresas?.filter(val => val.empresa?.uid === this.cliente.empresa?.uid)[0] as ProdutosEmpresasModel;
     for (let i of this.vendedor.empresas ? this.vendedor.empresas : []) {

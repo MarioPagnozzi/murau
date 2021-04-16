@@ -6,6 +6,7 @@ import * as md5 from "md5";
 import { sign } from "jsonwebtoken";
 import config from "../configuracao/config";
 import {functions} from "../configuracao/functions/globalFunctions";
+import { FileHelper } from '../helpers/FileHelpers';
 export class UserController extends BaseController<User> {
 
     private _repositories: Repository<User> = getRepository(User);
@@ -59,25 +60,55 @@ export class UserController extends BaseController<User> {
     user.grupos = grupos;
 
     if (senha != confirmaSenha )
-        return {status: 400, errors: ['A senha e a confirmação são diferentes!']};
+        return {status: 400, errors: [{message: 'A senha e a confirmação são diferentes!'}]};
 
     if (senha)
         user.senha = md5(senha);
     user.isRoot = isRoot;
 
+    if (user.foto) {
+        let criarFotoResult = await FileHelper.writePicture(user.foto);
+        if (criarFotoResult) {
+            user.foto = criarFotoResult;
+        }
+    }
+
     return super.save(user);
    }
    async save(request: Request) {
         
-        let _user = <User>request.body;        
+        let _user = <User>request.body;
+        let {confirmaSenha} = request.body;
         if (!this._fun.Permissao(request, "Usuarios", _user.uid ? "A" : "I")) {
             return {status: 400, errors:["Usuário não tem permissão para alterar ou inserir registros"]}
         }
         super.isRequired(_user.nome, "O nome do usuário é obrigatório");
         super.isRequired(_user.email, "O e-mail do usuário é obrigatório");
-        super.isRequired(_user.senha, "A senha do usuário é obrigatório");
+        
         super.isEmail(_user.email, "E-mail é inválido");
         super.isRequired(_user.grupos, "É preciso atribuir ao menos 1 (um) grupo para o usuário");
+
+        if (!_user.uid) {
+            super.isRequired(_user.senha, "A senha do usuário é obrigatório");
+            super.isRequired(confirmaSenha, "Confirme a senha");
+
+            if (_user.senha != confirmaSenha )
+            return {status: 400, errors: [{message: 'A senha e a confirmação são diferentes!'}]};
+
+            if (_user.senha)
+                _user.senha = md5(_user.senha);
+        } else {
+            delete _user.senha;
+        }
+        
+
+        if (_user.foto) {
+            let criarFotoResult = await FileHelper.writePicture(_user.foto);
+            if (criarFotoResult) {
+                _user.foto = criarFotoResult;
+            }
+        }
+
         return super.save(_user);
    }
    async nome_like(request: Request) {
@@ -91,5 +122,17 @@ export class UserController extends BaseController<User> {
             return {status: 400, errors: ["Usuário não tem permissão para acessar este cadastro"]}
         }
         return this._repositories.find({grupos: [{nome_grupo: request.params.nome_grupo}]});
-   }   
+   }
+   async filtro(request: Request) {
+       const filtro = request.params.filtro;
+       const valor = request.params.valor;
+       if (filtro === "vendedor") {
+           return this._repositories.findOne({vendedor: {uid: valor}})
+       }
+       else if (filtro === "cliente") {
+            return this._repositories.findOne({cliente: {uid: valor}});
+       } else {
+           return;
+       }
+   }
 }

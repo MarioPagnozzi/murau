@@ -7,6 +7,7 @@ import { IPedidos } from "../interfaces/IPedidos";
 import { IVendedores } from "../interfaces/IVendedores";
 import { BaseModel } from "./baseModel";
 import { ContatosModel } from "./contatosModel";
+import { UsuarioModel } from './usuarioModel';
 
 
 export class ClienteModel extends BaseModel {
@@ -27,4 +28,5 @@ export class ClienteModel extends BaseModel {
    vendedor?: VendedoresModel
    empresa?: EmpresasModel
    pedidos?: PedidosModel[]
+   usuario?: UsuarioModel
 }

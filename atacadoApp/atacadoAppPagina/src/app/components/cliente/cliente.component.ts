@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { UsuariosService } from './../../services/usuarios.service';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Operadoras } from 'src/app/enum/operadoras';
@@ -11,6 +13,14 @@ import { ViaCepService } from 'src/app/services/via-cep.service';
 import { Permissao } from 'src/app/shared/funcoesGlobal';
 
 import { IOperadora } from '../create-cliente/create-cliente.component';
+import { VendedoresModel } from 'src/app/models/vendedoresModel';
+import { EmpresasModel } from 'src/app/models/empresasModel';
+import { VendedoresService } from 'src/app/services/vendedores.service';
+import { EmpresasService } from 'src/app/services/empresas.service';
+import { UsuarioModel } from 'src/app/models/usuarioModel';
+import { FileManage } from '../input-file/input-file.component';
+import { GruposService } from 'src/app/services/grupos.service';
+import { GrupoModel } from 'src/app/models/grupoModel';
 
 export interface IStatus {
   valor: number
@@ -34,15 +44,29 @@ export class ClienteComponent implements OnInit {
   headerDialog = "";
   showDialog = false;
   submitted = false;
-
+  spinnerAcao = "";
+  vendedores: VendedoresModel[] = [];
+  empresas: EmpresasModel[] = [];
+  vendedoresFiltrados: VendedoresModel[] = [];
+  empresasFiltradas: EmpresasModel[] = [];
+  vendedor: VendedoresModel = new VendedoresModel();
+  empresa: EmpresasModel = new EmpresasModel();
+  usuario: UsuarioModel = new UsuarioModel();
   //permissao
   alterar = false;
+  fazerPedido = false;
+  aprovado = false;
+  clienteAtivo = false;
   constructor(
     private clienteService: ClienteService,
     private router: Router,
     private active: ActivatedRoute,
     private viaCepService: ViaCepService,
-    private matSnack: MatSnackBar
+    private matSnack: MatSnackBar,
+    private vendedorService: VendedoresService,
+    private empresaService: EmpresasService,
+    private usuarioService: UsuariosService,
+    private gruposService: GruposService
   ) { }
 
   ngOnInit(): void {
@@ -65,14 +89,34 @@ export class ClienteComponent implements OnInit {
     this.alterar = Permissao("clientes", "A");
   }
   async getUid(uid: string): Promise<void> {
+    
     if (uid === "novo") {
       return;
     }
+    this.spinnerAcao = "Carregando...";
+ 
     const result = await this.clienteService.getById(uid);
     this.cliente = result.data as ClienteModel;
     this.contatos = this.cliente.contatos as ContatosModel[];
     this.pedidos = this.cliente.pedidos as PedidosModel[];
-    this.cliente.pedidos = undefined;
+    this.cliente.pedidos = [];
+    this.fazerPedido = Permissao('pedidos', 'I');
+    this.aprovado = this.cliente.statusCliente === 2;
+    this.clienteAtivo = this.cliente.ativo ? this.cliente.ativo : false;
+    const _usuario = await this.usuarioService.filtro("cliente", uid);
+      if (_usuario.success) {
+        if (_usuario.data) {
+          this.usuario = _usuario.data;
+        } else {
+          this.usuario = new UsuarioModel();
+          const grupos = await this.gruposService.getAll();
+          let _grupos = grupos.data as GrupoModel[];
+          let grupo = _grupos.filter(val => val.nome_grupo = "Clientes")[0] as GrupoModel;
+          this.usuario.grupos.push(grupo);
+        }
+        
+        this.usuario.vendedor = undefined;
+      }
     
   }
   addNewContato() {
@@ -108,6 +152,7 @@ export class ClienteComponent implements OnInit {
     return Operadoras[key].toUpperCase();
   }
   async salvarAlteracoes() {
+    this.spinnerAcao = "Gravando...";
     this.cliente.contatos = this.contatos;
     this.cliente.razao_social = this.cliente.razao_social?.toUpperCase();
     this.cliente.nome_fantasia = this.cliente.nome_fantasia?.toUpperCase();
@@ -122,26 +167,108 @@ export class ClienteComponent implements OnInit {
       const snack = this.matSnack.open("Registro Salvo com Sucesso", undefined, {duration: 3000, verticalPosition: 'top', horizontalPosition: 'center', panelClass: ['style_ok']});
       // tslint:disable-next-line: deprecation
       snack.afterDismissed().subscribe(() => {
+        if (this.usuario.uid) {
+           this.salvarUsuario(false);
+        }
         this.router.navigateByUrl(`/clientes`);
       })
     }
 
   }
-  atribuirEmpresa() {
+  async atribuirEmpresa() {
+    if (this.empresa) {
+      this.empresa = new EmpresasModel();
+    }
     this.empresaDialog = true;
     this.submitted = false;
     this.showDialog = true;
     this.headerDialog = "Atribuição de Empresa";
+    this.empresas = this.cliente.vendedor?.empresas as EmpresasModel[];  
   }
   hideDialog() {
     this.showDialog = false;
     this.submitted = false;
-      
+    this.vendedorDialog = false;
+    this.empresaDialog = false;
   }
-  atribuirVendedor() {
+  filtraVendedor(event: any) {
+    let filtros: VendedoresModel[] = [];
+    let query = event.query;
+    // tslint:disable-next-line: prefer-for-of
+    for (let i = 0; i < this.vendedores.length; i++) {
+      let vendedor = this.vendedores[i];
+      if (vendedor.nome?.toLowerCase().indexOf(query.toLowerCase()) === 0) {
+        filtros.push(vendedor);
+      }
+    }
+    this.vendedoresFiltrados = filtros;
+  }
+  filtraEmpresa(event: any) {
+    let filtros: EmpresasModel[] = [];
+    let query = event.query;
+    // tslint:disable-next-line: prefer-for-of
+    for (let i = 0; i < this.empresas.length; i++) {
+      let empresa = this.empresas[i];
+      if (empresa.nome_fantasia?.toLowerCase().indexOf(query.toLowerCase()) === 0) {
+        filtros.push(empresa);
+      }
+    }
+    this.empresasFiltradas = filtros;
+  }
+  async atribuirVendedor() {
+    if (this.vendedor) {
+      this.vendedor = new VendedoresModel();
+    }
     this.vendedorDialog = true;
     this.submitted = false;
     this.showDialog = true;
     this.headerDialog = "Atribuição de Vendedor";
-  } 
+    const vend = await this.vendedorService.getAll();
+    this.vendedores = vend.data as VendedoresModel[];
+    let vendedoresCliente: VendedoresModel[] = [];
+
+    if (this.cliente.empresa) {
+      // tslint:disable-next-line: forin
+      for (let v in this.vendedores) {
+        this.vendedores[v].empresas?.forEach((empresa) => {
+          if (empresa.nome_fantasia === this.cliente.empresa?.nome_fantasia) {
+            vendedoresCliente.push(this.vendedores[v]);
+          }
+        })
+      }
+      this.vendedores = this.vendedores.filter(val => vendedoresCliente.includes(val));
+    }
+  }
+  salvarDialog() {
+    this.submitted = true;
+    if (this.vendedorDialog) {
+      this.cliente.vendedor = this.vendedor;
+      this.vendedor = new VendedoresModel();
+    } else {
+      this.cliente.empresa = this.empresa;
+      this.empresa = new EmpresasModel();
+    }
+  }
+  selectedFile(file: FileManage): void {
+    if (file.base64Data) {
+      this.usuario.foto = file.base64Data;
+    }
+  }
+
+  async salvarUsuario(snack: boolean = true) {
+    this.usuario.cliente = this.cliente;
+    this.usuario.nome = this.usuario.nome.toUpperCase();
+    this.usuario.email = this.usuario.email.toLowerCase();
+    this.usuario.ativo = this.cliente.ativo;
+    this.usuario.vendedor = undefined;
+    const result = await this.usuarioService.post(this.usuario as UsuarioModel);
+    if (result.success && snack) {
+      const snack = this.matSnack.open("Registro Salvo com Sucesso", undefined, {duration: 3000, verticalPosition: 'top', horizontalPosition: 'center', panelClass: ['style_ok']});
+      // tslint:disable-next-line: deprecation
+      snack.afterDismissed().subscribe(() => {
+        
+      })
+    }
+  }
+ 
 }

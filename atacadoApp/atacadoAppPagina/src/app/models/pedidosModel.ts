@@ -11,9 +11,10 @@ export class PedidosModel extends BaseModel {
     num_pedido?: string
     valor_pedido?: number
     status_pedido?: statusPedido
-    vendedor?: VendedoresModel
-    cliente?: ClienteModel
-    empresa?: EmpresasModel
-    itens?: ItensPedidoModel[]
-    historico?: HistoricoPedidoModel[]
+    previsao_entrega?: number
+    vendedor: VendedoresModel = new VendedoresModel()
+    cliente: ClienteModel = new ClienteModel()
+    empresa: EmpresasModel = new EmpresasModel()
+    itens: ItensPedidoModel[] = []
+    historico: HistoricoPedidoModel[] = []
 }

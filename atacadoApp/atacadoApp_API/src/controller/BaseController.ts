@@ -19,11 +19,7 @@ export abstract class BaseController<T> extends BaseNotificacao {
             if (!this._func.Permissao(request, tabela, "V")) 
                 return {status: 400, errors: [{message: "Você não tem permissão para acessar os registros"}]}
         }
-        return this._repositorio.find({
-            where: {
-                excluido: false
-            }
-        });
+        return this._repositorio.find();
     }
 
     async one(request: Request, restrito = true) {
@@ -38,15 +34,14 @@ export abstract class BaseController<T> extends BaseNotificacao {
 async save(model: any) {
         
         if (model.uid) {
-            delete model['excluido'];
+           
             delete model['data_inclusao'];
-            delete model['data_alteracao'];
 
             let _modelInDB = await this._repositorio.findOne(model.uid);
             if (_modelInDB) {
                 Object.assign(_modelInDB, model);
             }
-        }
+        }       
         if (this.valid()) {
             return this._repositorio.save(model);
         } else

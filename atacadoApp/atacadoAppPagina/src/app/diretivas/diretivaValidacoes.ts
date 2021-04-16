@@ -10,7 +10,7 @@ import { Validator, AbstractControl, NG_VALIDATORS } from '@angular/forms';
   })
   export class AppNomeValidateDirective implements Validator {
     validate(control: AbstractControl): {[key: string]: any} | null {
-      if (!control.value || (control.value && control.value.length <= 10)) {
+      if (!control.value || (control.value && control.value.length < 5)) {
         return { 'nomeInvalid': true }; // return object if the validation is not passed.
       }
       return null; // return null if validation is passed.

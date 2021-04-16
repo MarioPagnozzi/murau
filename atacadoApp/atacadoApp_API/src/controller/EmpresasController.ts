@@ -35,7 +35,7 @@ export class EmpresasController extends BaseController<Empresas> {
 
         return super.save(_empresa);
     }
-    async one(request: Request,) {       
+    async oneCodigo(request: Request,) {
         if (!this._func.Permissao(request, "Empresas", "V")) {
             return {status: 400, errors: [{message:"Você não tem permissão para acessar os resgistros"}]}
         }

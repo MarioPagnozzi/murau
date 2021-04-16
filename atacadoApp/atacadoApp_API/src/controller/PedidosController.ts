@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { getRepository, Like, Repository } from 'typeorm';
+import { Equal, getRepository, Like, Repository } from 'typeorm';
 import { statusPedido } from '../entity/enum/statusPedido';
 import { HistoricoPedido } from '../entity/HistoricoPedido';
 import { ItemPedido } from '../entity/ItemPedido';
@@ -49,13 +49,17 @@ export class PedidosController extends BaseController<Pedidos> {
             }
            
         });
+        let ped: Pedidos = new Pedidos();
         if (super.valid()) {
             this._repPedido.save(_pedido).then(async (pedido) => {
+                delete pedido.itens;
+                Object.assign(ped, pedido);
+               
                 if (pedido.status_pedido == 1) {
                     let itemPedido: ItemPedido;
                     itens.forEach(async (item) => {
                         itemPedido = new ItemPedido();
-                        itemPedido.pedido = pedido;
+                        itemPedido.pedido = ped;
                         itemPedido.produto = item.produto;
                         itemPedido.qtd_produto = item.qtd_produto;
                         itemPedido.valor_unitario = item.valor_unitario;
@@ -66,6 +70,7 @@ export class PedidosController extends BaseController<Pedidos> {
                             itemPedido.uid = item.uid;
                         }
                         this._repItemPedido.save(itemPedido);
+                        console.log(itemPedido)
                     });
                 }
                 
@@ -252,7 +257,7 @@ export class PedidosController extends BaseController<Pedidos> {
                                                             .where("historico.pedidoUid = :uid", {uid: pedido.uid})
                                                             .andWhere("historico.situacao = :situacao", {situacao: "Aprovado"}).getRawMany();
                    
-                    dataEstimada[0].data.setDate(dataEstimada[0].data.getDate() + 15);
+                    dataEstimada[0].data.setDate(dataEstimada[0].data.getDate() + (pedido.previsao_entrega ? pedido.previsao_entrega : 15));
                     let dataEntrega: any = new Date();
                     let diffData = (dataEstimada[0].data.getTime() - dataEntrega.getTime()) / dia
                     let totalDias = parseInt(diffData.toString());
@@ -304,10 +309,13 @@ export class PedidosController extends BaseController<Pedidos> {
                 let sendMail = this._func.Email(mensagem);
                 let retornoEmail = await sendMail;
                 console.log(retornoEmail);
+                return super.save(ped);
             })
             
+        } else {
+            return super.save(_pedido);
         }
-        return super.save(_pedido);
+        
 
     }
     async pedidosDia(request: Request) {
@@ -334,8 +342,7 @@ export class PedidosController extends BaseController<Pedidos> {
                                                             {codigo: valor}]}});
         }
         else if (filtro == "vendedor") {
-            return this._repPedido.find({where: {vendedor: [{nome: Like("%" + valor + "%")},
-                                                            {codigo: valor}]}});
+            return this._repPedido.find({where: [{vendedor: {uid: valor}}]});
         }
         else if (filtro == "itens") {
             return this._repPedido.createQueryBuilder("pedidos")

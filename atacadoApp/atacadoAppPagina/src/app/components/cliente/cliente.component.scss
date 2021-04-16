@@ -106,6 +106,9 @@
         background-color: transparent !important;
     }
 }
+:host::ng-deep .p-autocomplete {
+    width: 100%;
+}
 @media(max-width:1200px){
     
     mat-slide-toggle {

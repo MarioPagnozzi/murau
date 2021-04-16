@@ -42,12 +42,13 @@ export class HttpService {
                  
                  });*/
        try {
-      
+        this.spinner.show();
         const res = await this.http.get(url, { headers: header }).toPromise();
+        this.spinner.hide();
         resolve({success: true, data: res, error: undefined});
        
        } catch (error) {
-      
+        this.spinner.hide();
         resolve({success: false, data: undefined, error: error})
        }
     });
@@ -57,18 +58,18 @@ export class HttpService {
     return new Promise<IResult>(async (resolve) => {
       const header = this.createHeader();
       const body = JSON.stringify(model);
-      console.log(model);
-      console.log(header);
+     
       try {
-       
+       this.spinner.show();
         const res = await this.http.post(url, body, {headers: header}).toPromise();
+        this.spinner.hide();
         resolve({success: true, data: res, error: undefined});
        
 
       }
       catch (error) {
        
-        console.log(error);
+        this.spinner.hide();
         if (error.status === 400) {
           let txtErro = '<ul>';
           if (Array.isArray(error.error)) {
@@ -82,6 +83,7 @@ export class HttpService {
               }
             });
             txtErro = txtErro + '</ul>';
+            
             Swal.fire('Atenção', txtErro, 'warning');
           }
         }
@@ -93,14 +95,15 @@ export class HttpService {
     return new Promise<IResult>(async (resolve) => {
       const header = this.createHeader();
       try {
-     
+        this.spinner.show();
         const res = await this.http.delete(url, {headers: header}).toPromise();
+        this.spinner.hide();
         resolve({success: true, data: res, error: undefined});
       
 
       }
       catch (error) {
-       
+        this.spinner.hide();
         resolve({success: false, data: undefined, error});
       }
     })

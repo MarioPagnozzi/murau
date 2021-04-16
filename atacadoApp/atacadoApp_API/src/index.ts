@@ -11,13 +11,14 @@ import { Setup } from "./configuracao/inicializa";
 import cron_job from "./middleware/cron_job";
 
 
+
 var multer = require("multer");
 //var upload = multer();S
 
 // create express app
 const app = express();
 app.use(require('cors')());
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: "100mb"}));
 app.use(bodyParser.urlencoded({ extended: true }));
 //app.use(upload.array());
 
@@ -32,6 +33,8 @@ Routes.forEach(route => {
             result.then(d => {
                 if (d && d.status)
                     res.status(d.status).send(d.message || d.errors);
+                else if (d && d.file)
+                    res.sendFile(d.file);
                 else 
                     res.json(d);
             })

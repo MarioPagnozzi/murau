@@ -1,0 +1,9 @@
+<div class="input-file" (click)="selectFile()">
+    <div *ngIf="fileCurrent.nome" class="preview" [ngStyle]="{'background-image': 'url(' + fileCurrent.base64Data + ')'}">
+    </div>
+    <div class="content">
+      <span *ngIf="!fileCurrent.nome"><fa-icon [icon]="['fas','camera']" style="font-size: 3.5rem; color: gray"></fa-icon></span>
+      <span *ngIf="fileCurrent.nome"><fa-icon [icon]="['fas','camera']"></fa-icon></span>
+      <input #fileInput type="file" class="upload" [(ngModel)]="file" (change)="handleFileSelect($event)" />
+    </div>
+  </div>
