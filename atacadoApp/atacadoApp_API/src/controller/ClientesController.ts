@@ -1,6 +1,6 @@
 import { ContatosClientes } from './../entity/ContatosClientes';
 import { Request } from 'express';
-import { getRepository, Like, Repository } from 'typeorm';
+import { Equal, getRepository, Like, Repository } from 'typeorm';
 import { Clientes } from './../entity/Clientes';
 import { BaseController } from "./BaseController";
 import { Produtos } from '../entity/Produtos';
@@ -50,16 +50,19 @@ export class ClientesController extends BaseController<Clientes> {
 
         _cliente.codigo =  +codigo["maxCodigo"] + 1;
        if (super.valid()) {
-            contatos.forEach(async (contato) => {
-                let _contato: ContatosClientes = new ContatosClientes();
-                _contato.ddd = contato.ddd;
-                _contato.numero = contato.numero;
-                _contato.operadoras = contato.operadoras;
-                _contato.cliente = _cliente;
+           this._repClientes.save(_cliente).then(async (cliente) => {
+                contatos.forEach(async (contato) => {
+                    let _contato: ContatosClientes = new ContatosClientes();
+                    _contato.ddd = contato.ddd;
+                    _contato.numero = contato.numero;
+                    _contato.operadoras = contato.operadoras;
+                    _contato.cliente = cliente;
 
-                let _repContatoClientes: Repository<ContatosClientes> = getRepository(ContatosClientes);
-                _repContatoClientes.save(_contato);
-            });
+                    let _repContatoClientes: Repository<ContatosClientes> = getRepository(ContatosClientes);
+                    _repContatoClientes.save(_contato);
+                });
+           })
+            
             let fs = require("fs");
             let path = require("path");
             const arqHtml = path.join(path.dirname(__dirname),"templates") + "/email_cadastro.html";
@@ -139,7 +142,7 @@ export class ClientesController extends BaseController<Clientes> {
         }
 
         if (filtro == "vendedor") {
-            return this._repClientes.find({where: {vendedor: Like("%" + valor + "%")}});
+            return this._repClientes.find({where: {vendedor: Equal(valor)}});
         }
 
         if (filtro == "cnpj") {
@@ -150,11 +153,11 @@ export class ClientesController extends BaseController<Clientes> {
             return this._repClientes.find({where: {email: Like("%" + valor + "%")}});
         }
 
-        if (filtro == "pedidos") {         
+        if (filtro == "pedidos") {     
             return this._repClientes.createQueryBuilder("clientes")
                                     .innerJoinAndSelect("clientes.pedidos", "pedidos")
-                                    .where("pedidos.num_pedido = :num_pedido", {num_pedido: valor})
-                                    .getMany();
+                                    .where("replace(pedidos.num_pedido, '/','-') = :num_pedido", {num_pedido: valor})
+                                    .getOne();
         }
 
         if (filtro == "pendentes") {
@@ -193,26 +196,44 @@ export class ClientesController extends BaseController<Clientes> {
         super.isCPFCNPJ(_cliente.cnpj, "'CNPJ' informado não é válido");
 
         let codigo = await this._repClientes.findOne({where:{codigo: _cliente.codigo}});
-        if (codigo) {
+        if (codigo && !_cliente.uid) {
             let maxCodigo = await this._repClientes.createQueryBuilder("clientes")
                          .select("IFNULL(max(cast(cli.codigo as unsigned INTEGER)),0)","maxCodigo")
                          .from(Clientes, "cli")
                          .getRawOne();
             let sugestao = +maxCodigo["maxCodigo"] + 1;
-            return {status: 400, errors: ["Este código já está sendo usado por outro cliente. Sugestão: " + sugestao]};
+            return {status: 400, errors: [{message: "Este código já está sendo usado por outro cliente. Sugestão: " + sugestao}]};
         }
-        return super.save(_cliente).then((cliente) => {
-            _cliente.contatos.forEach(async (contato) => {
-                let _contato: ContatosClientes = new ContatosClientes();
-                _contato.ddd = contato.ddd;
-                _contato.numero = contato.numero;
-                _contato.operadoras = contato.operadoras;
-                _contato.cliente = cliente;
-    
-                let _repContatoClientes: Repository<ContatosClientes> = getRepository(ContatosClientes);
-                _repContatoClientes.save(_contato);
-            });
-        });
-        //return _cliente;
+
+        if (!_cliente.codigo) {
+            let maxCodigo = await this._repClientes.createQueryBuilder("clientes")
+            .select("IFNULL(max(cast(cli.codigo as unsigned INTEGER)),0)","maxCodigo")
+            .from(Clientes, "cli")
+            .getRawOne();
+            _cliente.codigo = +maxCodigo["maxCodigo"] + 1;
+        }
+        let cli: Clientes = new Clientes();
+        const contatos: ContatosClientes[] = _cliente.contatos;
+        if (super.valid()) {
+            this._repClientes.save(_cliente).then((cliente) => {
+                delete cliente['contatos'];
+                Object.assign(cli, cliente);
+              
+                contatos.forEach((contato) => {
+                    let _contato: ContatosClientes = new ContatosClientes();
+                    _contato.ddd = contato.ddd;
+                    _contato.numero = contato.numero;
+                    _contato.operadoras = contato.operadoras;
+                    _contato.cliente = cli;
+                    _contato.uid = contato.uid;
+                   
+                    let _repContatoClientes: Repository<ContatosClientes> = getRepository(ContatosClientes);
+                    _repContatoClientes.save(_contato);
+                });
+                return super.save(cli);
+           })
+        } else {
+            return super.save(_cliente);
+        }
     }
 }

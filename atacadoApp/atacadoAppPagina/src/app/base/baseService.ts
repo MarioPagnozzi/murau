@@ -27,6 +27,6 @@ export abstract class BaseService<T> {
     }
 
     public filtro(filtro: any, param: any) {
-        return this.http.get(`${this.baseUrl}/${filtro}/${param}/filtro`);
+        return this.http.get(`${this.baseUrl}/${param}/${filtro}/filtro`);
     }
 }

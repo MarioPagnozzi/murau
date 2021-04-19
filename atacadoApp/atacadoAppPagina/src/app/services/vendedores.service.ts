@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from '../base/baseService';
 import { IVendedores } from '../interfaces/IVendedores';
+import { VendedoresModel } from '../models/vendedoresModel';
 import { HttpService } from './http.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class VendedoresService extends BaseService<IVendedores> {
+export class VendedoresService extends BaseService<IVendedores | VendedoresModel> {
 
   constructor(public http: HttpService) { 
     super("vendedores", http)

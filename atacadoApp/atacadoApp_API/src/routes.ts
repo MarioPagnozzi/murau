@@ -6,6 +6,7 @@ import {UserController} from "./controller/UserController";
 import { ClientesController } from './controller/ClientesController';
 import { PedidosController } from './controller/PedidosController';
 import { GrupoController } from './controller/GrupoController';
+import { StorageController } from './controller/StorageController';
 
 export const Routes = [
 
@@ -26,6 +27,7 @@ export const Routes = [
     {method: "delete",route: "/users/:id", controller: UserController, action: "remove"},
     {method: "get", route: "/users/:nome/nome", controller: UserController, action: "nome_like"},
     {method: "get", route: "/users/:nome_grupo/grupo",controller: UserController, action: "porGrupo"},
+    {method: "get", route: "/users/:valor/:filtro/filtro", controller: UserController, action: "filtro"},
 
     //roteamentos restritos: Produtos
     {method: "get", route: "/produtos", controller: ProdutosController, action: "all"},
@@ -46,10 +48,13 @@ export const Routes = [
     {method: "get",route: "/vendedores/:nome/nome", controller: VendedoresController, action: "nome_like"},
     {method: "get", route: "/vendedores/:codigo/vendedor", controller: VendedoresController, action: "codigo"},
     {method: "get", route: "/vendedores/:codigo/empresas", controller: VendedoresController, action: "porEmpresa"},
+    {method: "delete", route: "/vendedores/:vend/contato/:id", controller: VendedoresController, action: "removeContato"},
+    {method: "delete", route: "/vendedores/:vend/empresa/:id", controller: VendedoresController, action: "removeEmpresa"},
 
     //retoeamento restritos: Empresas
     {method: "get", route: "/empresas", controller: EmpresasController, action: "all"}, 
-    {method: "get", route: "/empresas/:codigo", controller: EmpresasController, action: "one"}, 
+    {method: "get", route: "/empresas/:codigo/empresa", controller: EmpresasController, action: "oneCodigo"},
+    {method: "get", route: "/empresas/:id", controller: EmpresasController, action: "one"},
     {method: "post", route: "/empresas", controller: EmpresasController, action: "save"},
     {method: "delete",route: "/empresas/:id", controller: EmpresasController, action: "remove"},
     {method: "get", route: "/empresas/:codigo/clientes", controller: EmpresasController, action: "oneClientes"},
@@ -62,16 +67,16 @@ export const Routes = [
     //Rota privada Clientes
     {method: "get", route: "/clientes", controller: ClientesController, action: "all"},
     {method: "get", route: "/clientes/:id", controller: ClientesController, action: "one"},
-    {method: "get", route: "/clientes/:filtro/:valor/filtro", controller: ClientesController, action: "filtro"},
+    {method: "get", route: "/clientes/:valor/:filtro/filtro", controller: ClientesController, action: "filtro"},
     {method: "post", route: "/clientes",controller: ClientesController, action: "save"},
     {method: "delete", route: "/clientes/:id", controller: ClientesController, action: "remove"},
     {method: "get", route: "/clientes/clientesdia/hoje", controller: ClientesController, action: "clientesDia"},
     {method: "delete", route: "/clientes/:cli/contato/:id", controller: ClientesController, action: "removeContato"},
 
-    //Rota privada Peidos
+    //Rota privada Pedidos
     {method: "delete", route: "/pedidos/:id", controller: PedidosController, action: "remove"},
     {method: "post", route: "/pedidos", controller: PedidosController, action: "save"},
-    {method: "get", route: "/pedidos/:filtro/:valor/filtro", controller: PedidosController, action: "filtro"},
+    {method: "get", route: "/pedidos/:valor/:filtro/filtro", controller: PedidosController, action: "filtro"},
     {method: "get", route: "/pedidos", controller: PedidosController, action: "all"},
     {method: "get", route: "/pedidos/peddia", controller: PedidosController, action: "pedidosDia"},
     {method: "get", route: "/pedidos/:id", controller: PedidosController, action: "one"},
@@ -80,6 +85,8 @@ export const Routes = [
     {method: "post", route: "/grupos", controller: GrupoController, action: "save"},
     {method: "get", route: "/grupos", controller: GrupoController, action: "all"},
     {method: "get", route: "/grupos/:id", controller: GrupoController, action: "one"},
-    {method: "get", route: "/grupos/usuarios/:user", controller: GrupoController, action: "usuarios"}
+    {method: "get", route: "/grupos/usuarios/:user", controller: GrupoController, action: "usuarios"},
+
+    { method: "get", route: "/storage/:filename", controller: StorageController, action: "getFile" }
 
 ];

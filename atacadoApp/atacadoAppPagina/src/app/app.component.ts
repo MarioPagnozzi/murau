@@ -12,6 +12,8 @@ import { IGrupos } from './interfaces/IGrupos';
 import { MapsAPILoader } from '@agm/core';
 import { IProdutos } from './interfaces/IProdutos';
 import { HomeService } from './services/home.service';
+import { FileManage } from './components/input-file/input-file.component';
+import { UsuarioModel } from './models/usuarioModel';
 
 @Component({
   selector: 'app-root',
@@ -142,5 +144,20 @@ export class AppComponent implements OnInit, OnDestroy {
     this.lat = Location[0].geometry.location.lat();
     this.lng = Location[0].geometry.location.lng();
     this.zoom = 12;
+  }
+  async selectFile(file: FileManage) {
+    if (file.base64Data) {
+      this.usuario.foto = file.base64Data;
+      const result_user = await this.usuariosService.getById(this.usuario.uid);
+      let user = result_user.data as UsuarioModel;
+      user.foto = this.usuario.foto;
+
+      const result = await this.usuariosService.post(user);
+      if (result.success) {
+        this.usuario.foto = user.foto;
+        localStorage.setItem("murau:user", JSON.stringify(this.usuario));
+      }
+      
+    }
   }
 }

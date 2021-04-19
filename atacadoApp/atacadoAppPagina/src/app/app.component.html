@@ -26,7 +26,7 @@
                     </mat-card-header>
                     <mat-card-content>
                         <div align="center" class="perfil">
-                            <img class="murau__avatar" src="assets/images/eu.jpg">
+                            <app-input-file [image]="usuario.foto" (_select)="selectFile($event)"></app-input-file>
                             <p (click)="sidenav.toggle()"><a href="/">Editar</a></p>
                         </div>
                     </mat-card-content>

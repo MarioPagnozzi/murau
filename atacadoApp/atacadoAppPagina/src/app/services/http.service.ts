@@ -25,7 +25,7 @@ export class HttpService {
   public get(url: string): Promise<IResult> {
     return new Promise<IResult>(async (resolve) => {
       const header = this.createHeader();
-      this.spinner.show();
+  
       /*this.http.get(url, { headers: header })
                .subscribe( 
                  
@@ -44,8 +44,9 @@ export class HttpService {
        try {
         this.spinner.show();
         const res = await this.http.get(url, { headers: header }).toPromise();
-        resolve({success: true, data: res, error: undefined});
         this.spinner.hide();
+        resolve({success: true, data: res, error: undefined});
+       
        } catch (error) {
         this.spinner.hide();
         resolve({success: false, data: undefined, error: error})
@@ -57,22 +58,32 @@ export class HttpService {
     return new Promise<IResult>(async (resolve) => {
       const header = this.createHeader();
       const body = JSON.stringify(model);
+     
       try {
-        this.spinner.show();
+       this.spinner.show();
         const res = await this.http.post(url, body, {headers: header}).toPromise();
-        resolve({success: true, data: res, error: undefined});
         this.spinner.hide();
+        resolve({success: true, data: res, error: undefined});
+       
 
       }
       catch (error) {
+       
         this.spinner.hide();
         if (error.status === 400) {
           let txtErro = '<ul>';
           if (Array.isArray(error.error)) {
             error.error.forEach((element: any) => {
-              txtErro += `<li style='text-align: left'>${element.message || element}</li>`;
+              if (Array.isArray(element)) {
+                element.forEach((el: any) => {
+                  txtErro = txtErro + `<li style='text-align: left'>${el.message || el}</li>`;
+                })
+              } else {
+                txtErro = txtErro + `<li style='text-align: left'>${element.message || element}</li>`;
+              }
             });
-            txtErro += '</ul>';
+            txtErro = txtErro + '</ul>';
+            
             Swal.fire('Atenção', txtErro, 'warning');
           }
         }
@@ -86,8 +97,9 @@ export class HttpService {
       try {
         this.spinner.show();
         const res = await this.http.delete(url, {headers: header}).toPromise();
-        resolve({success: true, data: res, error: undefined});
         this.spinner.hide();
+        resolve({success: true, data: res, error: undefined});
+      
 
       }
       catch (error) {

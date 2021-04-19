@@ -26,3 +26,17 @@
 .m-trash {
     cursor: pointer;
 }
+app-input-file {
+    width: calc(100% - 40px);
+    border: 0px solid #dcdcdc;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    float: left;
+  }
+  app-form-usuario {
+      width: calc(100% - 20px);
+  }
+  .registroExcluido {
+    color: #E0E0E0 !important;
+}

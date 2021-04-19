@@ -48,7 +48,7 @@
     ],
     "no-empty": false,
     "no-inferrable-types": [
-      true,
+      false,
       "ignore-params"
     ],
     "no-non-null-assertion": true,
@@ -151,7 +151,8 @@
       "app",
       "kebab-case"
     ],
-    "no-shadowed-variable": false
+    "no-shadowed-variable": false,
+    "prefer-const":false
     
   }
 }

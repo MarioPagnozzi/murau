@@ -133,7 +133,7 @@ export function montaMenu() {
             children.push({
                 label: "Novo",
                 icon: "pi pi-plus",
-                data: "./clientes/novo",
+                data: "./cliente/novo",
                 type: "url"
             });
        }
@@ -158,7 +158,7 @@ export function montaMenu() {
             children.push({
                 label: "Novo",
                 icon: "pi pi-plus",
-                data: "./empresas/novo",
+                data: "./empresa/novo",
                 type: "url"
             });
         }
@@ -183,7 +183,7 @@ export function montaMenu() {
             children.push({
                 label: "Novo",
                 icon: "pi pi-plus",
-                data: "./grupos/novo",
+                data: "./grupo/novo",
                 type: "url"
             });
         }
@@ -208,7 +208,7 @@ export function montaMenu() {
             children.push({
                 label: "Novo",
                 icon: "pi pi-plus",
-                data: "./permissoes/novo",
+                data: "./permissao/novo",
                 type: "url"
             });
         }
@@ -233,7 +233,7 @@ export function montaMenu() {
             children.push({
                 label: "Novo",
                 icon: "pi pi-plus",
-                data: "./produtos/novo",
+                data: "./produto/novo",
                 type: "url"
             });
         }
@@ -258,7 +258,7 @@ export function montaMenu() {
             children.push({
                 label: "Novo",
                 icon: "pi pi-plus",
-                data: "./usuarios/novo",
+                data: "./usuario/novo",
                 type: "url"
             });
         }
@@ -283,7 +283,7 @@ export function montaMenu() {
             children.push({
                 label: "Novo",
                 icon: "pi pi-plus",
-                data: "./vendedores/novo",
+                data: "./vendedor/novo",
                 type: "url"
             });
         }
@@ -344,4 +344,9 @@ export function getAddress(latitude: number, longitude: number): Promise<Array<a
               }
           });
       });
+  }
+
+  export function getUrl(url: any): string {
+    let _url = JSON.parse(JSON.stringify(url))
+    return _url._value[0].path;
   }

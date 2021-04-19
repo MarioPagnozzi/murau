@@ -1,0 +1,88 @@
+
+<div class="row">
+    <div class="col-sm-8">
+        <div class="p-field m-razaosocial">
+            <label for="email_usuario">E-mail de Usuário</label>
+            <input type="email"
+                   id="email_usuario"
+                   name="email_usuario"
+                   [(ngModel)]="usuario.email"
+                   onkeyup="this.value = this.value.toLowerCase()"
+                   (focusout)="lowerCase($event)"
+                   class="form-control"
+                   [class.is-invalid]="emailUsuarioModel.errors?.emailInvalid && (emailUsuarioModel.touched || emailUsuarioModel.dirty)"
+                   #emailUsuarioModel= "ngModel"
+                   pInputText
+                   emailValidateDirective required/>
+            <small class="invalid-feedback" id="email_usuario-help" *ngIf="emailUsuarioModel.errors?.emailInvalid && (emailUsuarioModel.touched || emailUsuarioModel.dirty)">
+                E-mail do usuário deve ser informado.
+            </small>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div class="p-field m-razaosocial">
+            <label for="nome_usuario">Nome do Usuário</label>
+            <input type="text"
+                   id="nome_usuario"
+                   name="nome_usuario"
+                   [(ngModel)]="usuario.nome"
+                   onkeyup="this.value = this.value.toUpperCase();"
+                   (focusout)="upperCase($event)"
+                   class="form-control"
+                   #nomeUsuarioModel="ngModel"
+                   [class.is-invalid]="nomeUsuarioModel.errors?.nomeInvalid && (nomeUsuarioModel.touched || nomeUsuarioModel.dirty)"
+                   pInputText
+                   nomeValidateDirective required/>
+            <small class="invalid-feedback" id="nome_usuario-help" *ngIf="emailUsuarioModel.errors?.emailInvalid && (emailUsuarioModel.touched || emailUsuarioModel.dirty)">
+                Nome do usuário deve ser informado.
+            </small>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-4" *ngIf="!usuario.uid">
+        <label for="senha_usuario">Senha de Acesso</label>
+        <input type="password"
+               id="senha_usuario"
+               name="senha_usuario"
+               [(ngModel)]="usuario.senha"
+               class="form-control"
+               #senhaUsuarioModel= "ngModel"
+               [class.is-invalid]="senhaUsuarioModel.errors?.nomeInvalid && (senhaUsuarioModel.touched || senhaUsuarioModel.dirty) && !usuario.uid"
+               pInputText
+               nomeValidateDirective required/>
+        <small class="invalid-feedback" id="senha_usuario-help" *ngIf="emailUsuarioModel.errors?.emailInvalid && (emailUsuarioModel.touched || emailUsuarioModel.dirty) && !usuario.uid">
+            Senha deve ser informada
+        </small>
+    </div>
+    <div class="col-sm-4" *ngIf="!usuario.uid">
+        <label for="confirma_senha">Confirmar Senha</label>
+        <input type="password"
+               id="confirma_senha"
+               name="confirma_senha"
+               [(ngModel)]="usuario.confirmaSenha"
+               class="form-control"
+               #confirmaSenhaUsuarioModel= "ngModel"
+               [class.is-invalid]="confirmaSenhaUsuarioModel.errors?.nomeInvalid && (confirmaSenhaUsuarioModel.touched || confirmaSenhaUsuarioModel.dirty) && !usuario.uid"
+               pInputText
+               nomeValidateDirective required/>
+        <small class="invalid-feedback" id="confirma_senha-help" *ngIf="confirmaSenhaUsuarioModel.errors?.emailInvalid && (confirmaSenhaUsuarioModel.touched || confirmaSenhaUsuarioModel.dirty) && !usuario.uid">
+           Você deve confirmar a senha
+        </small>
+    </div>
+    <div class="col-sm">
+        <div class="p-field m-razaosocial">
+            <label for="status_usuario">Status Usuário</label>
+            <select class="custom-select d-block w-100" id="status_usuario" [(ngModel)]="usuario.status_usuario">
+                <option *ngFor="let std of status" [ngValue]="std.valor">{{std.label}}</option>
+            </select>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-2">
+        <div class="p-field">
+            <p-checkbox [(ngModel)]="usuario.isRoot" label="Super Usuário" [binary]="true" *ngIf="root"></p-checkbox>
+        </div>
+    </div>
+</div>

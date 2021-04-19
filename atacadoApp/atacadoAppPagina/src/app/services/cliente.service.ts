@@ -58,11 +58,13 @@ export class ClienteService extends BaseService<ICliente | ClienteModel> {
           let txtErro = '<ul>';
           if (Array.isArray(error.error)) {
             error.error.forEach((element: any) => {
-              element.forEach((el: any) => {
-                txtErro = txtErro + `<li style='text-align: left'>${el.message || el}</li>`;
-              })
-              
-             
+              if (Array.isArray(element)) {
+                element.forEach((el: any) => {
+                  txtErro = txtErro + `<li style='text-align: left'>${el.message || el}</li>`;
+                })
+              } else {
+                txtErro = txtErro + `<li style='text-align: left'>${element.message || element}</li>`;
+              }
             });
             txtErro = txtErro + '</ul>';
             Swal.fire('Atenção', txtErro, 'warning');

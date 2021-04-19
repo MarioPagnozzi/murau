@@ -13,7 +13,11 @@
         }
     }
 }
-
+.linkClick {
+    color: blue;
+    text-decoration: line;
+    cursor: pointer;
+}
 ::ng-deep .style_ok {
     background-color:green;
     color:white;
@@ -101,6 +105,9 @@
         border: none !important;
         background-color: transparent !important;
     }
+}
+:host::ng-deep .p-autocomplete {
+    width: 100%;
 }
 @media(max-width:1200px){
     

@@ -3,6 +3,7 @@ import {ICliente} from "./IClientes";
 import { IEmpresas } from "./IEmpresas";
 import { IPedidos } from "./IPedidos";
 import { IContatos } from "./IContatos";
+import { IUsuarios } from "./IUsuarios";
 
 export interface IVendedores extends IInterface {
     
@@ -17,4 +18,8 @@ export interface IVendedores extends IInterface {
     pedidos?: IPedidos[]
     empresas?: IEmpresas[]
     cliente?: ICliente[]
+    usuario?: IUsuarios
+    cep?: string
+    complemento?: string
+    email?: string
 }

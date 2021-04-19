@@ -1,0 +1,27 @@
+<p-toolbar>
+
+    <ng-template pTemplate="left">
+        <button pButton
+                pRipple
+                *ngIf="fazerPedido && aprovado && clienteAtivo"
+                icon="pi pi-shopping-cart"
+                class="p-button-outlined p-button-primary"
+                pTooltip="Novo Pedido"
+                routerLink="/pedido/novo/{{clienteUid}}"></button>
+        </ng-template>
+        <ng-template pTemplate="right">
+            <button pButton
+                    *ngIf="alterar"
+                    pRipple 
+                    icon="pi pi-save"
+                    class="p-button-success p-mr-2"
+                    (click)="salvarAlteracao($event)"></button> 
+
+            <button pButton
+                    pRipple
+                    icon="pi pi-sign-out"
+                    class="p-button-outlined p-button-primary"
+                    [routerLink]="routerBack" *ngIf="visivelBtnBack"></button>
+    </ng-template>
+    
+</p-toolbar>

@@ -29,19 +29,19 @@ const routes: Routes = [
   { path: 'perfil/:user', component: PanelComponent, canActivate: [AdminGuard] },
   { path: 'empresa/:cod', component: EmpresaComponent, canActivate: [AdminGuard] },
   { path: 'empresas', component: EmpresasComponent, canActivate: [AdminGuard] },
-  { path: 'grupo/:uid', component: GrupoComponent, canActivate: [AdminGuard] },
+  { path: 'grupo/:cod', component: GrupoComponent, canActivate: [AdminGuard] },
   { path: 'grupos', component: GruposComponent, canActivate: [AdminGuard] },
-  { path: 'permissao/:uid', component: PermissaoComponent, canActivate: [AdminGuard] },
+  { path: 'permissao/:cod', component: PermissaoComponent, canActivate: [AdminGuard] },
   { path: 'permissoes', component: PermissoesComponent, canActivate: [AdminGuard] },
   { path: 'produto/:cod', component: ProdutoComponent, canActivate: [AdminGuard] },
   { path: 'produtos', component: ProdutosComponent, canActivate: [AdminGuard] },
-  { path: 'usuario/:uid', component: UsuarioComponent, canActivate: [AdminGuard] },
+  { path: 'usuario/:cod', component: UsuarioComponent, canActivate: [AdminGuard] },
   { path: 'usuarios', component: UsuariosComponent, canActivate: [AdminGuard] },
   { path: 'vendedor/:cod', component: VendedorComponent, canActivate: [AdminGuard] },
   { path: 'vendedores', component: VendedoresComponent, canActivate: [AdminGuard] },
   { path: 'clientes', component: ClientesComponent, canActivate: [AdminGuard] },
   { path: 'cliente/:cod', component: ClienteComponent, canActivate: [AdminGuard] },
-  { path: 'pedido/:cod/:cli', component: PedidoComponent, canActivate: [AdminGuard] },
+  { path: 'pedido/:cod/:cli/:url', component: PedidoComponent, canActivate: [AdminGuard] },
 
   { path: 'cadastro', component: CreateClienteComponent}
 ];

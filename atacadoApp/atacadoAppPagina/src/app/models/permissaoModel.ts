@@ -1,5 +1,5 @@
 import { BaseModel } from "./baseModel";
-import { GrupoModel } from "./GrupoModel";
+import { GrupoModel } from "./grupoModel";
 
 export class PermissaoModel extends BaseModel {
     tabela?: string

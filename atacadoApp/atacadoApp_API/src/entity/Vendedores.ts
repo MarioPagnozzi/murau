@@ -2,9 +2,10 @@ import { VendedoresEmpresas } from './VendedoresEmpresas';
 import { Pedidos } from './Pedidos';
 import { Clientes } from './Clientes';
 import { ContatosVendedores } from './ContatosVendedores';
-import { Column, Entity, JoinTable, ManyToMany, OneToMany } from "typeorm";
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, OneToOne } from "typeorm";
 import { BaseEntity } from "./BaseEntity";
 import { Empresas } from './Empresas';
+import { User } from './User';
 @Entity({ name: "vendedores"})
 export class Vendedores extends BaseEntity {
 
@@ -23,11 +24,20 @@ export class Vendedores extends BaseEntity {
     @Column({type: "varchar", length: 200})
     bairro: string
 
+    @Column({type: "varchar", length: 250, nullable: true})
+    email: string
+
     @Column({type: "varchar", length: 100})
     cidade: string
 
+    @Column({type: "varchar", length: 100,  nullable: true})
+    complemento: string
+
     @Column({type: "varchar", length: 2})
     uf: string
+
+    @Column({type: "varchar", length: 9, nullable: true})
+    cep: string
 
     @OneToMany(type => ContatosVendedores, contatos => contatos.vendedor, {nullable: true, eager: true})
     contatos: ContatosVendedores[]
@@ -43,4 +53,7 @@ export class Vendedores extends BaseEntity {
     @ManyToMany(type => Empresas, empresas => empresas.vendedores, {eager: true})
     @JoinTable({name: "vendedores_empresas"})
     empresas: Empresas[]
+
+    @OneToOne(type => User, usuario => usuario.vendedor)
+    usuario: User
 }

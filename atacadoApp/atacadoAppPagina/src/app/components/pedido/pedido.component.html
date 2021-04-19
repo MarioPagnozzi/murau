@@ -1,6 +1,16 @@
 <div class="murau__container">
+    <ngx-spinner bdColor="rgba(75,46,40,0.7)"
+                color="#ffff"
+                size="medium"
+                type="ball-spin-fade-rotating"
+                [fullScreen]="true">
+        <p style="font-size: 20px; color: white">{{spinnerAcao}}</p>
+    </ngx-spinner>
     <h1>Pedidos</h1>
     <h5>Manutenção de Pedidos</h5>
+    <app-tool-bar [alterar]="alterar" routerBack="/{{url}}/{{uid}}" (salvar)="salvarAlteracoes()"></app-tool-bar>
+    
+    
     <mat-tab-group mat-align-tabs="starts">
         <mat-tab label="Cabeçalho">
             <div class="row murau__container">
@@ -28,12 +38,12 @@
                         <input type="text"
                                id="vendedor"
                                name="vendedor"
-                               matInput disabled [(ngModel)]="vendedor.nome" />
+                               matInput disabled [(ngModel)]="pedido.vendedor.nome" />
                     </mat-form-field>
                 </div>
                 <div class="col-sm">
                     <mat-form-field appearance="fill">
-                        <mat-select [(ngModel)]="pedido.status_pedido" name="statu_pedido" id="status_pedido" [disabled]="pedido.status_pedido === 2">
+                        <mat-select [(ngModel)]="pedido.status_pedido" name="statu_pedido" id="status_pedido" [disabled]="statusPedido === 5 && !isRoot">
                             <mat-option *ngFor="let status_pedido of status" [value]="status_pedido.valor">{{status_pedido.label}}</mat-option>
                         </mat-select>
                     </mat-form-field>
@@ -46,7 +56,7 @@
                         <input type="text"
                                id="empresa"
                                name="empresa"
-                               matInput disabled [(ngModel)]="empresa.nome_fantasia" />
+                               matInput disabled [(ngModel)]="pedido.empresa.nome_fantasia" />
                     </mat-form-field>
                 </div>
                 <div class="col-sm-2">
@@ -84,11 +94,22 @@
                                readonly />
                     </mat-form-field>
                 </div>
+                <div class="col-sm-2">
+                    <mat-form-field class="m-uf">
+                        <mat-label>Previsão de Entrega [dias]</mat-label>
+                        <input matInput
+                               type="number" 
+                               id="prevEntrega"
+                               name="prevEntrega"
+                               [(ngModel)]="pedido.previsao_entrega"
+                               [disabled]="statusPedido >= 2"/>
+                    </mat-form-field>
+                </div>
             </div>
         </mat-tab>
         <mat-tab label="Itens">
             <div class="murau__container">
-                <p-toolbar styleClass="p-mb-4" *ngIf="pedido.status_pedido === 1">
+                <p-toolbar styleClass="p-mb-4" *ngIf="statusPedido === 1">
                     <ng-template pTemplate="left">
                         <button pButton 
                                 pRipple 
@@ -100,9 +121,16 @@
                         <button pButton
                                 pRipple
                                 icon="pi pi-trash"
-                                class="p-button-danger"
+                                class="p-button-danger p-mr-2"
                                 (click)="excluirItensSel()"
                                 [disabled]="!selItens || !selItens.length"></button>
+
+                        <button pButton
+                                pRipple
+                                [pTooltip]="toolTipBtnExcluidos"
+                                [icon]="iconBtnEye"
+                                class="p-button-help"
+                                (click)="mostraItensExcluidos()"></button>
 
                     </ng-template>
                     
@@ -127,7 +155,7 @@
                     </ng-template>
                     <ng-template pTemplate="header">
                         <tr>
-                            <th style="width: 3rem" *ngIf="pedido.status_pedido === 1">
+                            <th style="width: 3rem" *ngIf="statusPedido === 1">
                                 <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
                             </th>
                             <th pSortableColumn="produto.codigo">Código <p-sortIcon field="produto.codigo"></p-sortIcon></th>
@@ -136,29 +164,39 @@
                             <th pSortableColumn="valor_unitario">Vlr Unitário <p-sortIcon field="valor_unitario"></p-sortIcon></th>
                             <th pSortableColumn="qtd_produto">Quantidade <p-sortIcon field="qtd_produto"></p-sortIcon></th>
                             <th pSortableColumn="valor_total">Vlr. Total <p-sortIcon field="valor_total"></p-sortIcon></th>
-                            <th *ngIf="pedido.status_pedido === 1"></th>
+                            <th *ngIf="statusPedido === 1"></th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-item>
                         <tr>
-                            <td *ngIf="pedido.status_pedido === 1">
-                                <p-tableCheckbox [value]="item"></p-tableCheckbox>
+                            <td *ngIf="statusPedido === 1">
+                                <p-tableCheckbox [value]="item" [disabled]="item.excluido"></p-tableCheckbox>
                             </td>
-                            <td style="text-align: right">{{item.produto.codigo}}</td>
-                            <td>{{item.produto.referencia}}</td>
-                            <td>{{item.produto.nome}}</td>
-                            <td style="text-align: right">{{item.valor_unitario | number: '0.2-2':'pt' }}</td>
-                            <td style="text-align: right">{{item.qtd_produto}}</td>
-                            <td style="text-align: right">{{item.valor_total | number:'0.2-2':'pt'}}</td>
-                            <td *ngIf="pedido.status_pedido === 1">
+                            <td style="text-align: right" [ngClass]="{'itemExcluido': item.excluido}">{{item.produto.codigo}}</td>
+                            <td [ngClass]="{'itemExcluido': item.excluido}">{{item.produto.referencia}}</td>
+                            <td [ngClass]="{'itemExcluido': item.excluido}">{{item.produto.nome}}</td>
+                            <td style="text-align: right" [ngClass]="{'itemExcluido': item.excluido}">{{item.valor_unitario | number: '0.2-2':'pt' }}</td>
+                            <td style="text-align: right" [ngClass]="{'itemExcluido': item.excluido}">{{item.qtd_produto}}</td>
+                            <td style="text-align: right" [ngClass]="{'itemExcluido': item.excluido}">{{item.valor_total | number:'0.2-2':'pt'}}</td>
+                            <td *ngIf="statusPedido === 1 && !item.excluido">
                                 <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-primary p-mr-2" (click)="editarItem(item)"></button>
                                 <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="excluirItem(item)"></button>
+                            </td>
+                            <td *ngIf="statusPedido === 1 && item.excluido">
+                                <button pButton pRipple pTooltip="Retaurar Item" icon="pi pi-undo" class="p-button-rounded p-button-help p-mr-2" (click)="restauraItem(item)"></button>                                
                             </td>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="summary">
-                        <div class="p-d-flex p-ai-center p-jc-between">
-                            Total de Itens a serem entregues neste pedido é de: {{totalItem}} unidades
+                        <div class="row p-d-flex p-ai-center p-jc-between">
+                            
+                                <div class="col-sm-8">
+                                    Total de Itens a serem entregues neste pedido é de: {{totalItem}} unidades
+                                </div>
+                                <div class="col-sm-4">
+                                    Total Pedido: {{pedido.valor_pedido | currency}}
+                                </div>
+                           
                         </div>
                     </ng-template>
                 </p-table>
@@ -187,7 +225,7 @@
         </mat-tab>
     </mat-tab-group>
     <p-dialog [(visible)]="itemDialog"
-              [style]="{width: '450px'}"
+              [style]="{width: '600px'}"
               header="Item Pedido"
               [modal]="true"
               (onHide)="hideDialog()"
@@ -197,12 +235,128 @@
                 <label for="codProd">Código Produto</label>
                 <input type="text"
                        pInputText
+                       #codProd
                        id="codProd"
                        [(ngModel)]="produto.codigo"
+                       (focusout)="buscaProduto()"
                     autofocus [disabled]="itemPedido.uid !== undefined" />
+                    <h3 *ngIf="produto.codigo || message">{{ produto.nome ? produto.nome : message }}</h3>
+            </div>
+            <div class="row murau__container">
+               
+                <h4 style="height: 3px">Empresa Padrão: {{cliente.empresa?.nome_fantasia}}</h4>
+                <div class="row murau__container" *ngIf="produto.nome">
+                    <div class="col-sm">
+                        <h5 [ngClass]="{'estoqueNegativo': (empresaPadrao.estoque ? empresaPadrao.estoque : -1) <= 0,
+                                'estoquePositivo': (empresaPadrao.estoque ? empresaPadrao.estoque : -1) > 0}">Estoque: {{empresaPadrao.estoque}}</h5>
+                    </div>
+                    <div class="col-sm">
+                        <h5>Valor Unitário: {{empresaPadrao.valor | currency: 'BRL'}}</h5>
+                    </div>
+                </div>
+                <div class="row murau__container" *ngIf="vendedores && produto.nome">
+                    <div class="col-sm" style="font-size: 12px !important">
+                        <p-checkbox [(ngModel)]="mostraEstoqueEmpresas"
+                                    inputId="mostraEstoqueEmp"
+                                    [binary]="true"></p-checkbox>
+                        <label for="mostraEstoqueEmp" style="height: 2px !important"> &nbsp; Mostrar Estoque de Outras Empresas</label>
+
+                    </div>
+                </div>
+                <div class="row murau__container">
+                    <div class="col-sm-8" *ngIf="vendedores && produto.nome && mostraEstoqueEmpresas" style="font-size: 15px !important">
+                
+                            <h5>Selecionando uma ou mais empresas você poderá compor estoque ou efetuar rateio</h5>
+                            <div *ngFor="let empPro of empresasVendedor" class="p-field-checkbox">
+                                <div class="row murau__container">
+                                    <div class="row murau__container">
+                                        <p-checkbox name="grupoEmpresa" 
+                                                    value="empPro" 
+                                                    [value]="empPro" 
+                                                    [inputId]="empPro.uid ? empPro.uid : '0'"
+                                                    [(ngModel)]="selEmpresasEstoque"></p-checkbox>
+                                        <label [for]="empPro.uid">
+                                            &nbsp;{{empPro.empresa?.nome_fantasia}}
+                                        </label>
+                                    </div>
+                                    <div class="row murau__container">
+                                        <div class="col-sm">
+                                            <h5 [ngClass]="{'estoqueNegativo': (empPro.estoque ? empPro.estoque : -1) <= 0,
+                                                    'estoquePositivo': (empPro.estoque ? empPro.estoque : -1) > 0}">Estoque: {{empPro.estoque}}</h5>
+                                        </div>
+                                        <div class="col-sm">
+                                            <h5>Valor Unitário: {{empPro.valor | currency: 'BRL'}}</h5>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    
+                    </div>
+                    <div class="col-sm-4" class="fotoProduto" *ngIf="produto.nome">
+                        <p-card>
+                            
+                                <img *ngIf="(produto.imagens ? produto.imagens.length : 0) > 0" src="{{produto.imagens ? produto.imagens[0].caminho : './../../assets/images/img_nao_disp.jpg' }}"/>
+                                <img *ngIf="(produto.imagens ? produto.imagens.length : 0) <= 0" src="./../../assets/images/img_nao_disp.jpg" width="100%" />
+                        
+                        </p-card>
+                    </div>
+                    <div class="col-sm">
+                        <div class="p-field">
+                            <label for="qtdProd">Qtd Produto</label>
+                            <input type="number"
+                                name="qtdProd"
+                                id="qtdProd"
+                                #qtdProd
+                                [(ngModel)]="itemPedido.qtd_produto"
+                                Class="qtdProduto"
+                                (click)="valorTotalItem()"
+                                (focusout)="valorTotalItem(); qtdProdExit()"
+                                pInputText
+                                [disabled]="produto.codigo ? false : true" />
+                        </div>
+                    </div>
+                    <div class="col-sm">
+                        <h1 style="height: 20px"><strong>Total</strong></h1>
+                        <h2><strong>{{ itemPedido.valor_total | currency: 'BRL' }}</strong></h2>
+                    </div>
+                </div>
+                <div class="row murau__container">
+                    <div class="col-sm">
+                        <p-toolbar>
+                            <div class="p-toolbar-group-left"></div>
+                            <div class="p-toolbar-group-right">
+                                <button icon="pi pi-sign-out"
+                                        pButton
+                                        type="button"
+                                          class="p-button-outlined p-button-danger p-mr-2"
+                                          id="btnCancelar"
+                                          (click)="hideDialog()"
+                                          pTooltip="Sair sem salvar"></button>
+                                <button icon="pi pi-plus"
+                                        pButton
+                                          type="button"
+                                          class="p-button-outlined p-button-primary p-mr-2"
+                                          id="btnAddNovo"
+                                          #btnAddNovo
+                                          (click)="saveItem(); btnAddNovoClick()"
+                                          pTooltip="Salva a alteração e habilita para novas adições"
+                                          [disabled]="produto.codigo && !itemPedido.uid ? false : true"></button>
+                                <button icon="pi pi-save"
+                                        pButton
+                                        type="button"
+                                          class="p-button-outlined p-button-success"
+                                          id="btnSalvar"
+                                          #btnSalvar
+                                          (click)="saveItem(); hideDialog()"
+                                          pTooltip="Salva as alterações e fecha a janela"
+                                          [disabled]="produto.codigo ? false : true"></button>
+                            </div>
+                        </p-toolbar>
+                    </div>
+                </div>
             </div>
         </ng-template>
     </p-dialog>
-    <p-confirmDialog [style]="{width: '450px'}"></p-confirmDialog>
+    <p-confirmDialog [style]="{width: '500px'}"></p-confirmDialog>
 </div>
 

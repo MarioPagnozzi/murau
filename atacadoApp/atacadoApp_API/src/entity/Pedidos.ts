@@ -19,6 +19,9 @@ export class Pedidos extends BaseEntity {
     @Column()
     status_pedido: statusPedido
 
+    @Column()
+    previsao_entrega: number
+
     @ManyToOne(type => Vendedores, vendedores => vendedores.pedidos, {eager: true})
     vendedor: Vendedores
 
