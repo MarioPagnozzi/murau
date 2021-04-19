@@ -30,5 +30,6 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 20/01/2021 | Atividade #36 - Layout             | Desenv. Mário
 28/01/2021 | Atividade #29 - Login              | Desenv. Mário
 11/02/2021 | Atividade #31 - Cad. Cliente       | Desenv. Mário
-19/04/2021 | Atividade #30 - Cad. Empresas      | Desenv. Mário
-19/04/2021 | Atividade #35 - Cad. Vendedores    | Desenv. Mário
+19/04/2021 | Atividade #35 - Cad. Empresas      | Desenv. Mário
+19/04/2021 | Atividade #30 - Cad. Pedidos       | Desenv. Mário
+19/04/2021 | Atividade #32 - Cad. Vendedores    | Desenv. Mário
