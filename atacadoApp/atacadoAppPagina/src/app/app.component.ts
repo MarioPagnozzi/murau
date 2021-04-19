@@ -63,7 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.setEnderecoLoja();
     });
     this.isLogged = this.usuariosService.isStaticLogged;
-   
+    // tslint:disable-next-line: deprecation
     this.subscrip = this.usuariosService.isLogged.subscribe(log => {
       this.isLogged = log;
       this.files =  montaMenu();

@@ -36,7 +36,7 @@ export class UsuariosService extends BaseService<IUsuarios> {
      }
      const usuarios = await this.http.get(`${environment.url_api}/users/${user.uid}`);
      localStorage.setItem('murau:isroot', usuarios.data.isRoot);
-     this.loginSubject.next(this.isStaticLogged);
+     this.loginSubject.next(this.isStaticLogged);  
    }
    get isLogged(): Observable<boolean> {
      return this.loginSubject.asObservable();
