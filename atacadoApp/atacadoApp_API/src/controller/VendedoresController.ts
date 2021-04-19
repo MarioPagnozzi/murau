@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import { getRepository, Like, Repository } from 'typeorm';
 import { ContatosVendedores } from '../entity/ContatosVendedores';
+import { VendedoresEmpresas } from '../entity/VendedoresEmpresas';
 import { Vendedores } from './../entity/Vendedores';
 import { BaseController } from "./BaseController";
 
@@ -61,6 +62,7 @@ export class VendedoresController extends BaseController<Vendedores> {
                     let _repContatoVendedor: Repository<ContatosVendedores> = getRepository(ContatosVendedores);
                     _repContatoVendedor.save(_contato);
                 });
+               
                 return super.save(ven);
            })
         } else {
@@ -77,6 +79,16 @@ export class VendedoresController extends BaseController<Vendedores> {
         let _vendedor = await this._repVendedor.findOne({where: {uid: request.params.vend}});
         _repContatoVendedor.remove(_contato);
         return _repContatoVendedor.find({where: {vendedor: _vendedor}});
+    }
+    async removeEmpresa(request: Request) {
+        if (!this._func.Permissao(request, "Vendedores", "A")) {
+            return {status: 400, errors: ["Você não tem permissão para alterar ou inserir registros"]}
+        }
+        let _repEmpresasVendedores: Repository<VendedoresEmpresas> = getRepository(VendedoresEmpresas);
+        let _Empresa = await _repEmpresasVendedores.findOne(request.params.id);
+        let _vendedor = await this._repVendedor.findOne({where: {uid: request.params.vend}});
+        _repEmpresasVendedores.remove(_Empresa);
+        return _repEmpresasVendedores.find({where: {vendedor: _vendedor}});
     }
     async nome_like(request: Request) {
         if (!this._func.Permissao(request, "Vendedores", "V")) {

@@ -272,7 +272,80 @@
             </div>
         </mat-tab>
         <mat-tab label="Empresas">
-
+            <p-toolbar styleClass="p-mb-4">
+                <ng-template pTemplate="left">
+                    <button pButton 
+                            pRipple 
+                            label="Novo Empresa" 
+                            icon="pi pi-plus"
+                            class="p-button-primary p-mr-2"
+                            (click)="openDialog()"></button>
+        
+                    <button pButton
+                            pRipple
+                            icon="pi pi-trash"
+                            class="p-button-danger p-mr-2"
+                            (click)="excluirEmpresas()"
+                            [disabled]="!selEmpresas || !selEmpresas.length"></button>
+        
+                </ng-template>
+                
+            </p-toolbar>
+            <p-table #dt [value]="empresas"
+                         [rows]="10"
+                         [paginator]="true"
+                         [globalFilterFields]="['nome_fantasia', 'codigo', 'razao_social','cnpj']"
+                         [(selection)]="selEmpresas"
+                         [rowHover]="true"
+                         dataKey="uid"
+                         currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} empresas"
+                         [showCurrentPageReport]="true" styleClass="p-datatable-responsive" [responsive]="true">
+                <ng-template pTemplate="caption">
+                    <div class="p-d-flex p-ai-center p-jc-between">
+                        <h2 class="p-m-0">Empresas do Vendedor</h2>
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Buscar..." />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th pSortableColumn="codigo" colspan="8%">Cód. <p-sortIcon field="codigo"></p-sortIcon></th>
+                        <th pSortableColumn="nome_fantasia" colspan="20%">Nome Fantasia <p-sortIcon field= "nome_fantasia"></p-sortIcon></th>
+                        <th pSortableColumn="razao_social" colspan="25%">Razao Social <p-sortIcon field="razao_social"></p-sortIcon></th>
+                        <th pSortableColumn="cnpj" colspan="15%">CNPJ<p-sortIcon field="cnpj"></p-sortIcon></th>
+                        <th pSortableColumn="data_inclusao" colspan="15%">Data Inc.<p-sortIcon field="data_inclusao"></p-sortIcon></th>
+                        <th pSortableColumn="data_alteracao" colspan="15%">Última Alt.<p-sortIcon field="data_alteracao"></p-sortIcon></th>
+                        
+                        <th colspan="12%"></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-empresa>
+                    <tr>
+                        <td *ngIf="!empresa.ativo || !empresa.excluido">
+                            <p-tableCheckbox [value]="empresa" [disabled]="empresa.excluido || !empresa.ativo"></p-tableCheckbox>
+                        </td>
+                        <td style="text-align: right" [ngClass]="{'registroExcluido': empresa.excluido}" colspan="8%">{{empresa.codigo}}</td>
+                        <td [ngClass]="{'registroExcluido': empresa.excluido}" colspan="20%">{{empresa.nome_fantasia}}</td>
+                        <td [ngClass]="{'registroExcluido': empresa.excluido}" colspan="25%">{{empresa.razao_social}}</td>
+                        <td [ngClass]="{'registroExcluido': empresa.excluido}" colspan="15%">{{empresa.cnpj}}</td>
+                        <td [ngClass]="{'registroExcluido': empresa.excluido}" colspan="15%">{{empresa.data_inclusao | date: 'dd/MM/yyyy'}}</td>
+                        <td [ngClass]="{'registroExcluido': empresa.excluido}" colspan="15%">{{empresa.data_alteracao | date: 'dd/MM/yyyy'}}</td>
+                        <td *ngIf="!empresa.excluido && empresa.ativo" colspan="12%">                            
+                            <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="excluirEmpresa(empresa)" *ngIf="excluir"></button>
+                        </td>
+                       
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="summary">
+                    
+                </ng-template>
+            </p-table>
+            <p-confirmDialog [style]="{width: '500px'}"></p-confirmDialog>
         </mat-tab>
     </mat-tab-group>
     <p-dialog [(visible)]="showDialog"

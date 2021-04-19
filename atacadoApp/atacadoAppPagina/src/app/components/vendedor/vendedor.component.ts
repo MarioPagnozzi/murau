@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { Operadoras } from 'src/app/enum/operadoras';
 import { ClienteModel } from 'src/app/models/clienteModel';
@@ -36,6 +37,7 @@ export class VendedorComponent implements OnInit {
   pedidos: PedidosModel[] = [];
   empresas: EmpresasModel[] = [];
   empresa: EmpresasModel = new EmpresasModel();
+  empresasList: EmpresasModel[] = [];
   contatos: ContatosModel[] = [];
   usuario: UsuarioModel = new UsuarioModel();
   clientes: ClienteModel[] = [];
@@ -44,6 +46,13 @@ export class VendedorComponent implements OnInit {
   empresasFiltradas: EmpresasModel[] = [];
 
   submitted: boolean = false;
+  selEmpresas: EmpresasModel[] = [];
+  toolTipBtnExcluidos: string = "";
+  iconBtnEye: string = "pi pi-eye";
+ 
+  excluir: boolean = false;
+
+  @ViewChild('dt') public dt: any;
   constructor(private viaCepService: ViaCepService,
     private vendedorService: VendedoresService,
     private usuarioService: UsuariosService,
@@ -72,7 +81,17 @@ export class VendedorComponent implements OnInit {
       { valor: Operadoras.Vivo, label: Operadoras[Operadoras.Vivo].toUpperCase() }
     ];
     this.alterar = Permissao("vendedores", "A");
+    this.excluir = this.alterar;
+    this.carregaEmpresas();
 
+  }
+  async carregaEmpresas() {
+    const result = await this.empresaService.getAll();
+    if (result.success) {
+      let empresasVend = this.empresas;
+      let empresasQuery = result.data as EmpresasModel[];
+      this.empresasList = empresasQuery.filter(val => !empresasVend.includes(val));
+    }
   }
   async getUid(uid: string): Promise<void> {
     if (uid === "novo") {
@@ -97,9 +116,7 @@ export class VendedorComponent implements OnInit {
         this.usuario.cliente = undefined;
     
       }
-
       this.empresas = this.vendedor.empresas as EmpresasModel[];
-
       let _cliente: any;
       let _oldPedidos: PedidosModel[] = [];
       const pedidos = await this.pedidosService.filtro("vendedor", uid);
@@ -130,6 +147,7 @@ export class VendedorComponent implements OnInit {
   }
   async salvarAlteracoes() {
     this.spinnerAcao = "Gravando...";
+    this.vendedor.empresas = this.empresas;
     this.vendedor.contatos = this.contatos;
     this.vendedor.nome = this.vendedor.nome?.toUpperCase();
     this.vendedor.endereco = this.vendedor.endereco?.toUpperCase();
@@ -206,35 +224,105 @@ export class VendedorComponent implements OnInit {
 
   hideDialog() {
     this.submitted = false;
-    this.showDialog = true;
-  }
-  async atribuirEmpresa() {
-    if (this.empresa) {
-      this.empresa = new EmpresasModel();
-    }
-    this.submitted = false;
-    this.showDialog = true;
-    this.empresas = this.vendedor.empresas as EmpresasModel[];
-  }
+    this.showDialog = false;
+  }  
   salvarDialog() {
     this.submitted = true;
 
-    this.vendedor.empresas?.push(this.empresa);
+    this.empresas.push(this.empresa);
     this.empresa = new EmpresasModel();
+    this.carregaEmpresas();
+    
 
   }
-  filtraEmpresa(event: any) {
+  filtraEmpresa(event: any) {   
+    
     let filtros: EmpresasModel[] = [];
     let query = event.query;
+    
     // tslint:disable-next-line: prefer-for-of
-    for (let i = 0; i < this.empresas.length; i++) {
-      let empresa = this.empresas[i];
+    for (let i = 0; i < this.empresasList.length; i++) {
+      let empresa = this.empresasList[i];
       if (empresa.nome_fantasia?.toLowerCase().indexOf(query.toLowerCase()) === 0) {
         filtros.push(empresa);
       }
-    }
-    const empresas: EmpresasModel[] = this.vendedor.empresas ? this.vendedor.empresas : [];
-    this.empresasFiltradas = filtros.filter(val => !this.empresas.includes(val));
+    }  
+    console.log(filtros)  
+    this.empresasFiltradas = filtros;
+    console.log(this.empresasFiltradas)
+    this.empresasFiltradas = this.empresasFiltradas.filter(val => !this.empresas.includes(val));
+    console.log(this.empresasFiltradas)
   }
-  
+  //empresas
+  openDialog() {
+    this.submitted = false;
+    this.showDialog = true;
+  }
+  excluirEmpresas() {
+    this.confirmationService.confirm({
+      message: "Deseja realmente excluir as empresas selecionadas?",
+      header: "Confirmação",
+      icon: "pi pi-exclamation-triangle",
+      accept: async () => {
+        this.empresas = this.empresas;
+        let x = 1;
+        this.selEmpresas.forEach(async (empresa) => {
+          const i = this.findIndexById(empresa.uid ? empresa.uid : '0');
+          if (i > -1) {
+            this.empresas[i].ativo = false;
+            this.empresas[i].excluido = true;
+          }
+        });
+        this.empresas = this.empresas.filter(val => val.ativo && !val.excluido);
+        this.selEmpresas = [];
+        this.messageService.add({
+          severity: "success",
+          summary: "Sucesso",
+          detail: "Clientes Excluídos!",
+          life: 3000
+        })
+      }
+    })
+  }
+ 
+  applyFilterGlobal($event: Event, stringVal: string) {
+    this.dt.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
+  }
+  excluirEmpresa(empresa: EmpresasModel) {
+    this.confirmationService.confirm({
+      message: "Deseja realmente excluir a empresa " + empresa.nome_fantasia + "?",
+      header: "Confirmação",
+      icon: "pi pi-exclamation-triangle",
+      accept: async () => {
+        const i = this.findIndexById(empresa.uid ? empresa.uid : '0');
+        this.empresas[i].ativo = false;
+        this.empresas[i].excluido = true;
+        this.empresas = this.empresas.filter(val => val.ativo && !val.excluido);
+        this.messageService.add({
+          severity: "success",
+          summary: "Sucesso",
+          detail: "Vendedor Excluído!",
+          life: 3000
+      })
+       
+      }
+    })
+  }
+  async retornaEmpresas(): Promise<EmpresasModel[]> {
+    const result = await this.empresaService.getAll();
+    if (result.success) {
+      return result.data as EmpresasModel[];
+    }
+    return [];
+  }
+  findIndexById(id: string): number {
+    let index = -1;
+    for (let i = 0; i < this.empresas.length; i++) {
+        if (this.empresas[i].uid === id) {
+            index = i;
+            break;
+        }
+    }
+    return index;
+  }
 }

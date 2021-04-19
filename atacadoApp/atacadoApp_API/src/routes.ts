@@ -49,6 +49,7 @@ export const Routes = [
     {method: "get", route: "/vendedores/:codigo/vendedor", controller: VendedoresController, action: "codigo"},
     {method: "get", route: "/vendedores/:codigo/empresas", controller: VendedoresController, action: "porEmpresa"},
     {method: "delete", route: "/vendedores/:vend/contato/:id", controller: VendedoresController, action: "removeContato"},
+    {method: "delete", route: "/vendedores/:vend/empresa/:id", controller: VendedoresController, action: "removeEmpresa"},
 
     //retoeamento restritos: Empresas
     {method: "get", route: "/empresas", controller: EmpresasController, action: "all"}, 
