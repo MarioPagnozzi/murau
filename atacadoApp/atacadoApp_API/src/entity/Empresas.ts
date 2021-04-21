@@ -36,6 +36,9 @@ export class Empresas extends BaseEntity {
     @Column({type: "varchar", length: 100})
     cidade: string
 
+    @Column({type: "varchar", length: 100, nullable: true})
+    complemento: string
+
     @Column({type: "varchar", length: 2})
     uf: string
 

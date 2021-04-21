@@ -70,6 +70,17 @@ export class VendedoresController extends BaseController<Vendedores> {
         }
 
     }
+    async filtro(request: Request) {
+        let valor = request.params.valor;
+        let filtro = request.params.filtro;
+
+        if (filtro === "empresa") {
+            return this._repVendedor.createQueryBuilder("vendedores")
+                                    .innerJoinAndSelect("vendedores.empresas","empresas")
+                                    .where("empresas.uid = :uid", {uid: valor})
+                                    .getMany();
+        }
+    }
     async removeContato(request: Request) {
         if (!this._func.Permissao(request, "Vendedores", "A")) {
             return {status: 400, errors: ["Você não tem permissão para alterar ou inserir registros"]}

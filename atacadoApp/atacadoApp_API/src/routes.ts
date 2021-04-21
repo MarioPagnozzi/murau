@@ -50,6 +50,7 @@ export const Routes = [
     {method: "get", route: "/vendedores/:codigo/empresas", controller: VendedoresController, action: "porEmpresa"},
     {method: "delete", route: "/vendedores/:vend/contato/:id", controller: VendedoresController, action: "removeContato"},
     {method: "delete", route: "/vendedores/:vend/empresa/:id", controller: VendedoresController, action: "removeEmpresa"},
+    {method: "get", route: "/vendedores/:valor/:filtro/filtro", controller: VendedoresController, action: "filtro"},
 
     //retoeamento restritos: Empresas
     {method: "get", route: "/empresas", controller: EmpresasController, action: "all"}, 

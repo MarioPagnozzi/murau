@@ -9,7 +9,7 @@ import { IHistoricoPedidos } from './IHistoricoPedidos';
 export interface IPedidos extends IInterface {
 
     num_pedido?: string
-    valor_pedido?: number
+    valor_pedido: number
     status_pedido?: statusPedido
     vendedor?: IVendedores
     cliente?: ICliente

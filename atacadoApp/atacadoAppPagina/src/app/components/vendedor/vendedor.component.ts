@@ -53,6 +53,7 @@ export class VendedorComponent implements OnInit {
   excluir: boolean = false;
 
   @ViewChild('dt') public dt: any;
+  url: string = "";
   constructor(private viaCepService: ViaCepService,
     private vendedorService: VendedoresService,
     private usuarioService: UsuariosService,
@@ -68,7 +69,7 @@ export class VendedorComponent implements OnInit {
 
   ngOnInit(): void {
     // tslint:disable-next-line: deprecation
-    this.active.params.subscribe(p => this.getUid(p.cod));
+    this.active.params.subscribe(p => this.getUid(p.cod, p.emp));
 
     this.operadoras = [
       { valor: 0, label: "Operadora" },
@@ -93,7 +94,13 @@ export class VendedorComponent implements OnInit {
       this.empresasList = empresasQuery.filter(val => !empresasVend.includes(val));
     }
   }
-  async getUid(uid: string): Promise<void> {
+  async getUid(uid: string, emp: string | undefined): Promise<void> {
+    if (emp) {
+      this.url = `/empresa/${emp}`;
+    } else {
+      this.url = "/vendedores";
+    }
+
     if (uid === "novo") {
       return;
     }
@@ -197,7 +204,7 @@ export class VendedorComponent implements OnInit {
     if (contato.uid) {
       const _contatos = await this.vendedorService.delete(`${this.vendedor.uid}/contato/${contato.uid}`);
       // tslint:disable-next-line: deprecation
-      this.active.params.subscribe(p => this.getUid(p.cod));
+      this.active.params.subscribe(p => this.getUid(p.cod, p.emp));
     }
   }
   selectedFile(file: FileManage): void {

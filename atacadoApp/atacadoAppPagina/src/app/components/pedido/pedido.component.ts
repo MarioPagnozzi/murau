@@ -160,6 +160,8 @@ export class PedidoComponent implements OnInit, AfterViewInit {
 
     if (url === "vendedor") { 
       this.uid = this.vendedor.uid ? this.vendedor.uid : '';
+    } if (url === "empresa") {
+      this.uid = this.empresa.uid ? this.empresa.uid : '';
     } else {
       this.uid = this.cliente.uid ? this.cliente.uid : '';
     }
