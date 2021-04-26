@@ -10,7 +10,7 @@
     <h5 style="height: 3px !important;">Tela de cadastro e manutenção de vendedores {{vendedor.codigo ? " - Cód.: " + vendedor.codigo : ""}}</h5>
     
     <app-tool-bar [alterar]="alterar"
-                  routerBack="/vendedores"
+                  [routerBack]="url"
                   (salvar)="salvarAlteracoes()"></app-tool-bar>
     <mat-tab-group mat-align-tabs="start">
         <mat-tab label="Dados">

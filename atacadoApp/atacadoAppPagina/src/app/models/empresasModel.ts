@@ -15,6 +15,7 @@ export class EmpresasModel extends BaseModel {
     numero?: string
     bairro?: string
     cidade?: string
+    complemento?: string
     uf?: string
     pedidos?: PedidosModel[]
     produtosempresas?: ProdutosEmpresasModel[]

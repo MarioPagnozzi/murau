@@ -15,6 +15,7 @@ export interface IEmpresas extends IInterface {
     numero?: string
     bairro?: string
     cidade?: string
+    complemento?: string
     uf?: string
     pedidos?: IPedidos[]
     produtosempresas?: IProdutos[]

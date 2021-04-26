@@ -332,14 +332,10 @@ export class PedidosController extends BaseController<Pedidos> {
         let valor = request.params.valor;
 
         if (filtro == "cliente") {
-            return this._repPedido.find({where: {cliente: [{razao_social: Like("%" + valor + "%")}, 
-                                                           {cnpj: Like("%" + valor + "%")}, 
-                                                           {nome_facebook: Like("%" + valor + "%")}, 
-                                                           {email: Like("%" + valor + "%")}]}});
+            return this._repPedido.find({where: [{cliente: {uid: valor} }]});
         }
         else if (filtro == "empresa") {
-            return this._repPedido.find({where: {empresa: [{razao_social: Like("%" + valor + "%")},
-                                                            {codigo: valor}]}});
+            return this._repPedido.find({where: [{empresa: {uid: valor}}]});
         }
         else if (filtro == "vendedor") {
             return this._repPedido.find({where: [{vendedor: {uid: valor}}]});

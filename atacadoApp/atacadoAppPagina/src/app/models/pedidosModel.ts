@@ -9,7 +9,7 @@ import { VendedoresModel } from "./vendedoresModel";
 export class PedidosModel extends BaseModel {
     
     num_pedido?: string
-    valor_pedido?: number
+    valor_pedido: number = 0
     status_pedido?: statusPedido
     previsao_entrega?: number
     vendedor: VendedoresModel = new VendedoresModel()

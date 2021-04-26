@@ -19,7 +19,7 @@ export class UserController extends BaseController<User> {
        let {email, senha} = request.body;
        if (!email || !senha) 
            return {status: 400, erros: ["informe um e-mail e uma senha para logar"]};
-        let user = await this.repositorio.findOne({email: email, senha: md5(senha)});
+        let user = await this.repositorio.findOne({email: email, senha: md5(senha), status_usuario: 2, ativo: true});
         if(user) {
             let _payload = {
                 uid: user.uid,

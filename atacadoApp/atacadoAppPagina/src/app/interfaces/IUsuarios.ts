@@ -15,4 +15,6 @@ export interface IUsuarios extends IInterface {
     grupos?: IGrupos[]
     vendedor?: IVendedores
     cliente?: ICliente
+    confirmaSenha?: string;
+    fotoBase64?: string;
 }

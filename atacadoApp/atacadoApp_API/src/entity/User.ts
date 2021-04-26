@@ -38,4 +38,5 @@ export class User extends BaseEntity {
     @OneToOne(type => Vendedores, vendedor => vendedor.usuario, {eager: true, nullable: true})
     @JoinColumn()
     vendedor: Vendedores
+   
 }

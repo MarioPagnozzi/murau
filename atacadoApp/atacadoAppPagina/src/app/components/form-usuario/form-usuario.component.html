@@ -80,9 +80,14 @@
     </div>
 </div>
 <div class="row">
-    <div class="col-sm-2">
+    <div class="col-sm-2"  *ngIf="root">
         <div class="p-field">
-            <p-checkbox [(ngModel)]="usuario.isRoot" label="Super Usuário" [binary]="true" *ngIf="root"></p-checkbox>
+            <p-checkbox [(ngModel)]="usuario.isRoot" label="Super Usuário" [binary]="true" [disabled]="!isRoot"></p-checkbox>
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div class="p-field" *ngIf="ativo">
+            <mat-slide-toggle id="ativo" color="primary" [(ngModel)]="usuario.ativo">{{usuario.ativo ? "Ativo" : "Inativo"}}</mat-slide-toggle>
         </div>
     </div>
 </div>

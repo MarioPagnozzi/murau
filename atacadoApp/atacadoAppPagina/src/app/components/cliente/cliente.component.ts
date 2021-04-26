@@ -111,7 +111,7 @@ export class ClienteComponent implements OnInit {
           this.usuario = new UsuarioModel();
           const grupos = await this.gruposService.getAll();
           let _grupos = grupos.data as GrupoModel[];
-          let grupo = _grupos.filter(val => val.nome_grupo = "Clientes")[0] as GrupoModel;
+          let grupo = _grupos.filter(val => val.nome_grupo === "Clientes")[0] as GrupoModel;
           this.usuario.grupos.push(grupo);
         }
         

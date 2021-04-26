@@ -56,7 +56,7 @@ async save(model: any) {
         if (restrito) {
             let tabela = this._func.Tabela(request);
             if (!this._func.Permissao(request, tabela, "E")) 
-                return {status: 400, errors: ["Você não tem permissão para excluir o registro"]}
+                return {status: 400, errors: [{message: "Você não tem permissão para excluir o registro"}]}
         }
         let uid = request.params.id;
         let model: any = await this._repositorio.findOne(uid);
@@ -69,7 +69,7 @@ async save(model: any) {
             return {
                 status: 404,
                 errors: [
-                    'Registro não encontrado!'
+                    {message: 'Registro não encontrado!'}
                 ]
             }
         }

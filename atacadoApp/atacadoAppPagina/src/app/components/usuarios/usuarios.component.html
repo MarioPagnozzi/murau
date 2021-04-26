@@ -1,1 +1,99 @@
-<p>usuarios works!</p>
+<div class="murau__container">
+    <ngx-spinner bdColor="rgba(75,46,40,0.7)"
+                color="#ffff"
+                size="medium"
+                type="ball-spin-fade-rotating"
+                [fullScreen]="true">
+        <p style="font-size: 20px; color: white">{{spinnerAcao}}</p>
+    </ngx-spinner>
+    <h1>Listagem de Usuários</h1>
+    <h5>Consulta - Exclusão e Manutenção de Usuários</h5>
+    <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+            <button pButton 
+                    pRipple 
+                    label="Novo Usuário" 
+                    icon="pi pi-plus"
+                    class="p-button-primary p-mr-2"
+                    routerLink="/usuario/novo"></button>
+
+            <button pButton
+                    pRipple
+                    icon="pi pi-trash"
+                    class="p-button-danger p-mr-2"
+                    (click)="excluirUsuarios()"
+                    [disabled]="!selUsuarios || !selUsuarios.length"></button>
+
+            <button pButton
+                    pRipple
+                    [pTooltip]="toolTipBtnExcluidos"
+                    [icon]="iconBtnEye"
+                    class="p-button-help"
+                    (click)="mostraUsuariosExcluidos()"></button>
+
+        </ng-template>
+        
+    </p-toolbar>
+    <p-table #dt [value]="usuarioList"
+                 [rows]="10"
+                 [paginator]="true"
+                 [globalFilterFields]="['nome', 'email', 'stauts_usuario']"
+                 [(selection)]="selUsuarios"
+                 [rowHover]="true"
+                 dataKey="uid"
+                 currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} usuários"
+                 [showCurrentPageReport]="true" styleClass="p-datatable-responsive" [responsive]="true">
+        <ng-template pTemplate="caption">
+            <div class="p-d-flex p-ai-center p-jc-between">
+                <h2 class="p-m-0">Usuários</h2>
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Buscar..." />
+                </span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 3rem">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th colspan="5%"></th>
+                <th pSortableColumn="nome" colspan="15%">Nome de Usuário <p-sortIcon field= "nome"></p-sortIcon></th>
+                <th pSortableColumn="email" colspan="20%">E-mail<p-sortIcon field="email"></p-sortIcon></th>
+                <th pSortableColumn="status_usuario" colspan="10%">Status<p-sortIcon field="status_usuario"></p-sortIcon></th>
+                <th pSortableColumn="data_inclusao" colspan="10%">Data Inc.<p-sortIcon field="data_inclusao"></p-sortIcon></th>
+                <th pSortableColumn="data_alteracao" colspan="10%">Última Alt.<p-sortIcon field="data_alteracao"></p-sortIcon></th>
+                
+                <th colspan="10%"></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-usuario>
+            <tr>
+                <td *ngIf="!usuario.ativo || !usuario.excluido">
+                    <p-tableCheckbox [value]="usuario" [disabled]="usuario.excluido || !usuario.ativo"></p-tableCheckbox>
+                </td>
+                <td [ngClass]="{'registroExcluido': usuario.excluido}" colspan="5%">
+                    <p-avatar [image]="usuario.fotoBase64" shape="circle" size="xlarge"></p-avatar>
+                </td>
+                <td [ngClass]="{'registroExcluido': usuario.excluido}" colspan="15%">{{usuario.nome}}</td>
+                <td [ngClass]="{'registroExcluido': usuario.excluido}" style="overflow: hidden; text-overflow: clip" colspan="20%">{{usuario.email}}</td>
+                <td [ngClass]="{'registroExcluido': usuario.excluido}" colspan="10%">{{usuario.status_usuario === 1 ? "PENDENTE" : "APROVADO"}}</td>
+                <td [ngClass]="{'registroExcluido': usuario.excluido}" colspan="10%">{{usuario.data_inclusao | date: 'dd/MM/yyyy'}}</td>
+                <td [ngClass]="{'registroExcluido': usuario.excluido}" colspan="10%">{{usuario.data_alteracao | date: 'dd/MM/yyyy'}}</td>
+                <td *ngIf="!usuario.excluido && usuario.ativo" colspan="10%">
+                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-primary p-mr-2" routerLink="/usuario/{{usuario.uid}}"></button>
+                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="excluirUsuario(usuario)"></button>
+                </td>
+                <td *ngIf="usuario.excluido || !usuario.ativo" colspan="12%">
+                    <button pButton pRipple pTooltip="Retaurar Registro" icon="pi pi-undo" class="p-button-rounded p-button-help p-mr-2" (click)="restaurarUsuario(usuario)"></button>                                
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            
+        </ng-template>
+    </p-table>
+    <p-confirmDialog [style]="{width: '500px'}"></p-confirmDialog>
+</div>
+
+

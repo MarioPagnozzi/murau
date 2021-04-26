@@ -15,5 +15,6 @@ export class UsuarioModel extends BaseModel {
     grupos: GrupoModel[] = []
     vendedor?: VendedoresModel = new VendedoresModel()
     cliente?: ClienteModel = new ClienteModel()
-    confirmaSenha: string = ""
+    confirmaSenha?: string
+    fotoBase64?: string
 }

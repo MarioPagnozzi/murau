@@ -1,1 +1,186 @@
-<p>usuario works!</p>
+<div class="murau__container">
+    <ngx-spinner bdColor="rgba(75,46,40,0.7)"
+                color="#ffff"
+                size="medium"
+                type="ball-spin-fade-rotating"
+                [fullScreen]="true">
+        <p style="font-size: 20px; color: white">{{spinnerAcao}}</p>
+    </ngx-spinner>
+    <h1>Cadastro de Usuários</h1>
+    <h5 style="height: 3px !important;">Tela de cadastro e manutenção de Usuários</h5>
+    <h5 style="height: 3px !important;">{{tipoUsuario}}</h5>
+    <app-tool-bar [alterar]="alterar"
+                  [aprovado]="aprovado"
+                  routerBack="/usuarios"
+                  (salvar)="salvarAlteracoes()"></app-tool-bar>
+    <mat-tab-group mat-align-tabs="start">
+          <mat-tab label="Dados">
+            <div class="row murau__container">
+                <div class="col-sm-2">
+                    <app-input-file [image]="usuario.foto" (_select)="selectedFile($event)"></app-input-file>
+                </div>
+                <div class="col-sm">
+                    <app-form-usuario [usuario]="usuario" [ativo]="true" [root]="true"></app-form-usuario>
+                </div>
+            </div>
+        </mat-tab>
+        <mat-tab label="Grupos e Permissões">
+            <p-toolbar styleClass="p-mb-4">
+                <ng-template pTemplate="left">
+                    <button pButton 
+                            pRipple 
+                            label="Add Grupo" 
+                            icon="pi pi-plus"
+                            class="p-button-primary p-mr-2"
+                            (click)="openDialog()"></button>
+        
+                    <button pButton
+                            pRipple
+                            icon="pi pi-trash"
+                            class="p-button-danger p-mr-2"
+                            (click)="excluirGrupos()"
+                            [disabled]="!selGrupos || !selGrupos.length"></button>
+        
+                  
+        
+                </ng-template>
+                
+            </p-toolbar>
+            <p-table #dt [value]="grupoList"
+                         [rows]="10"
+                         [paginator]="true"
+                         [globalFilterFields]="['nome_grupo', 'data_inclusao', 'data_alteracao']"
+                         [(selection)]="selGrupos"
+                         [rowHover]="true"
+                         dataKey="uid"
+                         currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} grupos"
+                         [showCurrentPageReport]="true" styleClass="p-datatable-responsive" [responsive]="true">
+                <ng-template pTemplate="caption">
+                    <div class="p-d-flex p-ai-center p-jc-between">
+                        <h2 class="p-m-0">Grupos e Permissões</h2>
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Buscar..." />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th style="width: 3rem">
+                            <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                        </th>
+                        <th style="width: 3rem"></th>
+                        <th pSortableColumn="nome_grupo" colspan="45%">Grupo<p-sortIcon field= "nome_grupo"></p-sortIcon></th>                       
+                        <th pSortableColumn="data_inclusao" colspan="20%">Data Inc.<p-sortIcon field="data_inclusao"></p-sortIcon></th>
+                        <th pSortableColumn="data_alteracao" colspan="20%">Última Alt.<p-sortIcon field="data_alteracao"></p-sortIcon></th>
+                        
+                        <th colspan="10%"></th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-grupo let-expanded="expanded">
+                    <tr>
+                        <td *ngIf="!grupo.ativo || !grupo.excluido">
+                            <p-tableCheckbox [value]="grupo" [disabled]="grupo.excluido || !grupo.ativo"></p-tableCheckbox>
+                        </td>
+                        <td>
+                            <button type="button" pButton pRipple [pRowToggler]="grupo" class="p-button-text p-button-rounded p-button-plain" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+                        </td>
+                        <td [ngClass]="{'registroExcluido': grupo.excluido}" colspan="45%">{{grupo.nome_grupo}}</td>
+                       
+                        <td [ngClass]="{'registroExcluido': grupo.excluido}" colspan="20%">{{grupo.data_inclusao | date: 'dd/MM/yyyy'}}</td>
+                        <td [ngClass]="{'registroExcluido': grupo.excluido}" colspan="20%">{{grupo.data_alteracao | date: 'dd/MM/yyyy'}}</td>
+                        <td *ngIf="!grupo.excluido && grupo.ativo" colspan="10%">
+                            <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="excluirGrupo(grupo)"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="rowexpansion" let-grupo>
+                    <tr>
+                        <td colspan="100%">
+                            <div class="p-p-3">
+                                <p-table [value]="grupo.permissoes" dataKey="uid">
+                                    <ng-template pTemplate="header">
+                                        <tr>
+                                            <th pSortableColumn="tabela">Tabela <p-sortIcon field="tabela"></p-sortIcon></th>
+                                            <th pSortableColumn="visualizar">Visualizar <p-sortIcon field="visualizar"></p-sortIcon></th>
+                                            <th pSortableColumn="inserir">Inserir <p-sortIcon field="inserir"></p-sortIcon></th>
+                                            <th pSortableColumn="altear">Alterar <p-sortIcon field="alterar"></p-sortIcon></th>
+                                            <th pSortableColumn="excluir">Excluir <p-sortIcon field="excluir"></p-sortIcon></th>
+                                           
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="body" let-permissao>
+                                        <tr>
+                                            <td>{{permissao.tabela}}</td>
+                                            <td>{{permissao.visualizar ? "Sim" : "Não"}}</td>
+                                            <td>{{permissao.inserir ? "Sim" : "Não"}}</td>
+                                            <td>{{permissao.alterar ? "Sim" : "Não"}}</td>
+                                            <td>{{permissao.excluir ? "Sim" : "Não"}}</td>
+                                            
+                                        </tr>
+                                    </ng-template>
+                                    <ng-template pTemplate="emptymessage">
+                                        <tr>
+                                            <td colspan="6">Nenhuma permissão configurada para este grupo.</td>
+                                        </tr>
+                                    </ng-template>
+                                </p-table>
+                            </div>
+                        </td>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="summary">
+                    
+                </ng-template>
+            </p-table>
+            <p-confirmDialog [style]="{width: '500px'}"></p-confirmDialog>
+        </mat-tab>
+    </mat-tab-group>
+    <p-dialog [(visible)]="showDialog"
+              [style]="{width: '600px', height: '600px'}"
+              header="Atribuir Grupo ao Usuário"
+              [modal]="true"
+              (onHide)="hideDialog()"
+              styleClass="p-fluit">
+        <div class="murau__container">
+            
+                <div class="p-field">
+                    <label for="vendedor">Grupo</label>
+                    <p-autoComplete [(ngModel)]="grupo"
+                                    id="grupo"
+                                    name="grupo"
+                                    [suggestions]="gruposFiltrados"
+                                    (completeMethod)="filtraGrupo($event)"
+                                    field="nome_grupo"
+                                    [minlength]="1" [inputStyle]="{width: '100%'}"></p-autoComplete>
+                </div>                
+                <div class="murau__container">
+                    <hr />
+                    <h3>Novo Grupo</h3>
+                    <p>Nome: {{grupo.nome_grupo}}</p>
+                </div>
+
+            <p-toolbar styleClass="p-mb-4">
+                <ng-template pTemplate="left">
+
+                </ng-template>
+                <ng-template pTemplate="right">
+                    <button pButton
+                            *ngIf="alterar"
+                            pRipple 
+                            icon="pi pi-save"
+                            class="p-button-success p-mr-2"
+                            (click)="salvarDialog(); hideDialog()"></button> 
+
+                    <button pButton
+                            pRipple
+                            icon="pi pi-sign-out"
+                            class="p-button-outlined p-button-primary"
+                            (click)="hideDialog()"></button>
+                </ng-template>
+            </p-toolbar>
+        </div>
+    </p-dialog>
+</div>
+
+
