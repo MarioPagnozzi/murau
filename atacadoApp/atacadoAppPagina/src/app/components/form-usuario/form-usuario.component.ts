@@ -21,6 +21,8 @@ export class FormUsuarioComponent implements OnInit, OnChanges {
   }
   get  usuario() { return this._usuario; }
   private _usuario: UsuarioModel = new UsuarioModel();
+  isRoot: boolean = false;
+  @Input() ativo: boolean = false;
   @Input() root: boolean = false;
 
   status: IStatus[] = [];
@@ -44,7 +46,7 @@ export class FormUsuarioComponent implements OnInit, OnChanges {
     for (let g in grupos) {
       let {nome_grupo} = grupos[g];
       if (nome_grupo?.toUpperCase() === "SUPER USUÁRIO" && localStorage.getItem("murau:isroot")) {
-        this.root = true;
+        this.isRoot = true;
       }
     }
   }

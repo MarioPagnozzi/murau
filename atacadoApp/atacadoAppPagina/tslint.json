@@ -152,7 +152,8 @@
       "kebab-case"
     ],
     "no-shadowed-variable": false,
-    "prefer-const":false
+    "prefer-const":false,
+    "forin": false
     
   }
 }

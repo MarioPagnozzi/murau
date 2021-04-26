@@ -40,3 +40,7 @@ app-input-file {
   .registroExcluido {
     color: #E0E0E0 !important;
 }
+::ng-deep .style_ok {
+    background-color:green;
+    color:white;
+  }

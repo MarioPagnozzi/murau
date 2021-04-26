@@ -36,11 +36,11 @@
                               }
                         ],
                         "styles": [
-                            "./node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css",
+                            "src/app/shared/deeppurple-amber.css",
                             "src/styles.scss",
                             "./node_modules/primeicons/primeicons.css",
-                            "./node_modules/primeng/resources/themes/saga-blue/theme.css",
-                            "./node_modules/primeng/resources/primeng.css",
+                            "src/app/shared/theme.css",
+                            "src/app/shared/primeng.css",
                             "./node_modules/@fullcalendar/daygrid/main.min.css",
                             "./node_modules/@fullcalendar/timegrid/main.min.css",
                             "./node_modules/@fullcalendar/common/main.min.css",
