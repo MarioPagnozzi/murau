@@ -90,7 +90,7 @@ export class EmpresasComponent implements OnInit {
         this.iconBtnEye = "pi pi-eye-slash";
         this.toolTipBtnExcluidos = "Ocultar Clientes Excluídos";
         this.empresaList = this.empresas;
-}
+    }
  }
  excluirEmpresa(empresa: EmpresasModel) {
     this.confirmationService.confirm({
