@@ -33,7 +33,7 @@
     "@googlemaps/js-api-loader": "^1.11.3",
     "@ngx-translate/core": "^13.0.0",
     "@ngx-translate/http-loader": "^6.0.0",
-    "@types/googlemaps": "^3.39.13",
+    "@types/googlemaps": "3.39.12",
     "bootstrap": "^4.6.0",
     "bootstrap-icons": "^1.4.1",
     "fullcalendar": "^5.6.0",
@@ -46,7 +46,7 @@
     "ngx-spinner": "^11.0.1",
     "primeflex": "^2.0.0",
     "primeicons": "^4.1.0",
-    "primeng": "^11.3.1",
+    "primeng": "^11.4.0",
     "rxjs": "^6.6.7",
     "sweetalert2": "^10.15.7",
     "tslib": "^2.0.0",
@@ -54,7 +54,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^0.1102.10",
-    "@angular/cli": "^11.2.6",
+    "@angular/cli": "^11.2.10",
     "@angular/compiler-cli": "^11.2.11",
     "@fortawesome/angular-fontawesome": "^0.8.2",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
@@ -76,7 +76,7 @@
     "protractor": "~7.0.0",
     "ts-node": "~8.3.0",
     "tslint": "~6.1.0",
-    "typescript": "^4.0.7"
+    "typescript": "4.1.5"
   },
   "peerDependencies": {
     "postcss": "^8.0.0"

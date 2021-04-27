@@ -87,7 +87,8 @@ export const Routes = [
     {method: "get", route: "/grupos", controller: GrupoController, action: "all"},
     {method: "get", route: "/grupos/:id", controller: GrupoController, action: "one"},
     {method: "get", route: "/grupos/usuarios/:user", controller: GrupoController, action: "usuarios"},
+    {method: "delete", route: "/grupos/:id", controller: GrupoController, action: "remove"},
 
-    { method: "get", route: "/storage/:filename", controller: StorageController, action: "getFile" }
+    {method: "get", route: "/storage/:filename", controller: StorageController, action: "getFile" }
 
 ];

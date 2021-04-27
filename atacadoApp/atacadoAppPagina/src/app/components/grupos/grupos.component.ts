@@ -37,9 +37,9 @@ export class GruposComponent implements OnInit {
     this.grupos =  await this.retornaGrupos();
     this.grupoList = this.grupos.filter(val => val.ativo && !val.excluido);
 
-    this.alterar = Permissao("grupos", "A");
-    this.excluir = Permissao("grupos", "E");
-    this.inserir = Permissao("grupos", "I");
+    this.alterar = Permissao("Grupo", "A");
+    this.excluir = Permissao("Grupo", "E");
+    this.inserir = Permissao("Grupo", "I");
   }
   async retornaGrupos(): Promise<GrupoModel[]> {
     this.spinnerAcao = "Carregando Grupos...";
@@ -88,7 +88,7 @@ export class GruposComponent implements OnInit {
   }
   excluirGrupo(grupo: GrupoModel) {
     this.confirmationService.confirm({
-      message: "Deseja realmente excluir a empresa " + grupo.nome_grupo + "?",
+      message: "Deseja realmente excluir o grupo " + grupo.nome_grupo + "?",
       header: "Confirmação",
       icon: "pi pi-exclamation-triangle",
       accept: async () => {

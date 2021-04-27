@@ -25,12 +25,12 @@
                     (click)="excluirGrupos()"
                     [disabled]="!selGrupos || !selGrupos.length"></button>
 
-            <button pButton
+            <p-button 
                     pRipple
                     [pTooltip]="toolTipBtnExcluidos"
                     [icon]="iconBtnEye"
-                    class="p-button-help"
-                    (click)="mostraGrupoExcluidos()"></button>
+                    styleClass="p-button-help"
+                    (click)="mostraGrupoExcluidos()"></p-button>
 
         </ng-template>
         
@@ -80,7 +80,7 @@
                     <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="excluirGrupo(grupo)" *ngIf="excluir"></button>
                 </td>
                 <td *ngIf="grupo.excluido || !grupo.ativo" colspan="12%">
-                    <button pButton pRipple pTooltip="Retaurar Registro" icon="pi pi-undo" class="p-button-rounded p-button-help p-mr-2" (click)="restauraGrupo(grupo)" *ngIf="alterar"></button>                                
+                    <button pButton pRipple pTooltip="Retaurar Registro" icon="pi pi-undo" class="p-button-rounded p-button-help p-mr-2" (click)="restauraGrupo(grupo)" *ngIf="alterar"></button>
                 </td>
             </tr>
         </ng-template>

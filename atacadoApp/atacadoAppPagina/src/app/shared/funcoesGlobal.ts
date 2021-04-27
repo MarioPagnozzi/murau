@@ -54,7 +54,7 @@ export function Permissao(tabela: string, acao: string): boolean {
                 }
             })
         })
-     
+        return hasPermissao;
     }
     if (acao === "I") {
 
@@ -67,7 +67,7 @@ export function Permissao(tabela: string, acao: string): boolean {
                 }
             })
         })
-
+        return hasPermissao;
     }
     if (acao === "A") {
 
@@ -80,6 +80,7 @@ export function Permissao(tabela: string, acao: string): boolean {
                 }
             })
         })
+        return hasPermissao;
     }
         
     if (acao === "E") {
@@ -93,7 +94,7 @@ export function Permissao(tabela: string, acao: string): boolean {
                 }
             })
         })
-
+        return hasPermissao;
     }
     return hasPermissao;
 }
