@@ -34,3 +34,4 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 19/04/2021 | Atividade #30 - Cad. Pedidos       | Desenv. Mário
 19/04/2021 | Atividade #32 - Cad. Vendedores    | Desenv. Mário
 19/04/2021 | Atividade #33 - Cad. Usuários      | Desenv. Mário
+26/04/2021 | Atividade #53 - Cad. Grupos        | Desenv. Mário

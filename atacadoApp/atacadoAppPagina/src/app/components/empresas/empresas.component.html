@@ -24,12 +24,12 @@
                     (click)="excluirEmpresas()"
                     [disabled]="!selEmpresas || !selEmpresas.length"></button>
 
-            <button pButton
+            <p-button
                     pRipple
                     [pTooltip]="toolTipBtnExcluidos"
                     [icon]="iconBtnEye"
-                    class="p-button-help"
-                    (click)="mostraEmpresasExcluidas()"></button>
+                    styleClass="p-button-help"
+                    (click)="mostraEmpresasExcluidas()"></p-button>
 
         </ng-template>
         

@@ -11,7 +11,7 @@ import { Setup } from "./configuracao/inicializa";
 import cron_job from "./middleware/cron_job";
 
 
-
+var querystring = require("querystring");
 var multer = require("multer");
 //var upload = multer();S
 

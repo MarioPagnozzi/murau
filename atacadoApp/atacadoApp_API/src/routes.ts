@@ -38,10 +38,11 @@ export const Routes = [
     {method: "post", route: "/produtos/:codigo/novo", controller: ProdutosController,action: "insereNovo"},
     {method: "post", route: "/produtos/uploadfotos", controller: ProdutosController,action: "uploadFotos"},
     {method: "post", route: "/produtos/empresas", controller: ProdutosController,action: "vinculaEmpresas"},
-    {method: "get", route: "produtos/proddia", controller: ProdutosController,action: "produtosDia"},
+    {method: "get", route: "/produtos/novos/proddia", controller: ProdutosController,action: "produtosDia"},
+    {method: "get", route: "/produtos/produto_list/query_custom/qry/search", controller: ProdutosController, action: "search"},
 
     //roteamentos restritos: Vendedores
-    {method: "get", route: "/vendedores", controller: VendedoresController, action: "all"}, 
+    {method: "get", route: "/vendedores", controller: VendedoresController, action: "all", useQueryString: true}, 
     {method: "get", route: "/vendedores/:id", controller: VendedoresController, action: "one"}, 
     {method: "post", route: "/vendedores", controller: VendedoresController, action: "save"},
     {method: "delete",route: "/vendedores/:id", controller: VendedoresController, action: "remove"},
@@ -50,7 +51,7 @@ export const Routes = [
     {method: "get", route: "/vendedores/:codigo/empresas", controller: VendedoresController, action: "porEmpresa"},
     {method: "delete", route: "/vendedores/:vend/contato/:id", controller: VendedoresController, action: "removeContato"},
     {method: "delete", route: "/vendedores/:vend/empresa/:id", controller: VendedoresController, action: "removeEmpresa"},
-    {method: "get", route: "/vendedores/:valor/:filtro/filtro", controller: VendedoresController, action: "filtro"},
+    {method: "get", route: "/vendedores/:valor/:filtro/filtro", controller: VendedoresController, action: "filtro", useQueryString: true},
 
     //retoeamento restritos: Empresas
     {method: "get", route: "/empresas", controller: EmpresasController, action: "all"}, 
@@ -79,7 +80,7 @@ export const Routes = [
     {method: "post", route: "/pedidos", controller: PedidosController, action: "save"},
     {method: "get", route: "/pedidos/:valor/:filtro/filtro", controller: PedidosController, action: "filtro"},
     {method: "get", route: "/pedidos", controller: PedidosController, action: "all"},
-    {method: "get", route: "/pedidos/peddia", controller: PedidosController, action: "pedidosDia"},
+    {method: "get", route: "/pedidos/novos/peddia", controller: PedidosController, action: "pedidosDia"},
     {method: "get", route: "/pedidos/:id", controller: PedidosController, action: "one"},
 
     //Rota de Grupos
@@ -87,7 +88,8 @@ export const Routes = [
     {method: "get", route: "/grupos", controller: GrupoController, action: "all"},
     {method: "get", route: "/grupos/:id", controller: GrupoController, action: "one"},
     {method: "get", route: "/grupos/usuarios/:user", controller: GrupoController, action: "usuarios"},
+    {method: "delete", route: "/grupos/:id", controller: GrupoController, action: "remove"},
 
-    { method: "get", route: "/storage/:filename", controller: StorageController, action: "getFile" }
+    {method: "get", route: "/storage/:filename", controller: StorageController, action: "getFile" }
 
 ];

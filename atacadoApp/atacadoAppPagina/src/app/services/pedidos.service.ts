@@ -14,7 +14,7 @@ export class PedidosService extends BaseService<PedidosModel> {
     super("pedidos", http);
    }
    async TotalPedidosDia(): Promise<number> {
-    const pedidos = await this.http.get(`${environment.url_api}/pedidos/peddia`);
+    const pedidos = await this.http.get(`${environment.url_api}/pedidos/novos/peddia`);
     let total = 0;
     if (pedidos.data) {
       pedidos.data.forEach(() => {

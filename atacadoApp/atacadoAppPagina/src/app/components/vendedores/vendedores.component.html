@@ -24,12 +24,12 @@
                     (click)="excluirVendedores()"
                     [disabled]="!selVendedores || !selVendedores.length"></button>
 
-            <button pButton
+            <p-button 
                     pRipple
                     [pTooltip]="toolTipBtnExcluidos"
                     [icon]="iconBtnEye"
-                    class="p-button-help"
-                    (click)="mostraVendedoresExcluidos()"></button>
+                    styleClass="p-button-help"
+                    (click)="mostraVendedoresExcluidos()"></p-button>
 
         </ng-template>
         

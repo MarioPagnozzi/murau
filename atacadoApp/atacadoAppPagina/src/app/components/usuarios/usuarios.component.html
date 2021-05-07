@@ -24,12 +24,12 @@
                     (click)="excluirUsuarios()"
                     [disabled]="!selUsuarios || !selUsuarios.length"></button>
 
-            <button pButton
+            <p-button 
                     pRipple
                     [pTooltip]="toolTipBtnExcluidos"
                     [icon]="iconBtnEye"
-                    class="p-button-help"
-                    (click)="mostraUsuariosExcluidos()"></button>
+                    styleClass="p-button-help"
+                    (click)="mostraUsuariosExcluidos()"></p-button>
 
         </ng-template>
         
