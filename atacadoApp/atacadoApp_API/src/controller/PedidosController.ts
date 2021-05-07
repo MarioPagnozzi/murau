@@ -322,7 +322,11 @@ export class PedidosController extends BaseController<Pedidos> {
         if (!this._func.Permissao(request, "Pedidos", "V")) {
             return { status: 400, errors: ["Você não tem permissão para acessar os registros"]}
         }
-        return this._repPedido.find({where: {data_inclusao: new Date}});
+        const dataAtual = new Date();
+        //dataAtual.setDate(dataAtual.getDate() - 1);
+        return this._repPedido.createQueryBuilder("pedidos")
+                                .where("date_format(pedidos.data_inclusao,'%d/%m/%Y') = date_format(:data,'%d/%m/%Y')", {data: dataAtual.toISOString()})
+                                .getMany();
     }
     async filtro(request: Request) {
         if (!this._func.Permissao(request, "Pedidos", "V")) {

@@ -2,6 +2,9 @@ import {getRepository, Repository} from "typeorm";
 import {NextFunction, Request, Response} from "express";
 import { BaseNotificacao } from "../entity/BaseNotificacao";
 import { functions } from "../configuracao/functions/globalFunctions"
+import { Produtos } from "../entity/Produtos";
+
+var querystring = require("querystring");
 export abstract class BaseController<T> extends BaseNotificacao {
 
     private _repositorio: Repository<T>;
@@ -19,6 +22,7 @@ export abstract class BaseController<T> extends BaseNotificacao {
             if (!this._func.Permissao(request, tabela, "V")) 
                 return {status: 400, errors: [{message: "Você não tem permissão para acessar os registros"}]}
         }
+      
         return this._repositorio.find();
     }
 
@@ -30,7 +34,7 @@ export abstract class BaseController<T> extends BaseNotificacao {
         }
         return this._repositorio.findOne(request.params.id);
     }
-
+    
 async save(model: any) {
         
         if (model.uid) {

@@ -1,6 +1,6 @@
 import { ProdutosEmpresas } from './ProdutosEmpresas';
 import { ImagensProduto } from './imagesProduto';
-import {  OneToMany } from 'typeorm';
+import {  Index, OneToMany } from 'typeorm';
 
 import { Column } from 'typeorm';
 import { Entity } from 'typeorm';
@@ -9,6 +9,7 @@ import { ItemPedido } from './ItemPedido';
 @Entity({name: "produtos"})
 export class Produtos extends BaseEntity {
 
+    @Index({fulltext: true})
     @Column({type: "varchar", length: 200})
     nome: string
 

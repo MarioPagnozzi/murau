@@ -13,7 +13,7 @@ export class ProdutosService extends BaseService<IProdutos> {
     super("produtos", http);
    }
    async TotalProdutosDia(): Promise<number> {
-    const produtos = await this.http.get(`${environment.url_api}/produtos/proddia`);
+    const produtos = await this.http.get(`${environment.url_api}/produtos/novos/proddia`);
     let total = 0;
     if (produtos.data) {
       produtos.data.forEach(() => {

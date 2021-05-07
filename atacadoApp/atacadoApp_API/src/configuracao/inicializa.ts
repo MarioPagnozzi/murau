@@ -128,6 +128,135 @@ export class Setup {
            await _repConfig.save(configuracoes);
        }
 
+       _parametro = await _repConfig.findOne({nome_parametro: "set_Hora_inicio_atualiza"});
+
+       if (!_parametro) {
+            configuracoes = new Configuracoes();
+            configuracoes.nome_parametro = "set_Hora_inicio_atualiza";
+            configuracoes.valor = "7,0,0";
+
+            await _repConfig.save(configuracoes);
+       }
+
+       _parametro = await _repConfig.findOne({nome_parametro: "set_Hora_fim_atualiza"});
+
+       if (!_parametro) {
+            configuracoes = new Configuracoes();
+            configuracoes.nome_parametro = "set_Hora_fim_atualiza";
+            configuracoes.valor = "23,59,0";
+
+            await _repConfig.save(configuracoes);
+        }
+
+       _parametro = await _repConfig.findOne({nome_parametro: "rule_atualiza_horas"});
+
+       if (!_parametro) {
+            configuracoes = new Configuracoes();
+            configuracoes.nome_parametro = "rule_atualiza_horas";
+            configuracoes.valor = "7,12,15,17";
+
+            await _repConfig.save(configuracoes);
+       }
+
+       _parametro = await _repConfig.findOne({nome_parametro: "rule_atualiza_minutos"});
+
+       if (!_parametro) {
+            configuracoes = new Configuracoes();
+            configuracoes.nome_parametro = "rule_atualiza_minutos";
+            configuracoes.valor = "0";
+
+            await _repConfig.save(configuracoes);
+       }
+
+       _parametro = await _repConfig.findOne({nome_parametro: "rule_atualiza_segundos"});
+
+       if (!_parametro) {
+            configuracoes = new Configuracoes();
+            configuracoes.nome_parametro = "rule_atualiza_segundos";
+            configuracoes.valor = "0";
+
+            await _repConfig.save(configuracoes);
+       }
+
+       _parametro = await _repConfig.findOne({nome_parametro: "rule_atualiza_diasSemanas"});
+
+       if (!_parametro) {
+            configuracoes = new Configuracoes();
+            configuracoes.nome_parametro = "rule_atualiza_diasSemanas";
+            configuracoes.valor = "0,1,2,3,4,5,6";
+
+            await _repConfig.save(configuracoes);
+       }
+
+       _parametro = await _repConfig.findOne({nome_parametro: "set_Hora_inicio_insere"});
+
+       if (!_parametro) {
+            configuracoes = new Configuracoes();
+            configuracoes.nome_parametro = "set_Hora_inicio_insere";
+            configuracoes.valor = "7,0,0";
+
+            await _repConfig.save(configuracoes);
+       }
+
+       _parametro = await _repConfig.findOne({nome_parametro: "set_Hora_fim_insere"});
+
+       if (!_parametro) {
+            configuracoes = new Configuracoes();
+            configuracoes.nome_parametro = "set_Hora_fim_insere";
+            configuracoes.valor = "23,59,0";
+
+            await _repConfig.save(configuracoes);
+       }
+       
+       _parametro = await _repConfig.findOne({nome_parametro: "rule_insere_horas"});
+
+       if (!_parametro) {
+            configuracoes = new Configuracoes();
+            configuracoes.nome_parametro = "rule_insere_horas";
+            configuracoes.valor = "";
+
+            await _repConfig.save(configuracoes);
+       }
+
+       _parametro = await _repConfig.findOne({nome_parametro: "rule_insere_minutos"});
+
+       if (!_parametro) {
+            configuracoes = new Configuracoes();
+            configuracoes.nome_parametro = "rule_insere_minutos";
+            configuracoes.valor = "0,15,30,45";
+
+            await _repConfig.save(configuracoes);
+       }
+
+       _parametro = await _repConfig.findOne({nome_parametro: "rule_insere_segundos"});
+
+       if (!_parametro) {
+            configuracoes = new Configuracoes();
+            configuracoes.nome_parametro = "rule_insere_segundos";
+            configuracoes.valor = "";
+
+            await _repConfig.save(configuracoes);
+       }
+
+       _parametro = await _repConfig.findOne({nome_parametro: "rule_insere_diasSemanas"});
+
+       if (!_parametro) {
+            configuracoes = new Configuracoes();
+            configuracoes.nome_parametro = "rule_insere_diasSemanas";
+            configuracoes.valor = "0,1,2,3,4,5,6";
+
+            await _repConfig.save(configuracoes);
+       }
+
+       _parametro = await _repConfig.findOne({nome_parametro: "qtd_lote_pesquisa"});
+
+       if (!_parametro) {
+            configuracoes = new Configuracoes();
+            configuracoes.nome_parametro = "qtd_lote_pesquisa";
+            configuracoes.valor = "1";
+
+            await _repConfig.save(configuracoes);
+       }
         console.log("Processo finalizado");
     }
     

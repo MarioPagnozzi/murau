@@ -47,7 +47,7 @@ export class ProdutosController extends BaseController<Produtos> {
             return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
         }
         const dataAtual = new Date();
-        dataAtual.setDate(dataAtual.getDate() - 1);
+        //dataAtual.setDate(dataAtual.getDate() - 1);
         return this._repProdutos.createQueryBuilder("produtos")
                                 .where("date_format(produtos.data_inclusao,'%d/%m/%Y') = date_format(:data,'%d/%m/%Y')", {data: dataAtual.toISOString()})
                                 .getMany();
