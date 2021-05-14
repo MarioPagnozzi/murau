@@ -68,7 +68,7 @@
         <mat-sidenav-content>
             <router-outlet></router-outlet>
             <div class="container-map" *ngIf="!isLogged">
-                <agm-map [latitude]="lat" [longitude]="lng" [zoom]="zoom" >
+                <agm-map [latitude]="lat" [longitude]="lng" [zoom]="zoom" [scrollwheel]="false" >
                   <agm-marker [latitude]="lat" [longitude]="lng"
                     iconUrl="./assets/images/logo.png"
                     [markerDraggable]="true"

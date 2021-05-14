@@ -13,7 +13,21 @@ import cron_job from "./middleware/cron_job";
 
 var querystring = require("querystring");
 var multer = require("multer");
-//var upload = multer();S
+//var upload = multer();
+
+if (config.production) {
+    process.env.target = "https://api.murau.com.br:9443";
+    process.env.key = "usr/local/directadmin/data/users/murau/domains/api.murau.com.br.key";
+    process.env.cert = "usr/local/directadmin/data/users/murau/domains/api.murau.com.br.cert";
+    process.env.ca = "usr/local/directadmin/data/users/murau/domains/api.murau.com.br.cacert";
+    process.env.dhparam = "usr/local/directadmin/data/users/murau/domains/api.murau.com.br.cert.combined";
+} else {
+    process.env.target = "https://apimurau.mapxsolucoes.com.br:9443";
+    process.env.key = "C:/Program Files/OpenSSL-Win64/bin/certificate.key";
+    process.env.cert = "C:/Program Files/OpenSSL-Win64/bin/certificate.crt";
+    process.env.ca = "undefined";
+    process.env.dhparam = "undefined";
+}
 
 // create express app
 const app = express();
@@ -49,16 +63,31 @@ app.use(path.join("/","uploads"), express.static("public"));
 var fs = require("fs");
 var constants = require("constants");
 let https = require("https");
-https.createServer({
-    target: "https://apimurau.mapxsolucoes.com.br:9443",
-    secureOptions: constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_SSLv2,
-    key: fs.readFileSync("C:/Program Files/OpenSSL-Win64/bin/certificate.key"),
-    cert: fs.readFileSync("C:/Program Files/OpenSSL-Win64/bin/certificate.crt")
-   /* key: fs.readFileSync("/etc/letsencrypt/live/apimurau.mapxsolucoes.com.br/privkey.pem"),
-    cert: fs.readFileSync("/etc/letsencrypt/live/apimurau.mapxsolucoes.com.br/cert.pem"),
-    ca: fs.readFileSync("/etc/letsencrypt/live/apimurau.mapxsolucoes.com.br/chain.pem"),
-    dhparam: fs.readFileSync("/etc/letsencrypt/archive/apimurau.mapxsolucoes.com.br/dh1.pem")*/
-},app).listen(config.port,'0.0.0.0', async () => {
+console.log(process.env.target)
+console.log(process.env.key)
+console.log(process.env.cert)
+console.log(process.env.ca)
+console.log(process.env.dhparam)
+
+let obj_param = {};
+if (config.production) {
+    obj_param = {
+        target: process.env.target,
+        secureOptions: constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_SSLv2,
+        key: fs.readFileSync(process.env.key),
+        cert: fs.readFileSync(process.env.cert),
+        ca: fs.readFileSync(process.env.ca),
+        dhparam: fs.readFileSync(process.env.dhparam)
+    };
+} else {
+    obj_param = {
+        target: process.env.target,
+        secureOptions: constants.SSL_OP_NO_SSLv3 | constants.SSL_OP_NO_SSLv2,
+        key: fs.readFileSync(process.env.key),
+        cert: fs.readFileSync(process.env.cert)
+    }
+}
+https.createServer(obj_param,app).listen(config.port,'0.0.0.0', async () => {
 
     
     try {
@@ -111,6 +140,6 @@ https.createServer({
         console.error("database not connected", error);
     }   
     console.log(`API atacado App Rodando inicializada na porta ${config.port}`);
-    cron_job.call(this);
+    if (config.production) cron_job.call(this);
 });
 

@@ -1,3 +1,5 @@
+import { Observable, throwError } from 'rxjs';
+import { retry, catchError } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
@@ -10,7 +12,7 @@ export class HttpService {
 
   constructor(private http: HttpClient, private spinner: NgxSpinnerService) { }
 
-  private createHeader(header?: HttpHeaders) {
+  public createHeader(header?: HttpHeaders) {
     if (!header) {header = new HttpHeaders()}
 
     header = header.append("Content-Type", "application/json");
@@ -40,7 +42,7 @@ export class HttpService {
                       this.spinner.hide();
                       resolve({success: false, data: undefined, error: err})
                  
-                 });*/
+                 }); */
        try {
         this.spinner.show();
         const res = await this.http.get(url, { headers: header }).toPromise();
@@ -108,5 +110,6 @@ export class HttpService {
       }
     })
   }
+  
 }
 

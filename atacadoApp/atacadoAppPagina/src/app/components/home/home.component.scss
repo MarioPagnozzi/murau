@@ -9,13 +9,40 @@
         font-size: 1.5rem;
         font-weight: 700;
         height: 50px;
+        padding: auto;
     }
+
+    
+      
     
     .product-description {
         margin: 0 0 1rem 0;
         height: 15px;
+        padding: 2rem;
+        overflow: auto !important;
+        text-overflow: ellipsis !important;
+        scroll-behavior: smooth;
+        -webkit-scrollbar: {
+            display: none
+        }
     }
-    
+
+    .product-description::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+        display: none;
+      }
+      .product-description::-webkit-scrollbar-track {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+      }
+      .product-description::-webkit-scrollbar-thumb {
+        background-color: #d5cece;
+        border-radius: 10px;
+      }
+      .product-description:hover::-webkit-scrollbar {
+          display: inline;
+      }
     .product-category-icon {
         vertical-align: middle;
         margin-right: .5rem;

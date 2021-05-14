@@ -16,9 +16,11 @@ import { Vendedores } from './../entity/Vendedores';
 import { Clientes } from './../entity/Clientes';
 import { User } from './../entity/User';
 import { createConnection } from 'typeorm';
+import config from "./config";
+import { Promocao } from '../entity/Promocao';
 
 
-const cfg = require("../../ormconfig.json");
+const cfg = config.production ? require("../../ormconfig-prod.json")  : require("../../ormconfig.json");
 export default {
     createConnection: async () => {
         await createConnection({
@@ -47,7 +49,8 @@ export default {
                 Tabelas,
                 Configuracoes,
                 ProdutosEmpresas,
-                HistoricoPedido
+                HistoricoPedido,
+                Promocao
             ]
         });
         console.log("Database connected");

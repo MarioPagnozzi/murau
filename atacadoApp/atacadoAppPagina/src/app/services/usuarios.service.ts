@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment';
 import { Observable, Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { UsuarioModel } from '../models/usuarioModel';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -18,8 +19,8 @@ export class UsuariosService extends BaseService<IUsuarios | UsuarioModel> {
 
   private loginSubject = new Subject<boolean>();
 
-  constructor(public http: HttpService) {
-    super("users", http);
+  constructor(public http: HttpService, httpCli: HttpClient) {
+    super("users", http, httpCli);
    }
    login(email: string, senha: string): Promise<IResult> {
      // tslint:disable-next-line: object-literal-shorthand

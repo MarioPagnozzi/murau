@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BaseService } from '../base/baseService';
 import { IVendedores } from '../interfaces/IVendedores';
@@ -9,7 +10,7 @@ import { HttpService } from './http.service';
 })
 export class VendedoresService extends BaseService<IVendedores | VendedoresModel> {
 
-  constructor(public http: HttpService) { 
-    super("vendedores", http)
+  constructor(public http: HttpService, httpCli: HttpClient) { 
+    super("vendedores", http, httpCli)
   }
 }

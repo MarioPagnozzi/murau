@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BaseService } from '../base/baseService';
 import { IConfiguracoes } from '../interfaces/IConfiguracoes';
@@ -8,7 +9,7 @@ import { HttpService } from './http.service';
 })
 export class ConfiguracoesService extends BaseService<IConfiguracoes> {
 
-  constructor(public http: HttpService) {
-    super("configuracoes", http);
+  constructor(public http: HttpService, public httpCli: HttpClient) {
+    super("configuracoes", http, httpCli);
    }
 }

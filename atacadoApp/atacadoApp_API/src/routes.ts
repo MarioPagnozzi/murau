@@ -7,6 +7,7 @@ import { ClientesController } from './controller/ClientesController';
 import { PedidosController } from './controller/PedidosController';
 import { GrupoController } from './controller/GrupoController';
 import { StorageController } from './controller/StorageController';
+import { PromocaoController } from './controller/PromocaoController';
 
 export const Routes = [
 
@@ -90,6 +91,7 @@ export const Routes = [
     {method: "get", route: "/grupos/usuarios/:user", controller: GrupoController, action: "usuarios"},
     {method: "delete", route: "/grupos/:id", controller: GrupoController, action: "remove"},
 
-    {method: "get", route: "/storage/:filename", controller: StorageController, action: "getFile" }
+    {method: "get", route: "/storage/:filename", controller: StorageController, action: "getFile" },
+    {method: "post", route: "/promocao/lista", controller: PromocaoController, action: "save"}
 
 ];

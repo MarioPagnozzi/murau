@@ -1,3 +1,10 @@
+<ngx-spinner bdColor="rgba(75,46,40,0.7)"
+            color="#ffff"
+            size="medium"
+            type="ball-spin-fade-rotating"
+            [fullScreen]="true">
+<p style="font-size: 20px; color: white">Aguarde ...</p>
+</ngx-spinner>
 <div class="card">
   <p-dataView #dv
     [value]="produtos"
@@ -12,7 +19,7 @@
       <div class="p-d-flex p-flex-column p-flex-md-row p-jc-md-between">
         <span class="p-input-icon-left p-mb-2 p-mb-md-0">
           <i class="pi pi-search"></i>
-          <input type="search" pInputText size="50%" placeholder="Buscar por Nome, Referência ou Código" (input)="applyFilter($event)">
+          <input type="search" pInputText placeholder="Buscar por Nome, Referência ou Código" (input)="applyFilter($event)">
         </span>
         <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
       </div>

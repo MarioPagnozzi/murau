@@ -21,6 +21,9 @@ export class Empresas extends BaseEntity {
     @Column({type: "varchar", length: 18})
     cnpj: string
 
+    @Column({type: "varchar", length: 18})
+    ie: string
+
     @Column({type: "varchar", length: 9})
     cep: string
 
@@ -41,6 +44,9 @@ export class Empresas extends BaseEntity {
 
     @Column({type: "varchar", length: 2})
     uf: string
+
+    @Column({type: "varchar", length: 14})
+    telefone: string
 
     @Column({type: "varchar", length: 100, nullable: true})
 

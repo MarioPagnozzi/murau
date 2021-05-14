@@ -30,7 +30,7 @@ export class Setup {
 
         if (!_Empresa) {
 
-            let emp = fs.readFileSync(__dirname + "/arquivos/empresas.csv", "utf8");           
+            let emp = fs.readFileSync(__dirname + "/arquivos/empresas.csv", "utf8");
             let emps = emp.split(/\n/);
 
             emps.forEach(async function (dados) {
@@ -42,16 +42,19 @@ export class Setup {
                     EntityEmp.nome_fantasia = _emp[1];
     
                     EntityEmp.ativo = true;
-                    EntityEmp.bairro = "Cadastro Automático";
-                    EntityEmp.cep = "00000-00";
-                    EntityEmp.cidade = "Cadastro Automático";
-                    EntityEmp.cnpj = "00.000.000/0000-00";
-                    EntityEmp.endereco = "Cadastro Automático";
+                    EntityEmp.bairro = _emp[6];
+                    EntityEmp.cep = _emp[9];
+                    EntityEmp.cidade = _emp[7];
+                    EntityEmp.cnpj = _emp[2];
+                    EntityEmp.endereco = _emp[4];
     
                     EntityEmp.excluido = false;
-                    EntityEmp.numero = "0000";
-                    EntityEmp.razao_social = "Cadastro Automático";
-                    EntityEmp.uf = "UF";
+                    EntityEmp.numero = _emp[5];
+                    EntityEmp.razao_social = _emp[1];
+                    EntityEmp.uf = _emp[8];
+                    EntityEmp.ie = _emp[3];
+                    EntityEmp.telefone = _emp[10];
+                    
                     await _repEmpresa.save(EntityEmp).then((empresa) => {
                         console.log("Empresa " + empresa.nome_fantasia + " cadastrada");                        
                     }).catch( (error) => {

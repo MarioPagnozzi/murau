@@ -1,3 +1,4 @@
+
 import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
 import { MessageService, PrimeNGConfig, SelectItem } from 'primeng/api';
 import { Subscription } from 'rxjs';
@@ -8,6 +9,7 @@ import { IProdutos } from 'src/app/interfaces/IProdutos';
 import { IImagesProduto } from 'src/app/interfaces/IImagesProduto';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 import { Router } from '@angular/router';
+import { ProdutosModel } from 'src/app/models/produtosModel';
 
 //declare var google: any;
 @Component({
@@ -20,7 +22,7 @@ export class HomeComponent implements OnInit {
   isLogged = false;
   subscrip: Subscription = new Subscription();
 
-  produtos: IProdutos[] = [];
+  produtos: ProdutosModel[] = [];
   sortOpicao: SelectItem[] = [];
   sortOrdem = 0;
   sortField = "";
@@ -44,26 +46,18 @@ export class HomeComponent implements OnInit {
       if (this.isLogged) {
         this.router.navigateByUrl("/panel")
       } else {
-        const prods =  await this.homeService.getAll();
-        this.produtos =  prods.data.map((pro: IProdutos) => {
-           return {
-             nome: pro.nome,
-             descricao: pro.descricao,
-             referencia: pro.referencia,
-             codigo: pro.codigo,
-             tamanho: pro.tamanho,
-             cor: pro.cor,
-             estoque: pro.estoque,
-             imagens: pro.imagens?.map((img: IImagesProduto) => {
-               return {
-                 caminho: img.caminho ? img.caminho : null
-               }
-             }),
-             uid: pro.uid,
-             ativo: pro.ativo
-           }
-    
-        });
+        //const prods = await this.homeService.getAll();
+        
+        this.homeService.getTeste().subscribe(
+          (data: {}) => {
+            console.log(data as ProdutosModel[])
+            this.produtos = data as ProdutosModel[];
+          },
+          err => {
+            const msg = err;
+            console.log(err.message);
+          }
+        )
         this.sortOpicao = [
           {label: "Menor Preço", value: "!preco"},
           {label: "Mario Preço", value: "preco"}

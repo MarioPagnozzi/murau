@@ -26,5 +26,6 @@ export default {
     apiVtexSearch: "https://lojamurau.vtexcommercestable.com.br/api/catalog_system/pub/products/search?",
     apiVetx: "/api/catalog_system/pvt/sku/stockkeepingunitbyid/",
     vtexAppKey: "vtexappkey-lojamurau-WLQIMF",
-    vtexToken:  "ZVWOWRDCPCPZQNECCDZMFYELGQHFIRXFUNRQIDNWIENXDWGBGGAOQTKARLHFKYUYEKECVNTYPCDBLGHKKFZBQJPADQZXVIMKKPTTREGSMBYNPJPKDXVEYSHUVDZFNWDG"
+    vtexToken:  "ZVWOWRDCPCPZQNECCDZMFYELGQHFIRXFUNRQIDNWIENXDWGBGGAOQTKARLHFKYUYEKECVNTYPCDBLGHKKFZBQJPADQZXVIMKKPTTREGSMBYNPJPKDXVEYSHUVDZFNWDG",
+    production: process.env.NODE_ENV === "production"
 }

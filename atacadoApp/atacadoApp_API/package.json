@@ -4,9 +4,16 @@
     "description": "API do App atacado",
     "devDependencies": {
         "@types/node": "^8.10.66",
-        "ts-node": "^9.0.0",
+        "ts-node": "^9.1.1",
         "ts-node-dev": "^1.0.0-pre.66",
         "typescript": "^4.3.0-dev.20210429"
+    },
+    "env": {
+        "NODE_ENV": "development"
+    },
+    "env_production": {
+        "NODE_ENV": "production"
+       
     },
     "dependencies": {
         "body-parser": "^1.18.1",

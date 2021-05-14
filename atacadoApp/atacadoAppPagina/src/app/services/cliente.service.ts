@@ -28,7 +28,7 @@ export class ClienteService extends BaseService<ICliente | ClienteModel> {
   }
   
   constructor(public http: HttpService, public httpCli: HttpClient, private spinner: NgxSpinnerService) { 
-    super("clientes", http);
+    super("clientes", http, httpCli);
    }
    async TotalClienteDia(): Promise<number> {
     const clientes = await this.http.get(`${environment.url_api}/clientes/clientesdia/hoje`);

@@ -7,7 +7,7 @@ export class HistoricoPedido extends BaseEntity {
     @Column({type: "varchar"})
     cidade: string
 
-    @Column({type: "timestamp"})
+    @Column({type: "datetime"})
     data: Date
 
     @Column({type: "varchar"})
