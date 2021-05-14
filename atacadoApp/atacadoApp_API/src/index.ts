@@ -18,9 +18,9 @@ var multer = require("multer");
 if (config.production) {
     process.env.target = "https://api.murau.com.br:9443";
     process.env.key = "/usr/local/directadmin/data/users/murau/domains/api.murau.com.br.key";
-    process.env.cert = "usr/local/directadmin/data/users/murau/domains/api.murau.com.br.cert";
-    process.env.ca = "usr/local/directadmin/data/users/murau/domains/api.murau.com.br.cacert";
-    process.env.dhparam = "usr/local/directadmin/data/users/murau/domains/api.murau.com.br.cert.combined";
+    process.env.cert = "/usr/local/directadmin/data/users/murau/domains/api.murau.com.br.cert";
+    process.env.ca = "/usr/local/directadmin/data/users/murau/domains/api.murau.com.br.cacert";
+    process.env.dhparam = "/usr/local/directadmin/data/users/murau/domains/api.murau.com.br.cert.combined";
 } else {
     process.env.target = "https://apimurau.mapxsolucoes.com.br:9443";
     process.env.key = "C:/Program Files/OpenSSL-Win64/bin/certificate.key";
