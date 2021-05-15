@@ -153,7 +153,7 @@ export class ClientesController extends BaseController<Clientes> {
             return this._repClientes.find({where: {email: Like("%" + valor + "%")}});
         }
 
-        if (filtro == "pedidos") {     
+        if (filtro == "pedidos") {
             return this._repClientes.createQueryBuilder("clientes")
                                     .innerJoinAndSelect("clientes.pedidos", "pedidos")
                                     .where("replace(pedidos.num_pedido, '/','-') = :num_pedido", {num_pedido: valor})

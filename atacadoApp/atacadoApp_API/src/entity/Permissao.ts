@@ -20,6 +20,6 @@ export class Permissao extends BaseEntity {
     @Column({default: false})
     inserir: boolean
 
-    @ManyToOne(type => Grupos, grupo => grupo.permissoes, {eager:false})
+    @ManyToOne(type => Grupos, grupo => grupo.permissoes)
     grupo: Grupos
 }

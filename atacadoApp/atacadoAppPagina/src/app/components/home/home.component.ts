@@ -48,16 +48,11 @@ export class HomeComponent implements OnInit {
       } else {
         //const prods = await this.homeService.getAll();
         
-        this.homeService.getTeste().subscribe(
-          (data: {}) => {
-            console.log(data as ProdutosModel[])
-            this.produtos = data as ProdutosModel[];
-          },
-          err => {
-            const msg = err;
-            console.log(err.message);
+        this.homeService.getTeste().subscribe({
+          next: (produtos) => {
+            this.produtos = produtos as ProdutosModel[];
           }
-        )
+        })
         this.sortOpicao = [
           {label: "Menor Preço", value: "!preco"},
           {label: "Mario Preço", value: "preco"}

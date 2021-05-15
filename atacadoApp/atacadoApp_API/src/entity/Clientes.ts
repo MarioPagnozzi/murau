@@ -57,7 +57,7 @@ export class Clientes extends BaseEntity {
     @ManyToOne(type => Empresas, empresa => empresa.clientes, {eager:true})
     empresa: Empresas
 
-    @OneToMany(type => Pedidos, pedidos => pedidos.cliente, {eager: true})
+    @OneToMany(type => Pedidos, pedidos => pedidos.cliente)
     pedidos: Pedidos[]
 
     @OneToOne(type => User, usuario => usuario.cliente)

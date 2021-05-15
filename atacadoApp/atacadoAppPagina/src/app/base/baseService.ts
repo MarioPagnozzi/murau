@@ -1,5 +1,6 @@
 import { HttpClient, HttpHandler, HttpRequest, HttpResponse } from "@angular/common/http";
 import { Observable, throwError } from "rxjs";
+import { catchError, retry, tap } from "rxjs/operators";
 import { IResult } from "../interfaces/IResult";
 import { HttpService } from "../services/http.service";
 import {environment} from "./../../environments/environment";
@@ -31,9 +32,16 @@ export abstract class BaseService<T> {
     public filtro(filtro: any, param: any) {
         return this.http.get(`${this.baseUrl}/${param}/${filtro}/filtro`);
     }
-    public getTeste(): Observable<any> {
+    public getTeste(): Observable<T []> {
         const header = this.http.createHeader();
-         return this.httpCli.get<any>(this.baseUrl, { headers: header });
+         return this.httpCli.get<T []>(this.baseUrl, { headers: header })
+                            .pipe(
+                                tap(data => {
+                                    console.log(data);
+                                }),
+                                retry(3),
+                                catchError(this.httpError)
+                            )
       }
       httpError(error: any) {
         let msg = '';

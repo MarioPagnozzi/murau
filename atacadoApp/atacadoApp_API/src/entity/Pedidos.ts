@@ -25,7 +25,7 @@ export class Pedidos extends BaseEntity {
     @ManyToOne(type => Vendedores, vendedores => vendedores.pedidos, {eager: true})
     vendedor: Vendedores
 
-    @ManyToOne(type => Clientes, cliente => cliente.pedidos)
+    @ManyToOne(type => Clientes, clientes => clientes.pedidos, {eager: true})
     cliente: Clientes
 
     @ManyToOne(type => Empresas, empresa => empresa.pedidos, {eager: true})

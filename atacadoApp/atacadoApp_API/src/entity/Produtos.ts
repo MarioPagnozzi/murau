@@ -34,7 +34,7 @@ export class Produtos extends BaseEntity {
     @Column({type: "float"})
     preco: number
 
-    @OneToMany(type => ProdutosEmpresas, produtosempresas => produtosempresas.produto, {eager: true})
+    @OneToMany(type => ProdutosEmpresas, produtosempresas => produtosempresas.produto)
     produtosEmpresas: ProdutosEmpresas[]
 
     @OneToMany (type => ImagensProduto, imagem => imagem.produto, {eager: true})

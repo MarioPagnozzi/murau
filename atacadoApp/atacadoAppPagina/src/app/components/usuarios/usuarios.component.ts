@@ -5,11 +5,11 @@ import { UsuarioModel } from 'src/app/models/usuarioModel';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 import { environment } from 'src/environments/environment';
 
-export class FileManage {
+/*export class FileManage {
   nome: string = ""
   extencao: string = ""
   base64Data: string = ""
-}
+}*/
 @Component({
   selector: 'app-usuarios',
   templateUrl: './usuarios.component.html',
@@ -26,9 +26,10 @@ export class UsuariosComponent implements OnInit {
 
   mostraExcluidos: boolean = false;
 
-  fileCurrent: FileManage = new FileManage();
-  file: any;
+  //fileCurrent: FileManage = new FileManage();
+  //file: any;
   localChange: boolean = false; 
+  urlFoto = `${environment.url_api}/storage/`;
 
   @ViewChild("dt") public dt: any;
   constructor(private usuarioService: UsuariosService, 
@@ -43,17 +44,10 @@ export class UsuariosComponent implements OnInit {
   async carregarUsuarios() {
     this.spinnerAcao = "Carregando Usuários...";
     const result = await this.usuarioService.getAll();
-    console.log(result);
+    
     this.usuarios = result.data as UsuarioModel[];
     this.usuarioList = this.usuarios.filter(val => val.ativo && !val.excluido);
-    for (let i in this.usuarioList) {
-  
-      if (this.usuarioList[i].foto) {
-        this._populatePreLoadImage(this.usuarioList[i].foto);
-        this.usuarioList[i].fotoBase64 = this.fileCurrent.base64Data;
-      }
-      
-    }
+   
    }
  applyFilterGlobal($event: Event, stringVal: any) {
     this.dt.filterGlobal(($event.target as HTMLInputElement).value, stringVal);
@@ -85,14 +79,7 @@ export class UsuariosComponent implements OnInit {
           }, 3000)
         });
         this.usuarios = this.usuarioList;
-        for (let i in this.usuarioList) {
-  
-          if (this.usuarioList[i].foto) {
-            this._populatePreLoadImage(this.usuarioList[i].foto);
-            this.usuarioList[i].fotoBase64 = this.fileCurrent.base64Data;
-          }
-          
-        }
+        
         this.mostraExcluidos = true;
         this.mostraUsuariosExcluidos();
         this.selUsuarios = [];
@@ -119,14 +106,7 @@ export class UsuariosComponent implements OnInit {
       this.usuarioList = this.usuarios;
       
   }
-  for (let i in this.usuarioList) {
-
-    if (this.usuarioList[i].foto) {
-      this._populatePreLoadImage(this.usuarioList[i].foto);
-      this.usuarioList[i].fotoBase64 = this.fileCurrent.base64Data;
-    }
-    
-  }
+  
  }
  excluirUsuario(usuario: UsuarioModel) {
     this.confirmationService.confirm({
@@ -145,14 +125,7 @@ export class UsuariosComponent implements OnInit {
               const result_usuario = await this.usuarioService.getAll();
               this.usuarios = result_usuario.data as UsuarioModel[];
               this.usuarioList = this.usuarios.filter(val => val.ativo && !val.excluido);
-              for (let i in this.usuarioList) {
-  
-                if (this.usuarioList[i].foto) {
-                  this._populatePreLoadImage(this.usuarioList[i].foto);
-                  this.usuarioList[i].fotoBase64 = this.fileCurrent.base64Data;
-                }
-                
-              }
+              
               this.mostraExcluidos = true;
               this.mostraUsuariosExcluidos();
               this.messageService.add({
@@ -181,14 +154,7 @@ export class UsuariosComponent implements OnInit {
             this.usuarios = [];
             this.usuarios = await this.retornaUsuarios();
             this.usuarioList = this.usuarios.filter(val => val.ativo && !val.excluido);
-            for (let i in this.usuarioList) {
-  
-              if (this.usuarioList[i].foto) {
-                this._populatePreLoadImage(this.usuarioList[i].foto);
-                this.usuarioList[i].fotoBase64 = this.fileCurrent.base64Data;
-              }
-              
-            }
+            
             this.mostraExcluidos = true;
             this.mostraUsuariosExcluidos();
         
@@ -213,7 +179,7 @@ export class UsuariosComponent implements OnInit {
 }
 
 
-private _setPictureFromCamera(picture: any): void {
+/*private _setPictureFromCamera(picture: any): void {
   this.fileCurrent.nome = new Date().getTime().toString();
   this.fileCurrent.extencao = 'png';
   this.fileCurrent.base64Data = picture;
@@ -232,7 +198,7 @@ private _populatePreLoadImage(image: string): void {
       this.fileCurrent.base64Data = `${environment.url_api}/storage/${image}`;
     }
   }
-}
+}*/
 
 
 }

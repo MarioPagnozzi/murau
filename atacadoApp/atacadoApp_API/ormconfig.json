@@ -6,7 +6,8 @@
     "password": "m4r101979",
     "database": "db_atacadoapp",
     "synchronize": true,
-    "logging": true,
+    "logging": false,
+    "cache": true,
     "entities": [
         "src/entity/**/*.ts"
     ],

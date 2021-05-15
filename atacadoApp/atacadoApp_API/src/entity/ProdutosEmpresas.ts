@@ -6,7 +6,7 @@ import { BaseEntity } from './BaseEntity';
 @Entity({name: "produtos_empresas"})
 export class ProdutosEmpresas extends BaseEntity {
 
-    @ManyToOne(type => Produtos, produtos => produtos.produtosEmpresas)   
+    @ManyToOne(type => Produtos, produtos => produtos.produtosEmpresas, {eager: true})
     produto: Produtos
 
     @ManyToOne(type => Empresas, empresa => empresa.produtosempresas, {eager: true})   

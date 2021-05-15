@@ -7,8 +7,9 @@ import { UsuarioModel } from 'src/app/models/usuarioModel';
 import { GruposService } from 'src/app/services/grupos.service';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 import { Permissao } from 'src/app/shared/funcoesGlobal';
-import { FileManage } from '../usuarios/usuarios.component';
+
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { FileManage } from '../input-file/input-file.component';
 
 @Component({
   selector: 'app-usuario',

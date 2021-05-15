@@ -6,7 +6,8 @@
     "password": "paxj8dcc",
     "database": "murau_atacadoapp",
     "synchronize": true,
-    "logging": true,
+    "logging": false,
+    "cache": true,
     "entities": [
         "src/entity/**/*.ts"
     ],

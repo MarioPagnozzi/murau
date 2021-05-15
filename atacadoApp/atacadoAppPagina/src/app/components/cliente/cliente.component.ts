@@ -21,6 +21,7 @@ import { UsuarioModel } from 'src/app/models/usuarioModel';
 import { FileManage } from '../input-file/input-file.component';
 import { GruposService } from 'src/app/services/grupos.service';
 import { GrupoModel } from 'src/app/models/grupoModel';
+import { PedidosService } from 'src/app/services/pedidos.service';
 
 export interface IStatus {
   valor: number
@@ -66,7 +67,8 @@ export class ClienteComponent implements OnInit {
     private vendedorService: VendedoresService,
     private empresaService: EmpresasService,
     private usuarioService: UsuariosService,
-    private gruposService: GruposService
+    private gruposService: GruposService,
+    private pedidoService: PedidosService
   ) { }
 
   ngOnInit(): void {
@@ -98,7 +100,8 @@ export class ClienteComponent implements OnInit {
     const result = await this.clienteService.getById(uid);
     this.cliente = result.data as ClienteModel;
     this.contatos = this.cliente.contatos as ContatosModel[];
-    this.pedidos = this.cliente.pedidos as PedidosModel[];
+    const result_pedidos = await this.pedidoService.filtro("cliente", uid);
+    this.pedidos = result_pedidos.data as PedidosModel[];
     this.cliente.pedidos = [];
     this.fazerPedido = Permissao('pedidos', 'I');
     this.aprovado = this.cliente.statusCliente === 2;

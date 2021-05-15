@@ -73,7 +73,7 @@
                     <p-tableCheckbox [value]="usuario" [disabled]="usuario.excluido || !usuario.ativo"></p-tableCheckbox>
                 </td>
                 <td [ngClass]="{'registroExcluido': usuario.excluido}" colspan="5%">
-                    <p-avatar [image]="usuario.fotoBase64" shape="circle" size="xlarge"></p-avatar>
+                    <p-avatar [image]="urlFoto + usuario.foto" shape="circle" size="xlarge"></p-avatar>
                 </td>
                 <td [ngClass]="{'registroExcluido': usuario.excluido}" colspan="15%">{{usuario.nome}}</td>
                 <td [ngClass]="{'registroExcluido': usuario.excluido}" style="overflow: hidden; text-overflow: clip" colspan="20%">{{usuario.email}}</td>
