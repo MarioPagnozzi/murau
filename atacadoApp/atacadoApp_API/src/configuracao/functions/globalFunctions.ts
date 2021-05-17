@@ -460,9 +460,8 @@ export class functions {
                 let _repProdutosEmpresas: Repository<ProdutosEmpresas> = getRepository(ProdutosEmpresas);
     
                 if (qtEstoque) {
-
-                    let produto_empresa_uid = prod.produtosEmpresas.filter(item => item.empresa = empresa)[0];
-                    let produtoEmpresa = await _repProdutosEmpresas.findOne({where: { uid: produto_empresa_uid.uid, valor: Not(qtEstoque)}});
+                   
+                    let produtoEmpresa = await _repProdutosEmpresas.findOne({where: { produto: prod, valor: Not(qtEstoque)}});
                     if (produtoEmpresa) {
                         produtoEmpresa.estoque = qtEstoque;
                         _repProdutosEmpresas.save(produtoEmpresa).then(async () => {
