@@ -243,7 +243,7 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     MatSlideToggleModule,
     AgmCoreModule.forRoot({
       apiKey: "AIzaSyDlDAx0Arx9LHCWagPDw2IeYiu8oD7GF6s",
-      libraries: ["places"]
+      libraries: ["places", "geometry"]
     }),   
     TranslateModule.forRoot(
       {loader: {provide: TranslateLoader, useFactory: TranslationLoaderFactory, deps: [HttpClient]}},

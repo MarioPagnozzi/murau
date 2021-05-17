@@ -374,9 +374,8 @@ export class functions {
                 let prod = await _repProdutos.findOne({where: {codigo: cdSKU, ativo: true, excluido: false}});
                 console.log(cdSKU)
                 let _repProdutosEmpresas: Repository<ProdutosEmpresas> = getRepository(ProdutosEmpresas);
-                if (vlPreco) {
-                    let produto_empresa_uid = prod.produtosEmpresas.filter(item => item.empresa = empresa)[0];
-                    let produtoEmpresa = await _repProdutosEmpresas.findOne({where: { uid: produto_empresa_uid.uid, valor: Not(vlPreco)}});
+                if (vlPreco) {                   
+                    let produtoEmpresa = await _repProdutosEmpresas.findOne({where: { produto: prod, valor: Not(vlPreco)}});
   
                     if (produtoEmpresa) {
                         produtoEmpresa.valor = vlPreco;

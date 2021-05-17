@@ -10,6 +10,7 @@ export class EmpresasModel extends BaseModel {
     razao_social?: string
     nome_fantasia?: string
     cnpj?: string
+    ie?: string
     cep?: string
     endereco?: string
     numero?: string
@@ -17,6 +18,7 @@ export class EmpresasModel extends BaseModel {
     cidade?: string
     complemento?: string
     uf?: string
+    telefone?: string
     pedidos?: PedidosModel[]
     produtosempresas?: ProdutosEmpresasModel[]
     clientes?: ClienteModel[]

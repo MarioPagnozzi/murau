@@ -10,6 +10,7 @@ export interface IEmpresas extends IInterface {
     razao_social?: string
     nome_fantasia?: string
     cnpj?: string
+    ie?: string
     cep?: string
     endereco?: string
     numero?: string
@@ -17,6 +18,7 @@ export interface IEmpresas extends IInterface {
     cidade?: string
     complemento?: string
     uf?: string
+    telefone?: string
     pedidos?: IPedidos[]
     produtosempresas?: IProdutos[]
     clientes?: ICliente[]
