@@ -7,6 +7,7 @@ import { Empresas } from '../../entity/Empresas';
 import { ImagensProduto } from '../../entity/imagesProduto';
 import { isArray } from 'util';
 import config from "../config";
+import { request } from 'https';
 
 //var https = require("https");
 require('events').EventEmitter.defaultMaxListeners = Infinity;
@@ -308,8 +309,7 @@ export class functions {
     
     async atualizaPrecoProduto(cdBarra, _token) {
         
-        let _repParametros: Repository<Configuracoes> = getRepository(Configuracoes);
-    
+        let _repParametros: Repository<Configuracoes> = getRepository(Configuracoes);    
         let _hostname_totvs = await _repParametros.findOne({nome_parametro: "host_api_totvs"});
         let _porta_totvs = await _repParametros.findOne({nome_parametro: "porta_api_totvs"});
             
@@ -372,10 +372,10 @@ export class functions {
               
                 let empresa = await _repEmpresas.findOne({where: { codigo: cdEmpresa, ativo: true, excluido: false}});
                 let prod = await _repProdutos.findOne({where: {codigo: cdSKU, ativo: true, excluido: false}});
-                console.log(cdSKU)
+               
                 let _repProdutosEmpresas: Repository<ProdutosEmpresas> = getRepository(ProdutosEmpresas);
                 if (vlPreco) {                   
-                    let produtoEmpresa = await _repProdutosEmpresas.findOne({where: { produto: prod, valor: Not(vlPreco)}});
+                    let produtoEmpresa = await _repProdutosEmpresas.findOne({where: { produto: {uid: prod.uid}, empresa: {uid: empresa.uid}, valor: Not(vlPreco)}});
   
                     if (produtoEmpresa) {
                         produtoEmpresa.valor = vlPreco;
@@ -390,14 +390,14 @@ export class functions {
         }
     }
     async atualizaEstoqueProduto(cdBarra, _token) {
-    
+       
         let _repParametros: Repository<Configuracoes> = getRepository(Configuracoes);
         let _hostname_totvs = await _repParametros.findOne({nome_parametro: "host_api_totvs"});
         let _porta_totvs = await _repParametros.findOne({nome_parametro: "porta_api_totvs"});
             
         let _restapi_totvs = await _repParametros.findOne({nome_parametro: "rest_api_totvs"});
         let _repProdutos: Repository<Produtos> = getRepository(Produtos);
-    
+      
         let _url;
         let options: any;
     
@@ -411,13 +411,11 @@ export class functions {
         let _repEmpresas: Repository<Empresas> = getRepository(Empresas);
         let _empresas = await _repEmpresas.find({where: {ativo: true, excluido: false}});
     
-        
         _empresas.forEach(async (empresa) => {
             _obj.empresas.push({
                 "cdEmpresa": empresa.codigo
             });
         });
-        
         if (isArray(cdBarra)) {
             for (let i = 0; i < cdBarra.length; i++) {
                 _obj.produtos.push({
@@ -429,7 +427,7 @@ export class functions {
                 "cdProduto": cdBarra
             })
         }
-    
+
         _url = _restapi_totvs.valor + "/produto/saldoproduto";
         options = {
             "method": "POST",
@@ -450,20 +448,22 @@ export class functions {
         let body = await requestProduto;
     
         if (body) {
+          
             let {saldos} = JSON.parse(body);
             if (!saldos) return;
             saldos.forEach(async (saldo) => {
                 let {cdEmpresa, qtEstoque, cdSKU} = saldo;
             
-                let empresa = await _repEmpresas.findOne({where: {codigo: cdEmpresa, ativo: true, excluido: false}});
-                let prod = await _repProdutos.findOne({where: {codigo: cdSKU, ativo: true, excluido: false}});
+                let empresa = await _repEmpresas.findOne({where: {codigo: cdEmpresa, ativo: true, excluido: false}});            
+                let prod = await _repProdutos.findOne({where: {codigo: cdSKU, ativo: true, excluido: false}});               
                 let _repProdutosEmpresas: Repository<ProdutosEmpresas> = getRepository(ProdutosEmpresas);
     
                 if (qtEstoque) {
-                   
-                    let produtoEmpresa = await _repProdutosEmpresas.findOne({where: { produto: prod, valor: Not(qtEstoque)}});
+                  
+                    let produtoEmpresa = await _repProdutosEmpresas.findOne({where:{produto: {uid: prod.uid}, empresa: {uid: empresa.uid}, estoque: Not(qtEstoque)}});
                     if (produtoEmpresa) {
-                        produtoEmpresa.estoque = qtEstoque;
+                        
+                        produtoEmpresa.estoque = qtEstoque;                       
                         _repProdutosEmpresas.save(produtoEmpresa).then(async () => {
                             console.log("Estoque do produto atualizado " + prod.codigo + " Para a empresa " + empresa.nome_fantasia);
                         }).catch(async (error) => {
@@ -476,12 +476,12 @@ export class functions {
         }
     }
     async atualizaImagemProduto(cdProdutos) {
-        
+       
         let _repProdutos: Repository<Produtos> = getRepository(Produtos);
         let reqItems: Array<any> = [];
         let options: any;
         let strBusca: string = "";
-        let cdProdSemEstoque: Array<any> = cdProdutos;       
+        let cdProdSemEstoque: Array<any> = cdProdutos;
         if (isArray(cdProdutos)) {
             for (let i = 0; i < cdProdutos.length; i++) {
                 if (strBusca === "") {
@@ -507,66 +507,79 @@ export class functions {
                     "maxSockets": 100
                 }
             }
+         
             let requestImage = this.apiRequest(options);
             let body = await requestImage;
         
             if (body) {
-                let retornoBody = JSON.parse(body);
+                let retornoBody = JSON.parse(body);            
                 retornoBody.forEach(async (rbody) => {
                     let {description, items} = rbody;
                     if (items.length > 0 || items) {
                         cdProdSemEstoque = cdProdSemEstoque.filter(item => !items.includes(item));
                         for (let item of items) {
                             let _produto = await _repProdutos.findOne({where: { codigo: item.itemId}});
-                            console.log(item.itemId)
-                            if (description) {
-                                if (_produto.descricao != description) {
-                                    _produto.descricao = description;
-                                    _repProdutos.save(_produto).then(() => {
-                                        console.log("Descrição do produto " + item.itemId + " atualizadas");
-                                    }).catch(async (error) => {
-                                        console.error("Erro ao atualizar descrição do produto " + error);
-                                    });;
+                            if (_produto) {
+                                if (description) {
+                                    if (_produto.descricao != description) {
+                                        _produto.descricao = description;
+                                        _repProdutos.save(_produto).then(() => {
+                                            console.log("Descrição do produto " + item.itemId + " atualizadas");
+                                        }).catch(async (error) => {
+                                            console.error("Erro ao atualizar descrição do produto " + error);
+                                        });;
+                                    }
                                 }
-                            }
-                            if (item.images.length > 0 || item.images) {
-                                let _repImagensProduto: Repository<ImagensProduto> = getRepository(ImagensProduto);
-                                let imagemProduto: ImagensProduto;
-                                
-                                for (let img of item.images) {
-                                    let imagens = _produto.imagens;
-                        
-                                    if (imagens.length > 0) {
-                                        if (img.imageUrl) {
-                                            let imagem = await _repImagensProduto.findOne({where: {caminho: img.mageUrl}});
+                                if (item.images.length > 0 || item.images) {
+                                    let _repImagensProduto: Repository<ImagensProduto> = getRepository(ImagensProduto);
+                                    let imagemProduto: ImagensProduto;
+                                    
+                                    for (let img of item.images) {
+                                        let imagens = _produto.imagens;
                             
-                                            if (!imagem) {
+                                        if (imagens.length > 0) {
+                                            if (img.imageUrl) {
+                                                let imagem = await _repImagensProduto.findOne({where: {caminho: img.mageUrl}});
+                                
+                                                if (!imagem) {
+                                                    imagemProduto = new ImagensProduto();
+                                                    imagemProduto.caminho = img.imageUrl;
+                                                    imagemProduto.produto = _produto;
+                                                    _repImagensProduto.save(imagemProduto).then(() => {
+                                                        console.log("Imagens do produto " + _produto.codigo + " atualizadas");
+                                                    }).catch(async (error) => {
+                                                        console.error("Erro ao atualizar imagens do produto " + error);
+                                                    });
+                                                }
+                                            }
+                                        } else {
+                                            if (img.imageUrl) {
                                                 imagemProduto = new ImagensProduto();
                                                 imagemProduto.caminho = img.imageUrl;
                                                 imagemProduto.produto = _produto;
                                                 _repImagensProduto.save(imagemProduto).then(() => {
                                                     console.log("Imagens do produto " + _produto.codigo + " atualizadas");
                                                 }).catch(async (error) => {
-                                                    console.error("Erro ao atualizar imagens do produto " + error);
+                                                    console.log("Erro ao atualizar imagens do produto " + error);
                                                 });
                                             }
                                         }
-                                    } else {
-                                        if (img.imageUrl) {
-                                            imagemProduto = new ImagensProduto();
-                                            imagemProduto.caminho = img.imageUrl;
-                                            imagemProduto.produto = _produto;
-                                            _repImagensProduto.save(imagemProduto).then(() => {
-                                                console.log("Imagens do produto " + _produto.codigo + " atualizadas");
-                                            }).catch(async (error) => {
-                                                console.log("Erro ao atualizar imagens do produto " + error);
-                                            });
-                                        }
                                     }
                                 }
-                            }
+                            } /*else {
+                                console.log(item.itemId.toArray());
+                                let codProd: Array<any> = [];
+                                codProd.push(item.itemId)
+                                const token = await this.geraToken();
+                                let produtoExiste = await this.insereNovoProduto(codProd,token);
+                                if (produtoExiste) {
+                                    await this.atualizaPrecoProduto(codProd,token);
+                                    await this.atualizaPrecoProduto(codProd, token);
+                                    await this.atualizaImagemProduto(codProd);
+                                }
+                            }*/
                         }
-                    }
+                    } 
                 })
             }
         }
@@ -596,44 +609,30 @@ export class functions {
                     let {ProductDescription, ImageUrl, Images} = JSON.parse(body);
                     let _produto = await _repProdutos.findOne({where: { codigo: prod.codigo}});
                     
-                    if (ProductDescription) {
-                        if (_produto.descricao != ProductDescription) {
-                            _produto.descricao = ProductDescription;
-                            _repProdutos.save(_produto).then(() => {
-                                console.log("Descrição do produto " + prod.nome + " atualizadas");
-                            }).catch(async (error) => {
-                                console.error("Erro ao atualizar descrição do produto " + error);
-                            });;
-                        }
-                    }
-            
-                    let _repImagensProduto: Repository<ImagensProduto> = getRepository(ImagensProduto);
-                    let imagemProduto: ImagensProduto;
-            
-                    let imagens = _produto.imagens;
-            
-                    if (imagens.length > 0) {
-                        if (ImageUrl) {
-                            let imagem = await _repImagensProduto.findOne({where: {caminho: ImageUrl}});
-            
-                            if (!imagem) {
-                                imagemProduto = new ImagensProduto();
-                                imagemProduto.caminho = ImageUrl;
-                                imagemProduto.produto = _produto;
-                                _repImagensProduto.save(imagemProduto).then(() => {
-                                    console.log("Imagens do produto " + _produto.codigo + " atualizadas");
+                    if (_produto) {
+                        if (ProductDescription) {
+                            if (_produto.descricao != ProductDescription) {
+                                _produto.descricao = ProductDescription;
+                                _repProdutos.save(_produto).then(() => {
+                                    console.log("Descrição do produto " + prod.nome + " atualizadas");
                                 }).catch(async (error) => {
-                                    console.error("Erro ao atualizar imagens do produto " + error);
-                                });
+                                    console.error("Erro ao atualizar descrição do produto " + error);
+                                });;
                             }
                         }
-                        if (Images) {
-                            for (let img in Images) {
-                                let imagem = await _repImagensProduto.findOne({where: {caminho: Images[img].ImageUrl}});
-            
+                
+                        let _repImagensProduto: Repository<ImagensProduto> = getRepository(ImagensProduto);
+                        let imagemProduto: ImagensProduto;
+                
+                        let imagens = _produto.imagens;
+                
+                        if (imagens.length > 0) {
+                            if (ImageUrl) {
+                                let imagem = await _repImagensProduto.findOne({where: {caminho: ImageUrl}});
+                
                                 if (!imagem) {
                                     imagemProduto = new ImagensProduto();
-                                    imagemProduto.caminho = Images[img].ImageUrl;
+                                    imagemProduto.caminho = ImageUrl;
                                     imagemProduto.produto = _produto;
                                     _repImagensProduto.save(imagemProduto).then(() => {
                                         console.log("Imagens do produto " + _produto.codigo + " atualizadas");
@@ -641,30 +640,46 @@ export class functions {
                                         console.error("Erro ao atualizar imagens do produto " + error);
                                     });
                                 }
-            
                             }
-                        }
-                    } else {
-                        if (ImageUrl) {
-                            imagemProduto = new ImagensProduto();
-                            imagemProduto.caminho = ImageUrl;
-                            imagemProduto.produto = _produto;
-                            _repImagensProduto.save(imagemProduto).then(() => {
-                                console.log("Imagens do produto " + _produto.codigo + " atualizadas");
-                            }).catch(async (error) => {
-                                console.log("Erro ao atualizar imagens do produto " + error);
-                            });
-                        }
-                        if (Images) {
-                            for (let img in Images) {
+                            if (Images) {
+                                for (let img in Images) {
+                                    let imagem = await _repImagensProduto.findOne({where: {caminho: Images[img].ImageUrl}});
+                
+                                    if (!imagem) {
+                                        imagemProduto = new ImagensProduto();
+                                        imagemProduto.caminho = Images[img].ImageUrl;
+                                        imagemProduto.produto = _produto;
+                                        _repImagensProduto.save(imagemProduto).then(() => {
+                                            console.log("Imagens do produto " + _produto.codigo + " atualizadas");
+                                        }).catch(async (error) => {
+                                            console.error("Erro ao atualizar imagens do produto " + error);
+                                        });
+                                    }
+                
+                                }
+                            }
+                        } else {
+                            if (ImageUrl) {
                                 imagemProduto = new ImagensProduto();
-                                imagemProduto.caminho = Images[img].ImageUrl;
+                                imagemProduto.caminho = ImageUrl;
                                 imagemProduto.produto = _produto;
                                 _repImagensProduto.save(imagemProduto).then(() => {
                                     console.log("Imagens do produto " + _produto.codigo + " atualizadas");
                                 }).catch(async (error) => {
                                     console.log("Erro ao atualizar imagens do produto " + error);
                                 });
+                            }
+                            if (Images) {
+                                for (let img in Images) {
+                                    imagemProduto = new ImagensProduto();
+                                    imagemProduto.caminho = Images[img].ImageUrl;
+                                    imagemProduto.produto = _produto;
+                                    _repImagensProduto.save(imagemProduto).then(() => {
+                                        console.log("Imagens do produto " + _produto.codigo + " atualizadas");
+                                    }).catch(async (error) => {
+                                        console.log("Erro ao atualizar imagens do produto " + error);
+                                    });
+                                }
                             }
                         }
                     }
@@ -694,7 +709,7 @@ export class functions {
     }
     Email(mensagem) {
        return new Promise( (resolve, reject) => {const nodemailer = require('nodemailer');
-            console.log("chamou funcao Email")
+           
             let transport = nodemailer.createTransport({
                 host: "smtp.gmail.com",
                 port: 465,
@@ -757,7 +772,7 @@ export class functions {
         if (rota.indexOf("?")) {
             rota = rota.split("?")[0]
         }
-        console.log(rota)
+      
         switch (rota) {
             case "users": return "Usuarios";
             case "produtos": return "Produtos";
@@ -837,13 +852,13 @@ export class functions {
              count = i;
              _cdProdutos.push(cdProdutos[i]);
              if (count === 49 || (i === (cdProdutos.length - 1))) {
-                 console.log(_cdProdutos)
+                
                 await this.atualizaPrecoProduto(_cdProdutos, token);
                 await this.atualizaEstoqueProduto(_cdProdutos, token);
                 await this.atualizaImagemProduto(_cdProdutos);
                 count = 0;
                 _cdProdutos = [];
-                console.log(i)
+               
              }
         }
         

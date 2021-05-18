@@ -63,11 +63,6 @@ app.use(path.join("/","uploads"), express.static("public"));
 var fs = require("fs");
 var constants = require("constants");
 let https = require("https");
-console.log(process.env.target)
-console.log(process.env.key)
-console.log(process.env.cert)
-console.log(process.env.ca)
-console.log(process.env.dhparam)
 
 let obj_param = {};
 if (config.production) {
