@@ -32,7 +32,7 @@ export abstract class BaseService<T> {
     public filtro(filtro: any, param: any) {
         return this.http.get(`${this.baseUrl}/${param}/${filtro}/filtro`);
     }
-    public getTeste(): Observable<T []> {
+    public getObservable(): Observable<T []> {
         const header = this.http.createHeader();
          return this.httpCli.get<T []>(this.baseUrl, { headers: header })
                             .pipe(

@@ -61,6 +61,8 @@ import {ConfirmDialogModule} from 'primeng/confirmdialog';
 import {FieldsetModule} from 'primeng/fieldset';
 import {TooltipModule} from 'primeng/tooltip';
 import {AutoCompleteModule} from 'primeng/autocomplete';
+import {GalleriaModule} from 'primeng/galleria';
+import {PaginatorModule} from 'primeng/paginator';
 
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -118,6 +120,25 @@ import { AppCepValidateDirective, AppCnpjValidateDirective, AppEmailValidateDire
 import { InputFileComponent } from './components/input-file/input-file.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
 import { FormUsuarioComponent } from './components/form-usuario/form-usuario.component';
+import { DetalhesProdutoComponent } from './components/detalhes-produto/detalhes-produto.component';
+
+declare global {
+  interface Document {
+    mozCancelFullScreen?: () => Promise<void>;
+    msExitFullscreen?: () => Promise<void>;
+    webkitExitFullscreen?: () => Promise<void>;
+    mozFullScreenElement?: Element;
+    msFullscreenElement?: Element;
+    webkitFullscreenElement?: Element;
+  }
+
+  interface HTMLElement {
+    msRequestFullscreen?: () => Promise<void>;
+    mozRequestFullscreen?: () => Promise<void>;
+    webkitRequestFullscreen?: () => Promise<void>;
+  }
+}
+
 registerLocaleData(localePt);
 
 FullCalendarModule.registerPlugins([
@@ -190,7 +211,8 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     AppEmailValidateDirective,
     InputFileComponent,
     ToolBarComponent,
-    FormUsuarioComponent
+    FormUsuarioComponent,
+    DetalhesProdutoComponent
   ],
   imports: [
     FormsModule,
@@ -255,7 +277,9 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     ConfirmDialogModule,
     FieldsetModule,
     TooltipModule,
-    AutoCompleteModule
+    AutoCompleteModule,
+    GalleriaModule,
+    PaginatorModule
     
 
   ],

@@ -1,0 +1,93 @@
+<div class="murau__container">
+    <div class="row container">
+        <div class="col-sm-7">
+            <p-galleria #galleria [value]="images" [(activeIndex)]="activeIndex" [numVisible]="5"
+                [containerStyle]="{'max-width':'640px','box-shadow' : '0 0 13px #3e2723, 0 0 15px #4e324e'}"
+                [containerClass]="galleriaClass()" [showThumbnails]="showThumbnails" [showItemNavigators]="true"
+                [showItemNavigatorsOnHover]="true" [circular]="true" [autoPlay]="true" [transitionInterval]="3000">
+                <ng-template pTemplate="item" let-item>
+                    <img [src]="item.caminho"
+                        [ngStyle]="{'margin-top': !fullscreen ? '30px' : '','width': !fullscreen ? '85%' : '400px', 'height': !fullscreen ? '550px' : '600px', 'display': !fullscreen ? 'block' : ''}" />
+                </ng-template>
+                <ng-template pTemplate="thumbnail" let-item>
+                    <div class="p-grid p-nogutter p-justify-center">
+                        <img [src]="item.caminho" style="width: 100px; height: 100px" />
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="footer" let-item>
+                    <div class="custom-galleria-footer">
+                        <button type="button" pButton icon="pi pi-list" (click)="onThumbnailButtonClick()"></button>
+                        <span *ngIf="images" class="title-container">
+                            <span>{{activeIndex + 1}}/{{images.length}}</span>
+                            <span class="title">{{produto.nome}}</span>
+                        </span>
+                        <button type="button" pButton [icon]="fullScreenIcon()" (click)="toggleFullScreen()"
+                            class="fullscreen-button"></button>
+                    </div>
+                </ng-template>
+            </p-galleria>
+        </div>
+        <div class="col-sm">
+            <h1 class='titulo'>{{produto.nome}}</h1>
+            <div class="row container">
+                <div class="col-sm">
+                    <h2>Referência: {{produto.referencia}}</h2>
+                </div>
+                <div class="col-sm" style="text-align: right">
+                    <h2>Código: {{produto.codigo}}</h2>
+                </div>
+            </div>
+            <div class="row container" style="text-align: justify; text-justify: inter-word; font-size: .99rem">
+                {{produto.descricao}}
+            </div>
+        </div>
+    </div>
+    <hr />
+   
+    <div class="row container" *ngIf="produtosModelo.length > 0">
+        <h2> Conheça outros tamanhos e outras cores deste modelo</h2>
+        
+        <div class="row container">
+          
+            <div class="col-sm" *ngFor="let prod of prodModelo">
+                
+                <p-card header="{{prod.nome}}" subheader="Ref.: {{prod.referencia}}" [style]="{width: '360px', 'margin-top': '10px'}" styleClass="p-card">
+                    <ng-template pTemplate="header">
+                        <img *ngIf="prod.imagens.length > 0" src="{{prod.imagens[0].caminho}}" style="height: 400px" />
+                        <img *ngIf="prod.imagens.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
+                    </ng-template>
+                    <p style="font-size: .9rem;">Tamanho: {{prod.tamanho}} - Cor: {{prod.cor}}</p>
+                    <p>{{prod.descricao?.substring(0, 80)}}...</p>
+                    <ng-template pTemplate="footer">
+                        <p-button label="Ver Detalhes" icon="pi pi-check" styleClass="p-button-outlined p-button-primary"></p-button>
+                        
+                    </ng-template>
+                </p-card>
+            </div>
+        </div>
+        <p-paginator *ngIf="produtosModelo.length > 3" [rows]='3' [totalRecords]="produtosModelo.length" (onPageChange)="onPageChangeT($event)" [ngStyle]="{width: '100%'}"></p-paginator>
+    </div>
+    <hr />
+    <div class="row container">
+        <h3>As pessoas que visualizaram este produto também visualizaram</h3>
+        
+        <div class="row container">
+          
+            <div class="col-sm" *ngFor="let prod of produtos">
+                
+                <p-card header="{{prod.nome}}" subheader="Ref.: {{prod.referencia}}" [style]="{width: '360px', 'margin-top': '10px'}" styleClass="p-card">
+                    <ng-template pTemplate="header">
+                        <img *ngIf="prod.imagens.length > 0" src="{{prod.imagens[0].caminho}}" style="height: 400px" />
+                        <img *ngIf="prod.imagens.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
+                    </ng-template>
+                    <p>{{prod.descricao?.substring(0, 80)}}...</p>
+                    <ng-template pTemplate="footer">
+                        <p-button label="Ver Detalhes" icon="pi pi-check" styleClass="p-button-outlined p-button-primary"></p-button>
+                        
+                    </ng-template>
+                </p-card>
+            </div>
+        </div>
+        <p-paginator [rows]='6' [totalRecords]="produtosExtras.length" (onPageChange)="onPageChange($event)" [ngStyle]="{width: '100%'}"></p-paginator>
+    </div>
+</div>

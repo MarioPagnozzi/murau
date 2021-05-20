@@ -20,6 +20,7 @@ import { VendedoresComponent } from './components/vendedores/vendedores.componen
 import { CreateClienteComponent } from './components/create-cliente/create-cliente.component';
 import { ClienteComponent } from './components/cliente/cliente.component';
 import { PedidoComponent } from './components/pedido/pedido.component';
+import { DetalhesProdutoComponent } from './components/detalhes-produto/detalhes-produto.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '/home' },
@@ -42,6 +43,7 @@ const routes: Routes = [
   { path: 'clientes', component: ClientesComponent, canActivate: [AdminGuard] },
   { path: 'cliente/:cod', component: ClienteComponent, canActivate: [AdminGuard] },
   { path: 'pedido/:cod/:cli/:url', component: PedidoComponent, canActivate: [AdminGuard] },
+  { path: 'produto/detalhes/:uid', component: DetalhesProdutoComponent},
 
   { path: 'cadastro', component: CreateClienteComponent}
 ];

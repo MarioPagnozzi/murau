@@ -48,7 +48,7 @@ export class HomeComponent implements OnInit {
       } else {
         //const prods = await this.homeService.getAll();
         
-        this.homeService.getTeste().subscribe({
+        this.homeService.getObservable().subscribe({
           next: (produtos) => {
             this.produtos = produtos as ProdutosModel[];
           }

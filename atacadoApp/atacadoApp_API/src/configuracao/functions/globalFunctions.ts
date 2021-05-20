@@ -261,7 +261,7 @@ export class functions {
         if (body) {
             let classificacoes = JSON.parse(body);
             for (let el in classificacoes) {
-                let {cdTpClassificacao, cdClassificacao, cdBarra, cdProduto, dsProduto, dsCor, dsTamanho, cdNivel, dsErro} = classificacoes[el];
+                let {cdTpClassificacao, cdClassificacao, dsGrupo, cdBarra, cdProduto, dsProduto, dsCor, dsTamanho, cdNivel, dsErro} = classificacoes[el];
                
                 if (dsErro) {
                     return false;
@@ -273,7 +273,7 @@ export class functions {
                     _produto.cor = dsCor;
                     _produto.tamanho = dsTamanho;
         
-                    _produto.nome = dsProduto;
+                    _produto.nome = dsGrupo;
                     
                     _produto.descricao = dsProduto;
         
