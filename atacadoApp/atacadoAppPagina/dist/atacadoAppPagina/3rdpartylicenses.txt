@@ -528,6 +528,8 @@ primeng/dialog
 
 primeng/dropdown
 
+primeng/galleria
+
 primeng/inputmask
 
 primeng/inputnumber

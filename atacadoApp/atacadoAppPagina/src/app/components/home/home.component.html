@@ -20,7 +20,7 @@
         <div class="product-list-item">
          
             <span class="product-image">
-              <a routerLink="/produto/detalhes/{{produto.uid}}" routerLinkActive>
+              <a routerLink="/produto/detalhes/{{produto.uid}}" fragment="topo" routerLinkActive="router-link-active">
               <img *ngIf="produto.imagens.length > 0" src="{{produto.imagens[0].caminho}}" />
               <img *ngIf="produto.imagens.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
              </a>

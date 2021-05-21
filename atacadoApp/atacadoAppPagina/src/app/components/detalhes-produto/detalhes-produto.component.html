@@ -1,4 +1,4 @@
-<div class="murau__container">
+<div #detalhesProduto id="detalhesProduto" class="murau__container">
     <div class="row container">
         <div class="col-sm-7">
             <p-galleria #galleria [value]="images" [(activeIndex)]="activeIndex" [numVisible]="5"
@@ -37,6 +37,14 @@
                     <h2>Código: {{produto.codigo}}</h2>
                 </div>
             </div>
+            <div class="row container">
+                <div class="col-sm">
+                    <h3>Tamanho: {{produto.tamanho}}</h3>
+                </div>
+                <div class="col-sm" style="text-align: right">
+                    <h3>Cor: {{produto.cor}}</h3>
+                </div>
+            </div>
             <div class="row container" style="text-align: justify; text-justify: inter-word; font-size: .99rem">
                 {{produto.descricao}}
             </div>
@@ -59,7 +67,7 @@
                     <p style="font-size: .9rem;">Tamanho: {{prod.tamanho}} - Cor: {{prod.cor}}</p>
                     <p>{{prod.descricao?.substring(0, 80)}}...</p>
                     <ng-template pTemplate="footer">
-                        <p-button label="Ver Detalhes" icon="pi pi-check" styleClass="p-button-outlined p-button-primary"></p-button>
+                        <p-button routerLink="/produto/detalhes/{{prod.uid}}" routerLinkActive="router-link-active" label="Ver Detalhes" icon="pi pi-check" styleClass="p-button-outlined p-button-primary"></p-button>
                         
                     </ng-template>
                 </p-card>
@@ -82,7 +90,7 @@
                     </ng-template>
                     <p>{{prod.descricao?.substring(0, 80)}}...</p>
                     <ng-template pTemplate="footer">
-                        <p-button label="Ver Detalhes" icon="pi pi-check" styleClass="p-button-outlined p-button-primary"></p-button>
+                        <p-button routerLink="/produto/detalhes/{{prod.uid}}" routerLinkActive="router-link-active" label="Ver Detalhes" icon="pi pi-check" styleClass="p-button-outlined p-button-primary"></p-button>
                         
                     </ng-template>
                 </p-card>

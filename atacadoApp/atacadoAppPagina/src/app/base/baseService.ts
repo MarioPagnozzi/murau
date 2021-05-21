@@ -43,6 +43,17 @@ export abstract class BaseService<T> {
                                 catchError(this.httpError)
                             )
       }
+      public getObservableById(uid: string): Observable<T> {
+        const header = this.http.createHeader();
+        return this.httpCli.get<T>(`${this.baseUrl}/${uid}`, { headers: header })
+                           .pipe(
+                               tap(data => {
+                                   console.log(data);
+                               }),
+                               retry(3),
+                               catchError(this.httpError)
+                           )
+      }
       httpError(error: any) {
         let msg = '';
         if (error.error instanceof ErrorEvent) {
