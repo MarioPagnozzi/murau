@@ -69,19 +69,13 @@ export class DetalhesProdutoComponent implements OnInit {
     }
   ];
   ngOnInit() {
-    this.router.events.subscribe((event) => {
-      
-      //let nvEnd: NavigationEnd = new NavigationEnd(2, this.router.url, this.router.url)
-
-      //let scroll: Scroll = new Scroll(nvEnd, [0, 0], "detalhesProduto");
-      //onsole.log(scroll)
-      if (!(event instanceof NavigationEnd)) {
-        return;
-    }
-    document.getElementById("detalhesProduto")?.scrollIntoView();
-     //window.scrollTo(scroll.position ? scroll.position[0] : 0, scroll.position ? scroll.position[1] : 0);
-    })
+    
     this.images = [];
+    this.produtos = [];
+    this.prodModelo = [];
+    this.activeIndex = 0;
+    this.produtosExtras = [];
+    this.produtosModelo = [];
     // tslint:disable-next-line: deprecation
     this.active.params.subscribe(p => this.getUid(p.uid));
     this.isLogged = this.usuarioService.isStaticLogged;
@@ -90,7 +84,7 @@ export class DetalhesProdutoComponent implements OnInit {
       this.isLogged = log;     
     })
     
-    this.bindDocumentListeners();    
+    //this.bindDocumentListeners();
   }
 
   async getUid(uid: string) {
@@ -102,6 +96,10 @@ export class DetalhesProdutoComponent implements OnInit {
           this.unbindDocumentListeners();
           this.activeIndex = 0;
           this.images = [];
+          this.produtos = [];
+          this.prodModelo = [];
+          this.produtosExtras = [];
+          this.produtosModelo = [];
           
           this.produto = produto as ProdutosModel;
           
@@ -121,7 +119,18 @@ export class DetalhesProdutoComponent implements OnInit {
             }
             this.prodModelo = this.produtosModelo.slice(0, 3);
           }
-          
+          this.router.events.subscribe((event) => {
+      
+            //let nvEnd: NavigationEnd = new NavigationEnd(2, this.router.url, this.router.url)
+      
+            //let scroll: Scroll = new Scroll(nvEnd, [0, 0], "detalhesProduto");
+            //onsole.log(scroll)
+            if (!(event instanceof NavigationEnd)) {
+              return;
+          }
+          document.getElementById("detalhesProduto")?.scrollIntoView();
+           //window.scrollTo(scroll.position ? scroll.position[0] : 0, scroll.position ? scroll.position[1] : 0);
+          })
         }
         
       }
