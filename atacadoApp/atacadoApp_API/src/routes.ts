@@ -56,13 +56,11 @@ export const Routes = [
 
     //retoeamento restritos: Empresas
     {method: "get", route: "/empresas", controller: EmpresasController, action: "all"}, 
-    {method: "get", route: "/empresas/:codigo/empresa", controller: EmpresasController, action: "oneCodigo"},
     {method: "get", route: "/empresas/:id", controller: EmpresasController, action: "one"},
     {method: "post", route: "/empresas", controller: EmpresasController, action: "save"},
     {method: "delete",route: "/empresas/:id", controller: EmpresasController, action: "remove"},
-    {method: "get", route: "/empresas/:codigo/clientes", controller: EmpresasController, action: "oneClientes"},
-    {method: "get", route: "/empresas/:codigo/vendedores", controller: EmpresasController, action: "oneVendedores"},
-    {method: "get", route: "/empresas/:codigo/produtos", controller: EmpresasController, action: "oneProdutos"},
+    {method: "get", route: "/empresas/:valor/:filtro/filtro", controller: EmpresasController, action: "filtro"},
+    
 
     //Rota pública Clientes
     {method: "post", route: "/clientes/createCliente", controller: ClientesController, action: "createCliente"},

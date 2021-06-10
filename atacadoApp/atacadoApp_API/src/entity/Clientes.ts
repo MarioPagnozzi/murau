@@ -48,18 +48,18 @@ export class Clientes extends BaseEntity {
     @Column({type: "int", default: 1})
     statusCliente: BaseStatus;
 
-    @OneToMany(type => ContatosClientes, contatos => contatos.cliente, {eager: true})
-    contatos: ContatosClientes[]
+    @OneToMany(type => ContatosClientes, contatos => contatos.cliente)
+    contatos: Promise<ContatosClientes[]>
     
-    @ManyToOne(type => Vendedores, vendedor => vendedor.clientes, {eager: true})
-    vendedor: Vendedores
+    @ManyToOne(type => Vendedores, vendedor => vendedor.clientes)
+    vendedor: Promise<Vendedores>
 
-    @ManyToOne(type => Empresas, empresa => empresa.clientes, {eager:true})
-    empresa: Empresas
+    @ManyToOne(type => Empresas, empresa => empresa.clientes)
+    empresa: Promise<Empresas>
 
     @OneToMany(type => Pedidos, pedidos => pedidos.cliente)
-    pedidos: Pedidos[]
+    pedidos: Promise<Pedidos[]>
 
     @OneToOne(type => User, usuario => usuario.cliente)
-    usuario: User
+    usuario: Promise<User>
 }

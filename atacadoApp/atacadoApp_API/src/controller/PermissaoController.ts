@@ -11,14 +11,14 @@ export class PermissaoController extends BaseController<Permissao> {
     async save(request: Request) {
         let permissao = <Permissao>request.body;
 
-        if (!this._func.Permissao(request, "Permissão", permissao.uid ? "A" : "I")) {
+        if (!this.func.Permissao(request, "Permissão", permissao.uid ? "A" : "I")) {
             return {status: 400, errors: ["Você não tem permissão para alterar ou inserir registros"]}
         }
 
         super.isRequired(permissao.tabela, "'Tabela' deve ser informada");
-        super.isRequired(permissao.grupo, "'Grupo' deve ser informado");
-
-        let _permissaoExist = this._repPermissao.findOne({where: {tabela: permissao.tabela, grupo: permissao.grupo }});
+        super.isRequired(permissao.grupo, "'Grupo' deve ser informado");      
+        let grupo = await permissao.grupo;
+        let _permissaoExist = await this._repPermissao.findOne({where: {tabela: permissao.tabela, grupo: [{uid: grupo.uid}] }});
         if (_permissaoExist && !permissao.uid) {
             return {status: 401, errors: "Permissão já existe para esta tabela e este grupo."}
         }

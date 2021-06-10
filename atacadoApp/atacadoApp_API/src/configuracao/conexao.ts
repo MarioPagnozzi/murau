@@ -18,6 +18,8 @@ import { User } from './../entity/User';
 import { createConnection } from 'typeorm';
 import config from "./config";
 import { Promocao } from '../entity/Promocao';
+import { vProdutos } from '../viewEntity/viewProduto';
+
 
 
 const cfg = config.production ? require("../../ormconfig-prod.json")  : require("../../ormconfig.json");
@@ -53,7 +55,8 @@ export default {
                 Configuracoes,
                 ProdutosEmpresas,
                 HistoricoPedido,
-                Promocao
+                Promocao,
+                vProdutos
             ]
         });
         console.log("Database connected");

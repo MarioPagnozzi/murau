@@ -3,286 +3,278 @@ import { User } from './../entity/User';
 import { Produtos } from './../entity/Produtos';
 import { Vendedores } from './../entity/Vendedores';
 import { Empresas } from './../entity/Empresas';
-import { getRepository, Repository } from 'typeorm';
+import { entity, Entity, getRepository, Repository } from 'typeorm';
 import * as fs from "fs";
 import { Grupos } from '../entity/Grupos';
 import { Permissao } from '../entity/Permissao';
 import { Tabelas } from '../entity/Tabelas';
 import * as md5 from "md5";
 import config from "./config";
-import { ProdutosEmpresas } from '../entity/ProdutosEmpresas';
-import { VendedoresEmpresas } from '../entity/VendedoresEmpresas';
+import { nextTick } from 'process';
 
 
 
 
-export class Setup {    
-   
-    constructor () {
-        
-    }
-    async inicializar() {
 
-        let _repEmpresa: Repository<Empresas> =  getRepository(Empresas);
-        let _emp: any;
-        let EntityEmp: Empresas;
-        let _Empresa = await _repEmpresa.findOne();
 
-        if (!_Empresa) {
 
-            let emp = fs.readFileSync(__dirname + "/arquivos/empresas.csv", "utf8");
-            let emps = emp.split(/\n/);
 
-            emps.forEach(async function (dados) {
-                _emp = dados.split(";");
+        export async function start(_repEmpresa: Repository<Empresas> = getRepository(Empresas)) {
+            console.log("Iniciando Servidor ...");
+            let _Empresa = await _repEmpresa.findOne();
+            let i = 0;
+            if (!_Empresa) {
 
-               
-                    EntityEmp = new Empresas();
-                    EntityEmp.codigo = parseFloat( _emp[0]);
-                    EntityEmp.nome_fantasia = _emp[1];
-    
-                    EntityEmp.ativo = true;
-                    EntityEmp.bairro = _emp[6];
-                    EntityEmp.cep = _emp[9];
-                    EntityEmp.cidade = _emp[7];
-                    EntityEmp.cnpj = _emp[2];
-                    EntityEmp.endereco = _emp[4];
-    
-                    EntityEmp.excluido = false;
-                    EntityEmp.numero = _emp[5];
-                    EntityEmp.razao_social = _emp[1];
-                    EntityEmp.uf = _emp[8];
-                    EntityEmp.ie = _emp[3];
-                    EntityEmp.telefone = _emp[10];
-                    
-                    await _repEmpresa.save(EntityEmp).then((empresa) => {
-                        console.log("Empresa " + empresa.nome_fantasia + " cadastrada");                        
-                    }).catch( (error) => {
-                        console.error("Erro ao cadastradar a empresa " + EntityEmp.nome_fantasia + " " + error);
+                    let emp = fs.readFileSync(__dirname + "/arquivos/empresas.csv", "utf8");
+                    let emps = emp.split(/\n/);
+                    let _emp: any;
+                    let EntityEmp: Empresas;
+                    emps.forEach((dados) => {
+                        _emp = dados.split(";");
+
+
+                        EntityEmp = new Empresas();
+                        EntityEmp.codigo = parseFloat(_emp[0]);
+                        EntityEmp.nome_fantasia = _emp[1];
+
+                        EntityEmp.ativo = true;
+                        EntityEmp.bairro = _emp[6];
+                        EntityEmp.cep = _emp[9];
+                        EntityEmp.cidade = _emp[7];
+                        EntityEmp.cnpj = _emp[2];
+                        EntityEmp.endereco = _emp[4];
+
+                        EntityEmp.excluido = false;
+                        EntityEmp.numero = _emp[5];
+                        EntityEmp.razao_social = _emp[1];
+                        EntityEmp.uf = _emp[8];
+                        EntityEmp.ie = _emp[3];
+                        EntityEmp.telefone = _emp[10];
+
+                        _repEmpresa.save(EntityEmp);
+                        i++
                     });
                     
-            });
-       }
-
-       let _repTabelas: Repository<Tabelas> = getRepository(Tabelas);
-       let tabelas: Tabelas;
-
-       config.tabelas.forEach(async (tab) => {
-           let _tabela = await _repTabelas.findOne({tabela: tab});
-
-           if (!_tabela) {
-               tabelas = new Tabelas();
-               tabelas.tabela = tab;
-
-               _repTabelas.save(tabelas);
-           }
-       });
-
-       let _repConfig: Repository<Configuracoes> = getRepository(Configuracoes);
-       let configuracoes: Configuracoes;
-
-       let _parametro = await _repConfig.findOne({nome_parametro: "cod_prod_busca"});
-
-       if (!_parametro) {
-           configuracoes = new Configuracoes();
-           configuracoes.nome_parametro = "cod_prod_busca";
-           configuracoes.valor = "0";
-           _repConfig.save(configuracoes);
-       }
-
-       _parametro = await _repConfig.findOne({nome_parametro: "host_api_totvs"});
-
-       if (!_parametro) {
-           
-            configuracoes = new Configuracoes();
-            configuracoes.nome_parametro = "host_api_totvs";
-            configuracoes.valor = "www30.bhan.com.br";
-
-            await _repConfig.save(configuracoes);
-
-            configuracoes = new Configuracoes();
-            configuracoes.nome_parametro = "porta_api_totvs";
-            configuracoes.valor = "9443";
-
-            await _repConfig.save(configuracoes);
-
-           configuracoes = new Configuracoes();
-           configuracoes.nome_parametro = "autorizacao_api_totvs_token";
-           configuracoes.valor = "/api/v1/autorizacao/token";
-
-           await _repConfig.save(configuracoes);
-
-           configuracoes = new Configuracoes();
-           configuracoes.nome_parametro = "usuario_api_totvs_token";
-           configuracoes.valor = "planteamorws";
-           
-           await _repConfig.save(configuracoes);
-
-           configuracoes = new Configuracoes();
-           configuracoes.nome_parametro = "senha_api_totvs_token";
-           configuracoes.valor = "896314";
-
-           await _repConfig.save(configuracoes);
-
-           configuracoes = new Configuracoes();
-           configuracoes.nome_parametro = "rest_api_totvs";
-           configuracoes.valor = "/api/v1";
-
-           await _repConfig.save(configuracoes);
-       }
-
-       _parametro = await _repConfig.findOne({nome_parametro: "set_Hora_inicio_atualiza"});
-
-       if (!_parametro) {
-            configuracoes = new Configuracoes();
-            configuracoes.nome_parametro = "set_Hora_inicio_atualiza";
-            configuracoes.valor = "7,0,0";
-
-            await _repConfig.save(configuracoes);
-       }
-
-       _parametro = await _repConfig.findOne({nome_parametro: "set_Hora_fim_atualiza"});
-
-       if (!_parametro) {
-            configuracoes = new Configuracoes();
-            configuracoes.nome_parametro = "set_Hora_fim_atualiza";
-            configuracoes.valor = "23,59,0";
-
-            await _repConfig.save(configuracoes);
+                    setTimeout(() => {
+                        console.log(i + "/" + emps.length + " empresas cadastradas");
+                    }, 10000)
+                }
         }
 
-       _parametro = await _repConfig.findOne({nome_parametro: "rule_atualiza_horas"});
+        export async function cadastraTabelas(_repTabelas: Repository<Tabelas> = getRepository(Tabelas)) {
+            
+            let tabelas: Tabelas;
+            config.tabelas.forEach(async (tab) => {
+                let _tabela = await _repTabelas.findOne({ tabela: tab });
 
-       if (!_parametro) {
-            configuracoes = new Configuracoes();
-            configuracoes.nome_parametro = "rule_atualiza_horas";
-            configuracoes.valor = "7,12,15,17";
+                if (!_tabela) {
+                    tabelas = new Tabelas();
+                    tabelas.tabela = tab;
 
-            await _repConfig.save(configuracoes);
-       }
+                    _repTabelas.save(tabelas);
+                }
+            });
+        }
 
-       _parametro = await _repConfig.findOne({nome_parametro: "rule_atualiza_minutos"});
+        export async function cadastraConfig (_repConfig: Repository<Configuracoes> = getRepository(Configuracoes)) {
 
-       if (!_parametro) {
-            configuracoes = new Configuracoes();
-            configuracoes.nome_parametro = "rule_atualiza_minutos";
-            configuracoes.valor = "0";
+            let _parametro = await _repConfig.findOne({ nome_parametro: "cod_prod_busca" });
+            let configuracoes: Configuracoes;
+            if (!_parametro) {
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "cod_prod_busca";
+                configuracoes.valor = "0";
+                _repConfig.save(configuracoes);
+            }
 
-            await _repConfig.save(configuracoes);
-       }
+            _parametro = await _repConfig.findOne({ nome_parametro: "host_api_totvs" });
 
-       _parametro = await _repConfig.findOne({nome_parametro: "rule_atualiza_segundos"});
+            if (!_parametro) {
 
-       if (!_parametro) {
-            configuracoes = new Configuracoes();
-            configuracoes.nome_parametro = "rule_atualiza_segundos";
-            configuracoes.valor = "0";
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "host_api_totvs";
+                configuracoes.valor = "www30.bhan.com.br";
 
-            await _repConfig.save(configuracoes);
-       }
+                 _repConfig.save(configuracoes);
 
-       _parametro = await _repConfig.findOne({nome_parametro: "rule_atualiza_diasSemanas"});
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "porta_api_totvs";
+                configuracoes.valor = "9443";
 
-       if (!_parametro) {
-            configuracoes = new Configuracoes();
-            configuracoes.nome_parametro = "rule_atualiza_diasSemanas";
-            configuracoes.valor = "0,1,2,3,4,5,6";
+                 _repConfig.save(configuracoes);
 
-            await _repConfig.save(configuracoes);
-       }
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "autorizacao_api_totvs_token";
+                configuracoes.valor = "/api/v1/autorizacao/token";
 
-       _parametro = await _repConfig.findOne({nome_parametro: "set_Hora_inicio_insere"});
+                 _repConfig.save(configuracoes);
 
-       if (!_parametro) {
-            configuracoes = new Configuracoes();
-            configuracoes.nome_parametro = "set_Hora_inicio_insere";
-            configuracoes.valor = "7,0,0";
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "usuario_api_totvs_token";
+                configuracoes.valor = "planteamorws";
 
-            await _repConfig.save(configuracoes);
-       }
+                await _repConfig.save(configuracoes);
 
-       _parametro = await _repConfig.findOne({nome_parametro: "set_Hora_fim_insere"});
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "senha_api_totvs_token";
+                configuracoes.valor = "896314";
 
-       if (!_parametro) {
-            configuracoes = new Configuracoes();
-            configuracoes.nome_parametro = "set_Hora_fim_insere";
-            configuracoes.valor = "23,59,0";
+                 _repConfig.save(configuracoes);
 
-            await _repConfig.save(configuracoes);
-       }
-       
-       _parametro = await _repConfig.findOne({nome_parametro: "rule_insere_horas"});
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "rest_api_totvs";
+                configuracoes.valor = "/api/v1";
 
-       if (!_parametro) {
-            configuracoes = new Configuracoes();
-            configuracoes.nome_parametro = "rule_insere_horas";
-            configuracoes.valor = "";
+                 _repConfig.save(configuracoes);
+            }
 
-            await _repConfig.save(configuracoes);
-       }
+            _parametro = await _repConfig.findOne({ nome_parametro: "set_Hora_inicio_atualiza" });
 
-       _parametro = await _repConfig.findOne({nome_parametro: "rule_insere_minutos"});
+            if (!_parametro) {
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "set_Hora_inicio_atualiza";
+                configuracoes.valor = "7,0,0";
 
-       if (!_parametro) {
-            configuracoes = new Configuracoes();
-            configuracoes.nome_parametro = "rule_insere_minutos";
-            configuracoes.valor = "0,15,30,45";
+                 _repConfig.save(configuracoes);
+            }
 
-            await _repConfig.save(configuracoes);
-       }
+            _parametro = await _repConfig.findOne({ nome_parametro: "set_Hora_fim_atualiza" });
 
-       _parametro = await _repConfig.findOne({nome_parametro: "rule_insere_segundos"});
+            if (!_parametro) {
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "set_Hora_fim_atualiza";
+                configuracoes.valor = "23,59,0";
 
-       if (!_parametro) {
-            configuracoes = new Configuracoes();
-            configuracoes.nome_parametro = "rule_insere_segundos";
-            configuracoes.valor = "";
+                 _repConfig.save(configuracoes);
+            }
 
-            await _repConfig.save(configuracoes);
-       }
+            _parametro = await _repConfig.findOne({ nome_parametro: "rule_atualiza_horas" });
 
-       _parametro = await _repConfig.findOne({nome_parametro: "rule_insere_diasSemanas"});
+            if (!_parametro) {
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "rule_atualiza_horas";
+                configuracoes.valor = "";
 
-       if (!_parametro) {
-            configuracoes = new Configuracoes();
-            configuracoes.nome_parametro = "rule_insere_diasSemanas";
-            configuracoes.valor = "0,1,2,3,4,5,6";
+                 _repConfig.save(configuracoes);
+            }
 
-            await _repConfig.save(configuracoes);
-       }
+            _parametro = await _repConfig.findOne({ nome_parametro: "rule_atualiza_minutos" });
 
-       _parametro = await _repConfig.findOne({nome_parametro: "qtd_lote_pesquisa"});
+            if (!_parametro) {
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "rule_atualiza_minutos";
+                configuracoes.valor = "";
 
-       if (!_parametro) {
-            configuracoes = new Configuracoes();
-            configuracoes.nome_parametro = "qtd_lote_pesquisa";
-            configuracoes.valor = "1";
+                 _repConfig.save(configuracoes);
+            }
 
-            await _repConfig.save(configuracoes);
-       }
-        console.log("Processo finalizado");
-    }
-    
-    async cadastraVendedores() {
+            _parametro = await _repConfig.findOne({ nome_parametro: "rule_atualiza_segundos" });
 
-        let _repVendedor: Repository<Vendedores> = getRepository(Vendedores);
-        let _vend: any;
-        let EntityVendedor: Vendedores;
-        let _repEmpresa: Repository<Empresas> = getRepository(Empresas);
-        
-        let _temVendedor = await _repVendedor.findOne();
-        
-        if (!_temVendedor) {
-            let vend = fs.readFileSync(__dirname + "/arquivos/vendedores.csv", "utf8");
-            let vendedores = vend.split(/\n/);
-            let _Empresas = await _repEmpresa.find();
-            vendedores.forEach(async function(dadosvend) {
-                console.clear();
-                _vend = dadosvend.split(";");
+            if (!_parametro) {
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "rule_atualiza_segundos";
+                configuracoes.valor = "0,30";
+
+                 _repConfig.save(configuracoes);
+            }
+
+            _parametro = await _repConfig.findOne({ nome_parametro: "rule_atualiza_diasSemanas" });
+
+            if (!_parametro) {
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "rule_atualiza_diasSemanas";
+                configuracoes.valor = "0,1,2,3,4,5,6";
+
+                 _repConfig.save(configuracoes);
+            }
+
+            _parametro = await _repConfig.findOne({ nome_parametro: "set_Hora_inicio_insere" });
+
+            if (!_parametro) {
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "set_Hora_inicio_insere";
+                configuracoes.valor = "7,0,0";
+
+                 _repConfig.save(configuracoes);
+            }
+
+            _parametro = await _repConfig.findOne({ nome_parametro: "set_Hora_fim_insere" });
+
+            if (!_parametro) {
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "set_Hora_fim_insere";
+                configuracoes.valor = "23,59,0";
+
+                _repConfig.save(configuracoes);
+            }
+
+            _parametro = await _repConfig.findOne({ nome_parametro: "rule_insere_horas" });
+
+            if (!_parametro) {
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "rule_insere_horas";
+                configuracoes.valor = "";
+
+                 _repConfig.save(configuracoes);
+            }
+
+            _parametro = await _repConfig.findOne({ nome_parametro: "rule_insere_minutos" });
+
+            if (!_parametro) {
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "rule_insere_minutos";
+                configuracoes.valor = "";
+
+                 _repConfig.save(configuracoes);
+            }
+
+            _parametro = await _repConfig.findOne({ nome_parametro: "rule_insere_segundos" });
+
+            if (!_parametro) {
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "rule_insere_segundos";
+                configuracoes.valor = "0,10,20,30,40,50";
+
+                 _repConfig.save(configuracoes);
+            }
+
+            _parametro = await _repConfig.findOne({ nome_parametro: "rule_insere_diasSemanas" });
+
+            if (!_parametro) {
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "rule_insere_diasSemanas";
+                configuracoes.valor = "0,1,2,3,4,5,6";
+
+                _repConfig.save(configuracoes);
+            }
+
+            _parametro = await _repConfig.findOne({ nome_parametro: "qtd_lote_pesquisa" });
+
+            if (!_parametro) {
+                configuracoes = new Configuracoes();
+                configuracoes.nome_parametro = "qtd_lote_pesquisa";
+                configuracoes.valor = "1";
+
+                 _repConfig.save(configuracoes);
+            }
+        }
+        export async function cadastraVendedores(empresas, _repVendedor: Repository<Vendedores> = getRepository(Vendedores)) {
+
+            let _vend: any;
+            let EntityVendedor: Vendedores;
+
+
+            let _temVendedor = await _repVendedor.findOne();
+            let i = 0;
+            if (!_temVendedor) {
+                let vend = fs.readFileSync(__dirname + "/arquivos/vendedores.csv", "utf8");
+                let vendedores = vend.split(/\n/);
+                vendedores.forEach(async function (dadosvend) {
+                    _vend = dadosvend.split(";");
 
                     EntityVendedor = new Vendedores();
                     EntityVendedor.ativo = true;
-                    
+
                     EntityVendedor.bairro = "Cadastro Automático";
                     EntityVendedor.cidade = "Cadastro Automático";
                     EntityVendedor.codigo = parseFloat(_vend[0]);
@@ -291,429 +283,204 @@ export class Setup {
 
                     EntityVendedor.endereco = "Cadastro Automático";
                     EntityVendedor.nome = _vend[1];
-                    EntityVendedor.empresas = _Empresas
-                    await _repVendedor.save(EntityVendedor).then(async (vendedor) => {
-                        console.log("Vendedor " + vendedor.nome + " cadastrado");
-                    }).catch((error) => {
-                        console.error("Erro ao cadastradar o vendedor " + EntityVendedor.nome);
-                    });
-            });
-        }
-
-    }
-     async cadastraProduto() {
-
-        let _repEmpresa: Repository<Empresas> =  getRepository(Empresas); 
-        let _empresasCount = await _repEmpresa.find();
-
-        let _repProduto: Repository<Produtos> = getRepository(Produtos);
-        let EntityProduto: Produtos;
-
-        let prod = fs.readFileSync(__dirname + "/arquivos/produtos.csv", "utf8");
-        let produtos = prod.split(/\n/);
-        let _prod: any;
-
-        let temProduto = await _repProduto.findOne();
-        let prodcadastrado: any = false;
-        if (!temProduto) { 
-            if (_empresasCount.length != 0) {
-                 produtos.forEach(async function(dadosprod) {
-                    let i = 0; 
-                     _prod = dadosprod.split(";");
-                             console.clear();                            
-                             EntityProduto = new Produtos();
-                             EntityProduto.ativo = true;
-                             let codigo: string = _prod[1];
-                             EntityProduto.codigo = _prod[1];
-                             EntityProduto.cor = _prod[4];
-                             
-                             EntityProduto.descricao = "nada consta";
-                             EntityProduto.estoque = 0;
-                             EntityProduto.nome = _prod[2];
-         
-                             EntityProduto.preco = 0;
-                             EntityProduto.referencia = _prod[0];
-                             EntityProduto.tamanho = _prod[3]; 
-                            
-                             if (EntityProduto.nome != "") {
-                                 prodcadastrado = true; 
-                                 await _repProduto.save(EntityProduto).then(async (produto) => {
-                                    let _repProdutosEmpresas: Repository<ProdutosEmpresas> = getRepository(ProdutosEmpresas);
-                                    let produtosEmpresas: ProdutosEmpresas;
-                                    _empresasCount = await _repEmpresa.find();
-                                    _empresasCount.forEach(async (empresa) => {
-                                            produtosEmpresas = new ProdutosEmpresas();
-                                            produtosEmpresas.produto = produto,
-                                            produtosEmpresas.empresa = empresa;
-                                            _repProdutosEmpresas.save(produtosEmpresas);
-                                       }); 
-                                   console.log("Produto: " + produto.nome + " cadastrado na empresa: ");
-                                 });
-                                 
-                             }
+                    EntityVendedor.empresas = empresas
+                   _repVendedor.save(EntityVendedor);
+                   i++
+                  
                 });
+                setTimeout(() => {
+                    console.log(i + "/" + vendedores.length + " vendores cadastradas");
+                }, 10000)
             }
-
         }
-     }
-     async cadastroGrupoPermissao () {
-
-         let _repGrupo: Repository<Grupos> = getRepository(Grupos);
-         let _rePermissao: Repository<Permissao> = getRepository(Permissao);
-         let _repUsuario: Repository<User> = getRepository(User);
-         
         
-         let grupo: Grupos;
-         
-         let permissaoCliente: Permissao;
-         let permissaoEmpresa: Permissao;
-         let permissaoGrupo: Permissao;
-         let permissaoPedidos: Permissao;      
-         let permissaoProdutos: Permissao;
-         let permissaoUser: Permissao;
-         let permissaoVendedores: Permissao;
-         let permissaoPermissoes: Permissao; 
-
-         let temUsuario = await _repUsuario.findOne();
-         let temgrupo = await _repGrupo.findOne();
-
-         if (!temUsuario && !temgrupo) {
-
-            grupo = new Grupos();
-
-            grupo.ativo = true;
-            grupo.nome_grupo = "Super Usuário";
-
-            await _repGrupo.save(grupo);
-
-            permissaoCliente = new Permissao();
-
-                permissaoCliente.alterar = true;
-                permissaoCliente.ativo = true;
-                permissaoCliente.excluir = true;
-                permissaoCliente.inserir = true;
-                permissaoCliente.visualizar = true;
-                permissaoCliente.tabela = "Clientes";
-
-                permissaoCliente.grupo = grupo;
-
-            permissaoEmpresa = new Permissao();
-            
-                permissaoEmpresa.alterar = true;
-                permissaoEmpresa.ativo = true;
-                permissaoEmpresa.excluido = true;
-                permissaoEmpresa.inserir = true;
-                permissaoEmpresa.visualizar = true;
-                permissaoEmpresa.tabela = "Empresas";
-
-                permissaoEmpresa.grupo = grupo;
-
-            permissaoGrupo = new Permissao();
-
-                permissaoGrupo.alterar = true;
-                permissaoGrupo.ativo = true;
-                permissaoGrupo.excluir = true;
-                permissaoGrupo.inserir = true;
-                permissaoGrupo.visualizar = true;
-                permissaoGrupo.tabela = "Grupo";
-
-                permissaoGrupo.grupo = grupo;
-
-            permissaoPedidos = new Permissao();
-
-                permissaoPedidos.alterar = true;
-                permissaoPedidos.ativo = true;
-                permissaoPedidos.excluir = true;
-                permissaoPedidos.inserir = true;
-                permissaoPedidos.visualizar = true;
-                permissaoPedidos.tabela = "Pedidos";
-
-                permissaoPedidos.grupo = grupo;
+        export async function cadastraProdutos(empresas, _repProduto: Repository<Produtos> = getRepository(Produtos)) {
+            let produto = await _repProduto.findOne();
+            let i = 0;
+          
+            if (!produto) {
+                let prod = fs.readFileSync(__dirname + "/arquivos/produtos.csv", "utf8");
+                let produtos = prod.split(/\n/);
                 
-            permissaoProdutos = new Permissao();
-            
-                permissaoProdutos.alterar = true;
-                permissaoProdutos.ativo = true;
-                permissaoProdutos.excluir = true;
-                permissaoProdutos.inserir = true;
-                permissaoProdutos.visualizar = true;
-                permissaoProdutos.tabela = "Produtos";
+                let _prod: any;
+                let EntityProduto: Produtos;
+                produtos.forEach(async function (dadosprod) {
+                    _prod = dadosprod.split(";");
+                  
+                    EntityProduto = new Produtos();
+                    EntityProduto.ativo = true;
+                    EntityProduto.codigo = _prod[1];
+                    EntityProduto.cor = _prod[4];
 
-                permissaoProdutos.grupo = grupo;
+                    EntityProduto.descricao = ".";
+                    EntityProduto.estoque = 0;
+                    EntityProduto.nome = _prod[2];
 
-            permissaoUser = new Permissao()
-
-                permissaoUser.alterar = true;
-                permissaoUser.ativo = true;
-                permissaoUser.excluir = true;
-                permissaoUser.inserir = true;
-                permissaoUser.visualizar = true;
-                permissaoUser.tabela = "Usuarios";
-
-                permissaoUser.grupo = grupo;
-
-            permissaoVendedores = new Permissao();
-
-                permissaoVendedores.alterar = true;
-                permissaoVendedores.ativo = true;
-                permissaoVendedores.excluir = true;
-                permissaoVendedores.inserir = true;
-                permissaoVendedores.visualizar = true;
-                permissaoVendedores.tabela = "Vendedores";
-
-                permissaoVendedores.grupo = grupo;
-            
-            permissaoPermissoes = new Permissao();
-
-                permissaoPermissoes.alterar = true;
-                permissaoPermissoes.ativo = true;
-                permissaoPermissoes.excluir = true;
-                permissaoPermissoes.inserir = true;
-                permissaoPermissoes.visualizar = true;
-                permissaoPermissoes.grupo = grupo;
-                permissaoPermissoes.tabela = "Permissoes";
-
-            await _rePermissao.save(permissaoCliente);
-            await _rePermissao.save(permissaoEmpresa);
-            await _rePermissao.save(permissaoGrupo);
-            await _rePermissao.save(permissaoPedidos);
-            await _rePermissao.save(permissaoProdutos);
-            await _rePermissao.save(permissaoUser);
-            await _rePermissao.save(permissaoVendedores);
-            await _rePermissao.save(permissaoPermissoes);  
-
-            //Cria grupo e permissão de vendedores
-
-            var grupoVendedores = new Grupos();
-            grupoVendedores.ativo = true;
-            grupoVendedores.nome_grupo = "Vendedores";
-            await _repGrupo.save(grupoVendedores);
-
-            var permissaoCliente_grupoVendedores = new Permissao();
-
-                permissaoCliente_grupoVendedores.alterar = true;
-                permissaoCliente_grupoVendedores.excluir = false;
-                permissaoCliente_grupoVendedores.inserir = true;
-                permissaoCliente_grupoVendedores.visualizar = true;
-                permissaoCliente_grupoVendedores.tabela = "Clientes";
-
-                permissaoCliente_grupoVendedores.grupo = grupoVendedores;
-
-            var permissaoEmpresa_grupoVendedores = new Permissao();
-            
-                permissaoEmpresa_grupoVendedores.alterar = false;
-                permissaoEmpresa_grupoVendedores.excluido = false;
-                permissaoEmpresa_grupoVendedores.inserir = false;
-                permissaoEmpresa_grupoVendedores.visualizar = false;
-                permissaoEmpresa_grupoVendedores.tabela = "Empresas";
-
-                permissaoEmpresa_grupoVendedores.grupo = grupoVendedores;
-
-            var permissaoGrupo_grupoVendedores = new Permissao();
-
-                permissaoGrupo_grupoVendedores.alterar = false;
-                permissaoGrupo_grupoVendedores.excluir = false;
-                permissaoGrupo_grupoVendedores.inserir = false;
-                permissaoGrupo_grupoVendedores.visualizar = false;
-                permissaoGrupo_grupoVendedores.tabela = "Grupo";
-
-                permissaoGrupo_grupoVendedores.grupo = grupoVendedores;
-
-            var permissaoPedidos_grupoVendedores = new Permissao();
-
-                permissaoPedidos_grupoVendedores.alterar = true;
-                permissaoPedidos_grupoVendedores.excluir = true;
-                permissaoPedidos_grupoVendedores.inserir = true;
-                permissaoPedidos_grupoVendedores.visualizar = true;
-                permissaoPedidos_grupoVendedores.tabela = "Pedidos";
-
-                permissaoPedidos_grupoVendedores.grupo = grupoVendedores;
-                
-            var permissaoProdutos_grupoVendedores = new Permissao();
-            
-                permissaoProdutos_grupoVendedores.alterar = false;
-                permissaoProdutos_grupoVendedores.excluir = false;
-                permissaoProdutos_grupoVendedores.inserir = false;
-                permissaoProdutos_grupoVendedores.visualizar = false;
-                permissaoProdutos_grupoVendedores.tabela = "Produtos";
-
-                permissaoProdutos_grupoVendedores.grupo = grupoVendedores;
-
-            var permissaoUser_grupoVendedores = new Permissao()
-
-                permissaoUser_grupoVendedores.alterar = false;
-                permissaoUser_grupoVendedores.excluir = false;
-                permissaoUser_grupoVendedores.inserir = false;
-                permissaoUser_grupoVendedores.visualizar = false;
-                permissaoUser_grupoVendedores.tabela = "Usuarios";
-
-                permissaoUser_grupoVendedores.grupo = grupoVendedores;
-
-            var permissaoVendedores_grupoVendedores = new Permissao();
-
-                permissaoVendedores_grupoVendedores.alterar = false;
-                permissaoVendedores_grupoVendedores.excluir = false;
-                permissaoVendedores_grupoVendedores.inserir = false;
-                permissaoVendedores_grupoVendedores.visualizar = false;
-                permissaoVendedores_grupoVendedores.tabela = "Vendedores";
-
-                permissaoVendedores_grupoVendedores.grupo = grupoVendedores;
-
-            var permissaoPermissoes_grupoVendedores = new Permissao();
-
-                permissaoPermissoes_grupoVendedores.alterar = true;
-                permissaoPermissoes_grupoVendedores.excluir = false;
-                permissaoPermissoes_grupoVendedores.inserir = true;
-                permissaoPermissoes_grupoVendedores.visualizar = true;
-                permissaoPermissoes_grupoVendedores.tabela = "Permissoes";
-
-                permissaoPermissoes_grupoVendedores.grupo = grupoVendedores;
-
-            await _rePermissao.save(permissaoCliente_grupoVendedores);
-            await _rePermissao.save(permissaoEmpresa_grupoVendedores);
-            await _rePermissao.save(permissaoGrupo_grupoVendedores);
-            await _rePermissao.save(permissaoPedidos_grupoVendedores);
-            await  _rePermissao.save(permissaoProdutos_grupoVendedores);
-            await _rePermissao.save(permissaoUser_grupoVendedores);
-            await _rePermissao.save(permissaoVendedores_grupoVendedores);
-            await _rePermissao.save(permissaoPermissoes_grupoVendedores) ;
-
-            //Grupo Clientes
-
-            var grupoClientes = new Grupos();
-            grupoClientes.ativo = true;
-            grupoClientes.nome_grupo = "Clientes";
-            await _repGrupo.save(grupoClientes);
-
-            var permissaoCliente_grupoClientes = new Permissao();
-
-            permissaoCliente_grupoClientes.alterar = false;
-            permissaoCliente_grupoClientes.ativo = true;
-            permissaoCliente_grupoClientes.excluir = false;
-            permissaoCliente_grupoClientes.inserir = false;
-            permissaoCliente_grupoClientes.visualizar = false;
-            permissaoCliente_grupoClientes.tabela = "Clientes";
-
-            permissaoCliente_grupoClientes.grupo = grupoClientes;
-
-        var permissaoEmpresa_grupoClientes = new Permissao();
-        
-            permissaoEmpresa_grupoClientes.alterar = false;
-            permissaoEmpresa_grupoClientes.ativo = true;
-            permissaoEmpresa_grupoClientes.excluido = false;
-            permissaoEmpresa_grupoClientes.inserir = false;
-            permissaoEmpresa_grupoClientes.visualizar = false;
-            permissaoEmpresa_grupoClientes.tabela = "Empresas";
-
-            permissaoEmpresa_grupoClientes.grupo = grupoClientes;
-
-        var permissaoGrupo_grupoClientes = new Permissao();
-
-            permissaoGrupo_grupoClientes.alterar = false;
-            permissaoGrupo_grupoClientes.ativo = true;
-            permissaoGrupo_grupoClientes.excluir = false;
-            permissaoGrupo_grupoClientes.inserir = false;
-            permissaoGrupo_grupoClientes.visualizar = false;
-            permissaoGrupo_grupoClientes.tabela = "Grupo";
-
-            permissaoGrupo_grupoClientes.grupo = grupoClientes;
-
-        var permissaoPedidos_grupoClientes = new Permissao();
-
-            permissaoPedidos_grupoClientes.alterar = true;
-            permissaoPedidos_grupoClientes.ativo = true;
-            permissaoPedidos_grupoClientes.excluir = false;
-            permissaoPedidos_grupoClientes.inserir = true;
-            permissaoPedidos_grupoClientes.visualizar = true;
-            permissaoPedidos_grupoClientes.tabela = "Pedidos";
-
-            permissaoPedidos_grupoClientes.grupo = grupoClientes;
-            
-        var permissaoProdutos_grupoClientes = new Permissao();
-        
-            permissaoProdutos_grupoClientes.alterar = false;
-            permissaoProdutos_grupoClientes.ativo = true;
-            permissaoProdutos_grupoClientes.excluir = false;
-            permissaoProdutos_grupoClientes.inserir = false;
-            permissaoProdutos_grupoClientes.visualizar = false;
-            permissaoProdutos_grupoClientes.tabela = "Produtos";
-
-            permissaoProdutos_grupoClientes.grupo = grupoClientes;
-
-        var permissaoUser_grupoClientes = new Permissao()
-
-            permissaoUser_grupoClientes.alterar = false;
-            permissaoUser_grupoClientes.ativo = true;
-            permissaoUser_grupoClientes.excluir = false;
-            permissaoUser_grupoClientes.inserir = false;
-            permissaoUser_grupoClientes.visualizar = false;
-            permissaoUser_grupoClientes.tabela = "Usuarios";
-
-            permissaoUser_grupoClientes.grupo = grupoClientes;
-
-        var permissaoVendedores_grupoClientes = new Permissao();
-
-            permissaoVendedores_grupoClientes.alterar = false;
-            permissaoVendedores_grupoClientes.ativo = true;
-            permissaoVendedores_grupoClientes.excluir = false;
-            permissaoVendedores_grupoClientes.inserir = false;
-            permissaoVendedores_grupoClientes.visualizar = false;
-            permissaoVendedores_grupoClientes.tabela = "Vendedores";
-
-            permissaoVendedores_grupoClientes.grupo = grupoClientes;
-        
-        var permissaoPermissoes_grupoClientes = new Permissao();
-        
-            permissaoPermissoes_grupoClientes.alterar = false;
-            permissaoPermissoes_grupoClientes.ativo = true;
-            permissaoPermissoes_grupoClientes.excluido = false;
-            permissaoPermissoes_grupoClientes.inserir = false;
-            permissaoPermissoes_grupoClientes.visualizar = false;
-            permissaoPermissoes_grupoClientes.tabela = "Permissoes";
-
-            permissaoPermissoes_grupoClientes.grupo = grupoClientes;
-
-        await _rePermissao.save(permissaoCliente_grupoClientes);
-        await _rePermissao.save(permissaoEmpresa_grupoClientes);
-        await _rePermissao.save(permissaoGrupo_grupoClientes);
-        await _rePermissao.save(permissaoPedidos_grupoClientes);
-        await _rePermissao.save(permissaoProdutos_grupoClientes);
-        await _rePermissao.save(permissaoUser_grupoClientes);
-        await _rePermissao.save(permissaoVendedores_grupoClientes);
-        await _rePermissao.save(permissaoPermissoes_grupoClientes);
+                    EntityProduto.preco = 0;
+                    EntityProduto.referencia = _prod[0];
+                    EntityProduto.tamanho = _prod[3];
+                    EntityProduto.empresas = empresas;
+                    if (EntityProduto.nome) {
+                        _repProduto.save(EntityProduto);
+                        i++
+                    }
+                });
+                setTimeout(() => {
+                    console.log(i + "/" + produtos.length +  " produtos cadastrados");
+                }, 10000)
+            }
         }
-    }
-     async cadastroUsuario () {
-         let _repUsuario: Repository<User> = getRepository(User); 
-         let usuario: User;
 
-         let _repGrupo: Repository<Grupos> = getRepository(Grupos);
+        export async function cadastroGrupo(nome_grupo: string[], _repGrupo: Repository<Grupos> = getRepository(Grupos),
+            _repUsuario: Repository<User> = getRepository(User)) {
+            let temUsuario = await _repUsuario.findOne();
+            let temgrupo = await _repGrupo.findOne();
 
-         let grupos = await _repGrupo.find();
-         let temUuario = await _repUsuario.findOne();
+            if (!temUsuario && !temgrupo) {
+                nome_grupo.forEach(async (nome_grupo) => {
+                    let grupo: Grupos = new Grupos();
+                    grupo.ativo = true;
+                    grupo.nome_grupo = nome_grupo;
+                    _repGrupo.save(grupo);
+                });
 
-         if (!temUuario) {
-            grupos = await _repGrupo.find();
-            if (grupos.length != 0) {               
-                usuario = new User();
-                    
+            }
+        }
+        export function cadastroPermissao(grupo: Grupos, tabela: Tabelas,
+                                        _repPermissao: Repository<Permissao> = getRepository(Permissao),
+                                        _repGrupo: Repository<Grupos> = getRepository(Grupos)) {
+          
+            if (grupo && tabela) {
+
+                
+                        if (grupo.nome_grupo == "Super Usuário") {
+
+                            let EntityPermissao: Permissao = new Permissao();
+                            EntityPermissao.visualizar = true;
+                            EntityPermissao.inserir = true;
+                            EntityPermissao.alterar = true;
+                            EntityPermissao.excluir = true;
+                            EntityPermissao.grupo = Promise.resolve(grupo);
+                            EntityPermissao.tabela = tabela.tabela;
+
+                            _repPermissao.save(EntityPermissao);
+
+                        } else if (grupo.nome_grupo == "Vendedores") {
+
+                            let EntityPermissao: Permissao = new Permissao();
+                            EntityPermissao.visualizar = tabela.tabela == "Vendedores" ? false : 
+                                                tabela.tabela == "Clientes" ? true : 
+                                                tabela.tabela == "Produtos" ? true :
+                                                tabela.tabela == "Perdidos" ? true : 
+                                                tabela.tabela == "Usuarios" ? false :
+                                                tabela.tabela == "Empresas" ? true :
+                                                tabela.tabela == "Grupos" ? false : 
+                                                tabela.tabela == "Configuracao" ? false : false;
+                            EntityPermissao.inserir = tabela.tabela == "Vendedores" ? false : 
+                                            tabela.tabela == "Clientes" ? true : 
+                                            tabela.tabela == "Produtos" ? false :
+                                            tabela.tabela == "Perdidos" ? true : 
+                                            tabela.tabela == "Usuarios" ? false :
+                                            tabela.tabela == "Empresas" ? false :
+                                            tabela.tabela == "Grupos" ? false : 
+                                            tabela.tabela == "Configuracao" ? false : false;
+                            EntityPermissao.excluir = false;
+                            EntityPermissao.alterar = tabela.tabela == "Vendedores" ? false : 
+                                            tabela.tabela == "Clientes" ? true : 
+                                            tabela.tabela == "Produtos" ? false :
+                                            tabela.tabela == "Perdidos" ? true : 
+                                            tabela.tabela == "Usuarios" ? false :
+                                            tabela.tabela == "Empresas" ? false :
+                                            tabela.tabela == "Grupos" ? false : 
+                                            tabela.tabela == "Configuracao" ? false : false;
+                            EntityPermissao.grupo = Promise.resolve(grupo);
+                            EntityPermissao.tabela = tabela.tabela;
+
+                            _repPermissao.save(EntityPermissao);
+
+                        } else {
+
+                            let EntityPermissao: Permissao = new Permissao();
+                            EntityPermissao.visualizar = tabela.tabela == "Vendedores" ? false : 
+                                                tabela.tabela == "Clientes" ? false : 
+                                                tabela.tabela == "Produtos" ? true :
+                                                tabela.tabela == "Perdidos" ? true : 
+                                                tabela.tabela == "Usuarios" ? false :
+                                                tabela.tabela == "Empresas" ? false :
+                                                tabela.tabela == "Grupos" ? false : 
+                                                tabela.tabela == "Configuracao" ? false : false;
+                            EntityPermissao.inserir = tabela.tabela == "Vendedores" ? false : 
+                                            tabela.tabela == "Clientes" ? false : 
+                                            tabela.tabela == "Produtos" ? false :
+                                            tabela.tabela == "Perdidos" ? true : 
+                                            tabela.tabela == "Usuarios" ? false :
+                                            tabela.tabela == "Empresas" ? false :
+                                            tabela.tabela == "Grupos" ? false : 
+                                            tabela.tabela == "Configuracao" ? false : false;
+                            EntityPermissao.excluir = false;
+                            EntityPermissao.alterar = tabela.tabela == "Vendedores" ? false : 
+                                            tabela.tabela == "Clientes" ? false : 
+                                            tabela.tabela == "Produtos" ? false :
+                                            tabela.tabela == "Perdidos" ? true : 
+                                            tabela.tabela == "Usuarios" ? false :
+                                            tabela.tabela == "Empresas" ? false :
+                                            tabela.tabela == "Grupos" ? false : 
+                                            tabela.tabela == "Configuracao" ? false : false;
+                            EntityPermissao.grupo = Promise.resolve(grupo);
+                            EntityPermissao.tabela = tabela.tabela;
+
+                            _repPermissao.save(EntityPermissao);
+
+                        }
+            }
+        }
+
+        export async function cadastroUsuario(grupo: Grupos[], _repUsuario: Repository<User> = getRepository(User)) {
+
+            let temUuario = await _repUsuario.findOne();
+
+            if (!temUuario) {
+                if (grupo) {
+                    let usuario = new User();
+
                     usuario.email = "admin@admin";
                     usuario.ativo = true;
                     usuario.isRoot = true;
                     usuario.nome = "Super Admin";
                     usuario.senha = md5("admin");
                     usuario.status_usuario = 1;
-                    usuario.grupos = grupos; 
+                    usuario.grupos = Promise.resolve(grupo);
 
-                _repUsuario.save(usuario);
+                    _repUsuario.save(usuario);
+                }
+
             }
-            
-         }
+        }
 
-     }
-}
-function delay(ms:number) {
-    return new Promise(resolve => setTimeout(resolve => {
-        
-    }, ms)); 
-}
+        export async function cadastroFilhas() {
+            console.log("cadastro tabela filhas")
+            const _repTabelas: Repository<Tabelas> = getRepository(Tabelas)
+            const _repGrupos: Repository<Grupos> = getRepository(Grupos)
+            const _repEmpresas: Repository<Empresas> = getRepository(Empresas)
+            const _repPermissao: Repository<Permissao> = getRepository(Permissao)
+            const empresas = await _repEmpresas.find();
+
+            await cadastraVendedores(empresas)
+            await cadastraProdutos(empresas);
+
+            const tabelas = await _repTabelas.find();
+            const grupos = await _repGrupos.find();
+
+            for (let i = 0; i < grupos.length; i++) {
+                for (let j = 0; j < tabelas.length; j++) {
+                    let permissao = await _repPermissao.findOne({relations: ["grupo"],
+                                                                 where: {tabela: tabelas[j].tabela, grupo: [{uid: grupos[i].uid}]}});
+                    if (!permissao) {
+                        cadastroPermissao(grupos[i], tabelas[j]);
+                    }
+                }
+            }
+            await cadastroUsuario(grupos);
+        }
+
+ 

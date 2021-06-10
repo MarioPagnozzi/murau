@@ -9,7 +9,7 @@ export class EmpresasController extends BaseController<Empresas> {
     }
     async save(request: Request) {
         let _empresa = <Empresas>request.body;
-        if (!this._func.Permissao(request, "Empresas", _empresa.uid ? "A" : "I")) {
+        if (!this.func.Permissao(request, "Empresas", _empresa.uid ? "A" : "I")) {
             return {status: 400, errors: [{message:"Você não tem permissão para altarar ou inserir registros"}]}
         }
         const restaurando = await this._repEmpresa.findOne({where: {uid: _empresa.uid, excluido: true, ativo: false}});
@@ -38,13 +38,13 @@ export class EmpresasController extends BaseController<Empresas> {
         return super.save(_empresa);
     }
     async oneCodigo(request: Request,) {
-        if (!this._func.Permissao(request, "Empresas", "V")) {
+        if (!this.func.Permissao(request, "Empresas", "V")) {
             return {status: 400, errors: [{message:"Você não tem permissão para acessar os resgistros"}]}
         }
         return this._repEmpresa.findOne({where: {codigo: request.params.codigo}});
     }
     async oneClientes(request: Request) {
-        if (!this._func.Permissao(request, "Empresas", "V")) {
+        if (!this.func.Permissao(request, "Empresas", "V")) {
             return {status: 400, errors: [{message: "Você não tem permissão para acessar os registros"}]}
         }
         return this._repEmpresa.createQueryBuilder("empresas")
@@ -53,7 +53,7 @@ export class EmpresasController extends BaseController<Empresas> {
                                .getOne();
     }
     async oneVendedores(request: Request) {
-        if (!this._func.Permissao(request, "Empresas", "V")) {
+        if (!this.func.Permissao(request, "Empresas", "V")) {
             return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
         }
         return this._repEmpresa.createQueryBuilder("empresas")
@@ -62,7 +62,7 @@ export class EmpresasController extends BaseController<Empresas> {
                                .getOne();
     }
     async oneProdutos(request: Request) {
-        if (!this._func.Permissao(request, "Empresas", "V")) {
+        if (!this.func.Permissao(request, "Empresas", "V")) {
             return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
         }
         return this._repEmpresa.createQueryBuilder("empresas").addSelect("empresas.*")
@@ -77,5 +77,21 @@ export class EmpresasController extends BaseController<Empresas> {
                                ])
                                .where("empresas.codigo = :codigo", {codigo: request.params.codigo})
                                .getOne();
+    }
+    async filtro(request: Request) {
+        let filtro = request.params.filtro;
+        let valor = request.params.valor;
+
+        if (filtro === "cidade") {
+            return this._repEmpresa.find({where: {cidade: valor}});
+        }
+
+        if (filtro === "endereco") {
+            return this._repEmpresa.find({where: {endereco: valor}})
+        }
+
+        if (filtro === "codigo") {
+            return this._repEmpresa.find({where: {codigo: valor}});
+        }
     }
 }

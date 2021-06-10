@@ -14,6 +14,22 @@ import { IProdutos } from './interfaces/IProdutos';
 import { HomeService } from './services/home.service';
 import { FileManage } from './components/input-file/input-file.component';
 import { UsuarioModel } from './models/usuarioModel';
+import { EmpresasService } from './services/empresas.service';
+import { IEmpresas } from './interfaces/IEmpresas';
+
+
+
+export interface ILocais extends IEmpresas {
+  
+  lat: number
+  lng: number
+  dist: number
+}
+
+export interface IDistancia {
+  uid: string
+  dist: number
+}
 
 @Component({
   selector: 'app-root',
@@ -40,6 +56,10 @@ export class AppComponent implements OnInit, OnDestroy {
   endereco = "";
   cidade = "";
   options: any;
+  
+  markers: ILocais[] = [];
+  distancias: IDistancia[] = [];
+  calcDist = 0;
 
   @ViewChild('search')
   public searchElementRef: ElementRef | undefined;
@@ -52,7 +72,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private router: Router,
     private mapsAPILoader: MapsAPILoader,
     private homeService: HomeService,
-    private primengConfig: PrimeNGConfig
+    private primengConfig: PrimeNGConfig,
+    private empresasService: EmpresasService
   ) {}
 
   ngOnDestroy() {
@@ -60,9 +81,59 @@ export class AppComponent implements OnInit, OnDestroy {
   }
   async ngOnInit() {
     this.translate.setDefaultLang("pt-BR");
-    this.mapsAPILoader.load().then(() => {
-      //this.setCurrentLocation();
-      this.setEnderecoLoja();
+    this.mapsAPILoader.load().then(async () => {
+      await this.setCurrentLocation().then(async (end) => {
+        this.cidade = end.cidade;
+        this.endereco = end.endereco;
+        console.log(end.endereco)
+        await this.setEnderecoLoja(this.endereco).then(async (res) => {
+          if (res.id === "distancias") {
+             console.log("teste")
+             for (let i in res.dist.sort((a: any, b: any) => a.dist - b.dist)) {
+               console.log(res.dist[i].uid)
+               let uid = res.dist[i].uid;
+               let distancia = res.dist[i].dist;
+               console.log(res.dist[i].dist)
+               let result = await this.homeService.filtro("empresaById", uid);
+                
+                if (result.success) {
+                  let lat: number = 0;
+                  let lng: number = 0;
+                  let empresa = result.data as IEmpresas;
+                  let montaEnd = empresa.endereco + ',' + empresa.numero + "-" + empresa.bairro + "," + empresa.cidade + "-" + empresa.uf + "," + empresa.cep;
+                  console.log(montaEnd)
+                  await getLatLong(montaEnd).then((local) => {
+                    lat = local[0].geometry.location.lat();
+                    lng = local[0].geometry.location.lng();
+                    
+                  }).catch((err) => {console.log(err)});
+                  
+                  let local: ILocais = {
+                  
+                    nome_fantasia: empresa.nome_fantasia,
+                    telefone: empresa.telefone,
+                    cep: empresa.cep,
+                    endereco: empresa.endereco,
+                    numero: empresa.numero,
+                    complemento: empresa.complemento,
+                    cidade: empresa.cidade,
+                    uf: empresa.uf,
+                    lat: lat,
+                    lng: lng,
+                    dist: res.dist[i].dist,
+                    data_inclusao: empresa.data_inclusao,
+                    data_alteracao: empresa.data_alteracao,
+                    excluido: empresa.excluido,
+                    ativo: empresa.ativo,
+                    uid: empresa.uid
+                };
+                  this.markers.push(local);
+
+                }
+             }
+          }
+        });
+      });
     });
     this.isLogged = this.usuariosService.isStaticLogged;
     // tslint:disable-next-line: deprecation
@@ -121,29 +192,126 @@ export class AppComponent implements OnInit, OnDestroy {
     return tabela;
   }
 
-  private setCurrentLocation() {
+  private setCurrentLocation(): Promise<any> {
+      return new Promise<any>(async (resolve) => {
+        if ('geolocation' in navigator) {
+          navigator.geolocation.getCurrentPosition( async (position) => {
+            
+            this.lat = position.coords.latitude;
+            this.lng = position.coords.longitude;
+            const Address: Array<any> = await getAddress(this.lat, this.lng);
+            resolve({cidade: Address[6].address_components[1].long_name, endereco: Address[0].formatted_address})
 
-    if ('geolocation' in navigator) {
-      navigator.geolocation.getCurrentPosition( async (position) => {
-        
-        this.lat = position.coords.latitude;
-        this.lng = position.coords.longitude;
-        
-        const Address: Array<any> = await getAddress(this.lat, this.lng);
-       
-        this.cidade = Address[6].address_components[1].long_name;
-        this.endereco = Address[0].formatted_address;
-        
-      });
-    }
+          });
+        }
+      })
   }
-  private async setEnderecoLoja() {
-    this.endereco = "são josé do rio preto";
-    const Location: Array<any> = await getLatLong(this.endereco);
-    
-    this.lat = Location[0].geometry.location.lat();
-    this.lng = Location[0].geometry.location.lng();
-    this.zoom = 12;
+  private setEnderecoLoja(endereco: string): Promise<any> {
+    return new Promise<any>(async (resolve) => {
+
+      const Location: Array<any> = await getLatLong(endereco);
+      this.lat = Location[0].geometry.location.lat();
+      this.lng = Location[0].geometry.location.lng();
+      this.zoom = 8;
+
+      let result = await this.homeService.filtro("cidade", this.cidade);
+     
+      if (result.success) {
+        let empresas = result.data as IEmpresas[];
+        
+        if (empresas.length > 0) {
+          
+          empresas.forEach(async (empresa) => {
+             const Loc: Array<any> = await getLatLong(empresa.endereco as string);
+             let lat = Loc[0].geometry.location.lat();
+             let lng = Loc[0].geometry.location.lng();
+             let locVisit = new google.maps.LatLng(this.lat, this.lng);
+             let locLoja = new google.maps.LatLng(lat, lng);
+             let dist = google.maps.geometry.spherical.computeDistanceBetween(locVisit, locLoja)
+
+             let local: ILocais = {
+               
+                nome_fantasia: empresa.nome_fantasia,
+                telefone: empresa.telefone,
+                cep: empresa.cep,
+                endereco: empresa.endereco,
+                numero: empresa.numero,
+                complemento: empresa.complemento,
+                cidade: empresa.cidade,
+                uf: empresa.uf,
+                lat: lat,
+                lng: lng,
+                dist: dist,
+                data_inclusao: empresa.data_inclusao,
+                data_alteracao: empresa.data_alteracao,
+                excluido: empresa.excluido,
+                ativo: empresa.ativo,
+                uid: empresa.uid
+             };
+             this.markers.push(local);
+             
+          })
+          resolve({id: "markers"})
+        } else {
+         
+          let res_emp = await this.homeService.filtro("empresas", "empresa");
+          let arrDist: IDistancia[] = [];
+         
+
+          if (res_emp.success) {
+            empresas = res_emp.data as IEmpresas[];
+            console.log(empresas)
+            empresas.forEach(async (empresa) => {
+                    console.log(empresa)
+                    const getObj = async (endereco: string) => {
+                      const location = await getLatLong(endereco);
+                      const [latitude, longitude] = await Promise.all([
+                        location[0].geometry.location.lat(),
+                        location[0].geometry.location.lng()
+                      ]);
+                      return {
+                        latitude, 
+                        longitude
+                      }
+                    }                    
+                    const local = async (getObj: any) => {
+                      
+                      const [locVist, locLoja] = await Promise.all([
+                        new google.maps.LatLng(getObj.latitude, getObj.longitude),
+                        new google.maps.LatLng(this.lat, this.lng)
+                      ])
+                      return {
+                        locVist,
+                        locLoja
+                      }
+                    }
+                    
+                    const dist = async (local: any) => {
+                    
+                      const [dist] = await Promise.all([
+                        google.maps.geometry.spherical.computeDistanceBetween(local.locVist, local.locLoja)
+                      ]);
+                      return {dist}
+                    }
+                    console.log(endereco)
+                    //console.log( await local(endereco, (await getObj(empresa.endereco as string))))
+                    console.log((await dist(await local((await getObj(empresa.endereco as string))))));
+                    arrDist.push({
+                      uid: empresa.uid,
+                      dist: 0
+                    });
+
+                    console.log(arrDist)
+                    
+            });
+            console.log("passou --")
+            console.log(arrDist);
+            resolve({id: "distancias", dist: arrDist});
+          }
+          
+        }
+      }
+    })
   }
   async selectFile(file: FileManage) {
     if (file.base64Data) {
@@ -159,5 +327,5 @@ export class AppComponent implements OnInit, OnDestroy {
       }
       
     }
-  }
+  } 
 }

@@ -9,9 +9,9 @@ export class Grupos extends BaseEntity {
     @Column({type: "varchar", length: 50, unique: true })
     nome_grupo: string
 
-    @OneToMany(type => Permissao, permissao => permissao.grupo, {eager: true})
-    permissoes: Permissao[]
+    @OneToMany(type => Permissao, permissao => permissao.grupo)
+    permissoes: Promise<Permissao[]>
 
     @ManyToMany(type => User, usuarios => usuarios.grupos)
-    usuarios: User[]
+    usuarios: Promise<User[]>
 }

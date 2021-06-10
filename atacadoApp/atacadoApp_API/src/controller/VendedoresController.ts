@@ -14,7 +14,7 @@ export class VendedoresController extends BaseController<Vendedores> {
 
     async save(request: Request) {
         let vend = <Vendedores>request.body;
-        if (!this._func.Permissao(request, "Vendedores", vend.uid ? "A" : "I")) {
+        if (!this.func.Permissao(request, "Vendedores", vend.uid ? "A" : "I")) {
             return {status: 400, errors: ["Vocês não tem permissão para alterar ou inserir registros"]}
         }
         super.isRequired(vend.nome, "O 'Nome' do vendedor deve ser informado");
@@ -45,30 +45,7 @@ export class VendedoresController extends BaseController<Vendedores> {
             .getRawOne();
             vend.codigo = +maxCodigo["maxCodigo"] + 1;
         }
-        let ven: Vendedores = new Vendedores();
-        const contatos: ContatosVendedores[] = vend.contatos;
-        if (super.valid()) {
-            this._repVendedor.save(vend).then((vendedor) => {
-                delete vendedor['contatos'];
-                Object.assign(ven, vendedor);
-              
-                contatos.forEach((contato) => {
-                    let _contato: ContatosVendedores = new ContatosVendedores();
-                    _contato.ddd = contato.ddd;
-                    _contato.numero = contato.numero;
-                    _contato.operadoras = contato.operadoras;
-                    _contato.vendedor = ven;
-                    _contato.uid = contato.uid;
-                   
-                    let _repContatoVendedor: Repository<ContatosVendedores> = getRepository(ContatosVendedores);
-                    _repContatoVendedor.save(_contato);
-                });
-               
-                return super.save(ven);
-           })
-        } else {
             return super.save(vend);
-        }
 
     }
     async filtro(request: Request) {
@@ -82,40 +59,20 @@ export class VendedoresController extends BaseController<Vendedores> {
                                     .getMany();
         }
     }
-    async removeContato(request: Request) {
-        if (!this._func.Permissao(request, "Vendedores", "A")) {
-            return {status: 400, errors: ["Você não tem permissão para alterar ou inserir registros"]}
-        }
-        let _repContatoVendedor: Repository<ContatosVendedores> = getRepository(ContatosVendedores);
-        let _contato = await _repContatoVendedor.findOne(request.params.id);
-        let _vendedor = await this._repVendedor.findOne({where: {uid: request.params.vend}});
-        _repContatoVendedor.remove(_contato);
-        return _repContatoVendedor.find({where: {vendedor: _vendedor}});
-    }
-    async removeEmpresa(request: Request) {
-        if (!this._func.Permissao(request, "Vendedores", "A")) {
-            return {status: 400, errors: ["Você não tem permissão para alterar ou inserir registros"]}
-        }
-        let _repEmpresasVendedores: Repository<Empresas> = getRepository(Empresas);
-        let _Empresa = await _repEmpresasVendedores.findOne(request.params.id);
-        let _vendedor = await this._repVendedor.findOne({where: {uid: request.params.vend}});
-        _repEmpresasVendedores.remove(_Empresa);
-        return _repEmpresasVendedores.find({where: {vendedores: {uid: _vendedor.uid}}});
-    }
     async nome_like(request: Request) {
-        if (!this._func.Permissao(request, "Vendedores", "V")) {
+        if (!this.func.Permissao(request, "Vendedores", "V")) {
             return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
         }
         return this._repVendedor.find({where: {nome: Like("%" + request.params.nome + "%")}});
     }
     async codigo(request: Request) {
-        if (!this._func.Permissao(request, "Vendedores", "V")) {
+        if (!this.func.Permissao(request, "Vendedores", "V")) {
             return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
         }
         return this._repVendedor.findOne({where: {codigo: request.params.codigo}});
     }
     async porEmpresa(request: Request) {
-        if (!this._func.Permissao(request, "Vendedores", "V")) {
+        if (!this.func.Permissao(request, "Vendedores", "V")) {
             return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
         }
         return this._repVendedor.createQueryBuilder("vendedores")

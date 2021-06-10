@@ -27,16 +27,16 @@ export class User extends BaseEntity {
     @Column()
     status_usuario: BaseStatus
 
-    @ManyToMany(type => Grupos, grupo => grupo.usuarios, {eager: true})
+    @ManyToMany(type => Grupos, grupo => grupo.usuarios)
     @JoinTable()
-    grupos: Grupos[]
+    grupos: Promise<Grupos[]>
 
-    @OneToOne(type => Clientes, cliente => cliente.usuario, {eager: true, nullable: true})
+    @OneToOne(type => Clientes, cliente => cliente.usuario, {nullable: true})
     @JoinColumn()
-    cliente: Clientes
+    cliente: Promise<Clientes>
 
-    @OneToOne(type => Vendedores, vendedor => vendedor.usuario, {eager: true, nullable: true})
+    @OneToOne(type => Vendedores, vendedor => vendedor.usuario, {nullable: true})
     @JoinColumn()
-    vendedor: Vendedores
+    vendedor: Promise<Vendedores>
    
 }

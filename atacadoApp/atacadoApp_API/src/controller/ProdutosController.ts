@@ -15,7 +15,7 @@ export class ProdutosController extends BaseController<Produtos> {
         
         let _produto = <Produtos>request.body;
 
-        if (!this._func.Permissao(request,"Produtos", _produto.uid ? "A" : "I")) {
+        if (!this.func.Permissao(request,"Produtos", _produto.uid ? "A" : "I")) {
             return {status: 400, errors: ["Vocês não tem permissão para alterar ou inserir registros"]}
         }
         
@@ -43,7 +43,7 @@ export class ProdutosController extends BaseController<Produtos> {
         return super.save(_produto);
     }
     async produtosDia(request: Request) {
-        if (!this._func.Permissao(request,"Produtos", "V")) {
+        if (!this.func.Permissao(request,"Produtos", "V")) {
             return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
         }
         const dataAtual = new Date();
@@ -54,7 +54,7 @@ export class ProdutosController extends BaseController<Produtos> {
     }
     async filtro(request: Request) {
 
-        if (!this._func.Permissao(request,"Produtos", "V")) {
+        if (!this.func.Permissao(request,"Produtos", "V")) {
             return {status: 400, errors: ["Você não tem permissão para acessar os registros"]}
         }
 
@@ -88,13 +88,13 @@ export class ProdutosController extends BaseController<Produtos> {
         return {status: 400, errors: "Parâmetros fornecidos não satisfazem a pesquisa."};
     }
     async insereNovo(request: Request) {
-        if (!this._func.Permissao(request, "Produtos", "I")) {
+        if (!this.func.Permissao(request, "Produtos", "I")) {
             return {status: 400, errors: ["Você não tem permissão para inserir novos produtos"]}
         }
         let cdProduto = request.params.codigo;
         try {           
-            let _token = await this._func.geraToken();
-            let cadastrado = await this._func.insereNovoProduto(cdProduto, _token);
+            let _token = await this.func.geraToken();
+            let cadastrado = await this.func.insereNovoProduto(cdProduto, _token);
             if (cadastrado) {
                 return this._repProdutos.findOne({where: {codigo: cdProduto}})
             }
@@ -106,7 +106,7 @@ export class ProdutosController extends BaseController<Produtos> {
     }
     async uploadFotos(request: Request, response: Response, next: NextFunction) {
         
-        if (!this._func.Permissao(request, "Produtos", "A") || !this._func.Permissao(request, "Produtos", "I")) {
+        if (!this.func.Permissao(request, "Produtos", "A") || !this.func.Permissao(request, "Produtos", "I")) {
             return {status: 400, errors: ["Você não tem permissão para carregar novas fotos"]}
         }
         const fs = require('fs');
@@ -173,7 +173,7 @@ export class ProdutosController extends BaseController<Produtos> {
 
                             let produto = await _repProdutos.findOne({where: {codigo: request.body.cdproduto}});
                             
-                            imagesProd.produto = produto;
+                            imagesProd.produto = Promise.resolve(produto);
                             imagesProd.caminho = caminho;
 
                             _repImagemProduto.save(imagesProd);
@@ -192,7 +192,7 @@ export class ProdutosController extends BaseController<Produtos> {
     }
     async vinculaEmpresas(request: Request) {
 
-        if (!this._func.Permissao(request, "Produtos", "A") || !this._func.Permissao(request, "Produtos", "I")) {
+        if (!this.func.Permissao(request, "Produtos", "A") || !this.func.Permissao(request, "Produtos", "I")) {
             return {status: 400, errors: ["Você não tem permissão para vincular empresas ao produto"]}
         }
         let {produto, empresas} = request.body;
@@ -209,8 +209,8 @@ export class ProdutosController extends BaseController<Produtos> {
         let prodEmpresas: ProdutosEmpresas = new ProdutosEmpresas();
 
         _empresas.forEach((emp) => {
-            prodEmpresas.produto = _produto;
-            prodEmpresas.empresa = emp;
+            prodEmpresas.produto = Promise.resolve(_produto);
+            prodEmpresas.empresa = Promise.resolve(emp);
             _repProdutosEmpresas.save(prodEmpresas);
         });
 

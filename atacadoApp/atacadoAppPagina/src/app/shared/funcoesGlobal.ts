@@ -333,15 +333,15 @@ export function getAddress(latitude: number, longitude: number): Promise<Array<a
   export function getLatLong(endereco: string): Promise<Array<any>> {
       const geoCoder = new google.maps.Geocoder();
       return new Promise<Array<any>>( async (resolve, reject) => {
-          geoCoder.geocode({"address" : endereco}, (results: any, status: any) => {
+          geoCoder.geocode({"address" : endereco}, (results: any, status: any, error: any) => {
               if (status === 'OK') {
                   if (results[0]) {
                       resolve(results);
                   } else {
-                      reject();
+                      reject([{status: status, message: error}]);
                   }
               } else {
-                  reject();
+                  reject([{status: status, message: error}]);
               }
           });
       });

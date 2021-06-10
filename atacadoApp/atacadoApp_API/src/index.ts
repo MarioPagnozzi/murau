@@ -7,8 +7,9 @@ import {Routes} from "./routes";
 import config from "./configuracao/config";
 import auth from "./middleware/auth"
 import conexao from "./configuracao/conexao";
-import { Setup } from "./configuracao/inicializa";
-import cron_job from "./middleware/cron_job";
+import {start, cadastraTabelas, cadastraConfig, cadastroGrupo, cadastroFilhas}  from "./configuracao/inicializa";
+import {job} from './middleware/cron_job';
+
 
 
 var querystring = require("querystring");
@@ -84,57 +85,38 @@ if (config.production) {
 }
 https.createServer(obj_param,app).listen(config.port,'0.0.0.0', async () => {
 
-    
     try {
-        await conexao.createConnection().then(async () => {
-            try {
-                let inicializa = new Setup();
-                await inicializa.inicializar.call(this);
-            }
-            catch (error) {
-                console.error("Empresa não registrada", error); 
-            }
-        }).then(async () => {
-            try {
-                let inicializa = new Setup();
-                 await inicializa.cadastraVendedores.call(this);
-            }
-            catch (error) {
-                console.error("Vendedores não foram cadastrados ", error)
-            }
-        }).then(async () => {
-            try {
-                let inicializa = new Setup(); 
-                await  inicializa.cadastraProduto.call(this);
-            }
-            catch (error) {
-                console.error("Produtos não registrados", error); 
-            }
-        }).then(async () => {
-            try {
-                let inicializa = new Setup();
-                await inicializa.cadastroGrupoPermissao.call(this);
-            }
-            catch (error) {
-                console.error("Grupo e Permissao não registrado", error);
-            }
-        }).then(async () => {
-            try {
-                let inicializa = new Setup();
-                await inicializa.cadastroUsuario.call(this);
-            }
-            catch (error) {
-                 console.error("Usuário não registrado", error);
-            }
-        }).catch((err) => {
-            console.error("API não iniciada corretamente: " + err);
-        });
-        console.log("Data base conectado");
+        await conexao.createConnection()
+                    .then(async () => {
+                        start();
+                    })
+                    .then(async () =>{
+                       cadastraTabelas();
+                    })
+                    .then(async () => {
+                        cadastraConfig();
+                    })
+                    .then(async () => {
+                        cadastroGrupo(["Super Usuário", "Vendedores", "Clientes"]).then(() => {
+                            console.log("Grupos ['Super Usuário', 'Vendedores', 'Clientes'] cadastrado")
+                        });
+                    })
+                    .then(async () => {
+                        await cadastroFilhas();
+                    })
+                    .then(async () => {
+                        console.log("Data base conectado");
+                    })
+                    .catch((err) => {
+                        console.error("API não iniciada corretamente: " + err);
+                    });
     }
     catch (error) {
         console.error("database not connected", error);
-    }   
+    }
     console.log(`API atacado App Rodando inicializada na porta ${config.port}`);
-    if (config.production) cron_job.call(this);
-});
+    if (!config.production) {
+        job();
+    }
+})
 

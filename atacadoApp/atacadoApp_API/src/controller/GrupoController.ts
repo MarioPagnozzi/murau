@@ -15,14 +15,14 @@ export class GrupoController extends BaseController<Grupos> {
     async save(request: Request) {
         let grupo = <Grupos>request.body;
 
-         if (!this._func.Permissao(request, "Grupo", grupo.uid ? "A" : "I")) {
+         if (!this.func.Permissao(request, "Grupo", grupo.uid ? "A" : "I")) {
              return {status: 400, errors: ["Você não tem permissão para incluir ou alterar registros"]}
          }
 
         super.isRequired(grupo.permissoes, "É obrigatório atribuir as permissões do grupo");
         super.isRequired(grupo.nome_grupo, "O 'Nome do Grupo' deve ser informado!");
 
-        let permissoes = grupo.permissoes;
+        let permissoes = await grupo.permissoes;
         return super.save(grupo).then(async (grupo) => {
             permissoes.forEach(async (permissao) => {
                 let perm: Permissao = new Permissao();

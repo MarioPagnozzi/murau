@@ -21,8 +21,8 @@
          
             <span class="product-image">
               <a routerLink="/produto/detalhes/{{produto.uid}}" fragment="topo" routerLinkActive="router-link-active">
-              <img *ngIf="produto.imagens.length > 0" src="{{produto.imagens[0].caminho}}" />
-              <img *ngIf="produto.imagens.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
+              <img *ngIf="produto.__imagens__.length > 0" src="{{produto.__imagens__[0].caminho}}" />
+              <img *ngIf="produto.__imagens__.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
              </a>
             </span>
          
@@ -54,8 +54,8 @@
           </div>
           <div class="product-grid-item-content">
             <a routerLink="/produto/detalhes/{{produto.uid}}" routerLinkActive>
-              <img *ngIf="produto.imagens.length > 0" src="{{produto.imagens[0].caminho}}" />
-              <img *ngIf="produto.imagens.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
+              <img *ngIf="produto.__imagens__.length > 0" src="{{produto.__imagens__[0].caminho}}" />
+              <img *ngIf="produto.__imagens__.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
              </a>
             <div class="product-name">{{produto.nome}}</div>
             <div class="product-description">{{produto.descricao}}</div>

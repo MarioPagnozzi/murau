@@ -40,20 +40,20 @@ export class Vendedores extends BaseEntity {
     cep: string
 
     @OneToMany(type => ContatosVendedores, contatos => contatos.vendedor, {nullable: true, eager: true})
-    contatos: ContatosVendedores[]
+    contatos: Promise<ContatosVendedores[]>
 
     @OneToMany(type => Clientes, clientes => clientes.vendedor, {nullable: true})
-    clientes: Clientes[]
+    clientes: Promise<Clientes[]>
 
     @OneToMany(type => Pedidos, pedidos => pedidos.vendedor, {nullable: true})
-    pedidos: Pedidos[]
+    pedidos: Promise<Pedidos[]>
 
     /*@OneToMany(type => VendedoresEmpresas, vendedoresEmpresas => vendedoresEmpresas.vendedor,{eager: true})
     empresas: VendedoresEmpresas[]*/
-    @ManyToMany(type => Empresas, empresas => empresas.vendedores, {eager: true})
+    @ManyToMany(type => Empresas, empresas => empresas.vendedores)
     @JoinTable({name: "vendedores_empresas"})
-    empresas: Empresas[]
+    empresas: Promise<Empresas[]>
 
     @OneToOne(type => User, usuario => usuario.vendedor)
-    usuario: User
+    usuario: Promise<User>
 }

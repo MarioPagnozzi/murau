@@ -5,6 +5,7 @@ import { BaseEntity } from './BaseEntity';
 import { Clientes } from './Clientes';
 import { VendedoresEmpresas } from './VendedoresEmpresas';
 import { Vendedores } from './Vendedores';
+import { Produtos } from './Produtos';
 
 @Entity({name: "empresas"})
 export class Empresas extends BaseEntity {
@@ -51,16 +52,17 @@ export class Empresas extends BaseEntity {
     @Column({type: "varchar", length: 100, nullable: true})
 
     @OneToMany(type => Pedidos, pedidos => pedidos.empresa)
-    pedidos: Pedidos[]
+    pedidos: Promise<Pedidos[]>
 
     @OneToMany(type => ProdutosEmpresas, produtosempresas => produtosempresas.empresa)
-    produtosempresas: ProdutosEmpresas[]
+    produtosempresas: Promise<ProdutosEmpresas[]>
 
     @OneToMany(type => Clientes, cliente => cliente.empresa)
-    clientes: Clientes[]
+    clientes: Promise<Clientes[]>
 
-    /*@OneToMany(type => VendedoresEmpresas, vendedoresEmpresas => vendedoresEmpresas.empresa,{eager: true})
-    vendedores: VendedoresEmpresas[]*/
     @ManyToMany(type => Vendedores, vendedores => vendedores.empresas)
-    vendedores: Vendedores[]
+    vendedores: Promise<Vendedores[]>
+
+    @ManyToMany(type => Produtos, produtos => produtos.empresas)
+    produtos: Promise<Produtos[]>
 }

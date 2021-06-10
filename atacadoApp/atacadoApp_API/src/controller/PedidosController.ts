@@ -1,7 +1,8 @@
+import { HistoricoPedido } from './../entity/HistoricoPedido';
 import { Request } from 'express';
 import { Equal, getRepository, Like, Repository } from 'typeorm';
 import { statusPedido } from '../entity/enum/statusPedido';
-import { HistoricoPedido } from '../entity/HistoricoPedido';
+
 import { ItemPedido } from '../entity/ItemPedido';
 import { Pedidos } from './../entity/Pedidos';
 import { BaseController } from "./BaseController";
@@ -18,7 +19,7 @@ export class PedidosController extends BaseController<Pedidos> {
         let _repHistorico: Repository<HistoricoPedido> = getRepository(HistoricoPedido);
 
         
-        if (!this._func.Permissao(request, "Pedidos", _pedido.uid ? "A" : "I")) {
+        if (!this.func.Permissao(request, "Pedidos", _pedido.uid ? "A" : "I")) {
             return {status: 400, errors: ["Você não tem permissão para alterar ou inserir registro"]}
         }
 
@@ -31,7 +32,7 @@ export class PedidosController extends BaseController<Pedidos> {
         
         super.isRequired(_pedido.itens, "Informe 1 ou mais itens para este pedido");
 
-        let itens = _pedido.itens;
+        let itens = await _pedido.itens;
         let dataAtual = new Date();
         let numPedido = ("00" + dataAtual.getDate()).toString().slice(-2) + 
                         ("00" + (dataAtual.getMonth() + 1)).toString().slice(-2) + 
@@ -42,60 +43,41 @@ export class PedidosController extends BaseController<Pedidos> {
 
         _pedido.num_pedido = _pedido.status_pedido == 1 && !_pedido.num_pedido ? numPedido : _pedido.num_pedido;
         _pedido.valor_pedido = 0;
-        _pedido.itens.forEach((item) => {
+        
+        itens.forEach((item) => {
 
             if (!item.excluido || item.ativo) {
                 _pedido.valor_pedido = +_pedido.valor_pedido + (+item.valor_unitario * item.qtd_produto);
             }
            
         });
-        let ped: Pedidos = new Pedidos();
-        if (super.valid()) {
-            this._repPedido.save(_pedido).then(async (pedido) => {
-                delete pedido.itens;
-                Object.assign(ped, pedido);
-               
-                if (pedido.status_pedido == 1) {
-                    let itemPedido: ItemPedido;
-                    itens.forEach(async (item) => {
-                        itemPedido = new ItemPedido();
-                        itemPedido.pedido = ped;
-                        itemPedido.produto = item.produto;
-                        itemPedido.qtd_produto = item.qtd_produto;
-                        itemPedido.valor_unitario = item.valor_unitario;
-                        itemPedido.valor_total = item.valor_total;
-                        itemPedido.excluido = item.excluido;
-                        itemPedido.ativo = item.ativo;
-                        if (item.uid) {
-                            itemPedido.uid = item.uid;
-                        }
-                        this._repItemPedido.save(itemPedido);
-                        console.log(itemPedido)
-                    });
-                }
+       
                 
-                let historicoPedido = new HistoricoPedido();
-                    historicoPedido.pedido = pedido;
-                    historicoPedido.cidade = pedido.empresa.cidade + "/" + pedido.empresa.uf;
+                let historicoPedido = new HistoricoPedido()
+               
+                    let empresa = await _pedido.empresa;
+                    let cliente = await _pedido.cliente;
+                    
+                    historicoPedido.cidade = empresa.cidade + "/" + empresa.uf;
                     historicoPedido.data = new Date();
                     historicoPedido.hora = ("00" + dataAtual.getHours()).toString().slice(-2) + ":" + ("00" + dataAtual.getMinutes()).toString().slice(-2) + ":" + ("00" + dataAtual.getSeconds()).toString().slice(-2);
-                    historicoPedido.situacao = statusPedido[pedido.status_pedido];
-                    _repHistorico.save(historicoPedido);
+                    historicoPedido.situacao = statusPedido[_pedido.status_pedido];
+                    _pedido.historico = Promise.resolve([historicoPedido]); 
                 let fs = require("fs");
                 let path = require("path");
                 let arqHtml: any;
                 let html: any;
                 let table = "";
                 let history: any = "";
-                if (pedido.status_pedido == 1) {
+                if (_pedido.status_pedido == 1) {
                     arqHtml = path.join(path.dirname(__dirname),"templates") + "/email_pedido.html";
                     html = fs.readFileSync(arqHtml);
                     itens.forEach(async (item) => {
-    
+                        let produto = await item.produto;
                         if (!item.excluido) {
                             table =  table + "<tr>" +
-                                    "<td width='50' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + item.produto.codigo + "</b></td>" + 
-                                    "<td width='150' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + item.produto.nome + "</b></td>" + 
+                                    "<td width='50' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + produto.codigo + "</b></td>" + 
+                                    "<td width='150' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + produto.nome + "</b></td>" + 
                                     "<td width='30' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + item.qtd_produto + "</b></td>" + 
                                     "<td width='100' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" +new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(item.valor_unitario) + "</b></td>" + 
                                     "<td width='100' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(item.valor_total) + "</b></td>" +
@@ -105,14 +87,15 @@ export class PedidosController extends BaseController<Pedidos> {
                     });
                     html = html.toString().replace("*|ITENS|*", table);
                     
-                } else if (pedido.status_pedido == 2) {
+                } else if (_pedido.status_pedido == 2) {
                     arqHtml = path.join(path.dirname(__dirname),"templates") + "/email_pedido_aprovado.html";
                     html = fs.readFileSync(arqHtml);
-                    pedido.itens.forEach(async (item) => {
+                    itens.forEach(async (item) => {
+                        let produto = await item.produto;
                         if (!item.excluido) {
                             table =  table + "<tr>" +
-                                    "<td width='50' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + item.produto.codigo + "</b></td>" + 
-                                    "<td width='150' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + item.produto.nome + "</b></td>" + 
+                                    "<td width='50' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + produto.codigo + "</b></td>" + 
+                                    "<td width='150' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + produto.nome + "</b></td>" + 
                                     "<td width='30' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + item.qtd_produto + "</b></td>" + 
                                     "<td width='100' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" +new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(item.valor_unitario) + "</b></td>" + 
                                     "<td width='100' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(item.valor_total) + "</b></td>" +
@@ -124,7 +107,7 @@ export class PedidosController extends BaseController<Pedidos> {
                     estimativa.setDate(estimativa.getDate() + 15);
                     var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };               
                     html = html.toString().replace("*|ESTIMATED_DELIVERY_DATE|*", new this.Intl.DateTimeFormat('pt-BR', options).format(estimativa));
-                    let hist = await _repHistorico.find({where: {pedido: pedido}});
+                    let hist = await _repHistorico.find({where: {pedido:[{uid: _pedido.uid}]}});
                     hist.forEach(async (historico) => {
                         history = history + "<tr>" + 
                                     "<td>" + historico.cidade + "</td>" +
@@ -144,16 +127,17 @@ export class PedidosController extends BaseController<Pedidos> {
                                     "<td>" + historicoPedido.situacao + "</td>" + 
                                     "</tr>";
                     html = html.toString().replace("*|HISTORY_HTML|*", history);
-                    html = html.toString().replace("*|TOTAL|*", new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(pedido.valor_pedido));
+                    html = html.toString().replace("*|TOTAL|*", new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(_pedido.valor_pedido));
                  
-                } else if (pedido.status_pedido == 3) {
+                } else if (_pedido.status_pedido == 3) {
                     arqHtml = path.join(path.dirname(__dirname),"templates") + "/email_pedido_enviado.html";
                     html = fs.readFileSync(arqHtml);
                     itens.forEach(async (item) => {
+                        let produto = await item.produto;
                         if (!item.excluido) {
                             table =  table + "<tr>" +
-                                    "<td width='50' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + item.produto.codigo + "</b></td>" + 
-                                    "<td width='150' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + item.produto.nome + "</b></td>" + 
+                                    "<td width='50' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + produto.codigo + "</b></td>" + 
+                                    "<td width='150' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + produto.nome + "</b></td>" + 
                                     "<td width='30' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + item.qtd_produto + "</b></td>" + 
                                     "<td width='100' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" +new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(item.valor_unitario) + "</b></td>" + 
                                     "<td width='100' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(item.valor_total) + "</b></td>" +
@@ -163,13 +147,13 @@ export class PedidosController extends BaseController<Pedidos> {
                     html = html.toString().replace("*|ITENS|*", table);
                     let dataEstimada = await _repHistorico.createQueryBuilder("historico")
                                                             .select(["data"])
-                                                            .where("historico.pedidoUid = :uid", {uid: pedido.uid})
+                                                            .where("historico.pedidoUid = :uid", {uid: _pedido.uid})
                                                             .andWhere("historico.situacao = :situacao", {situacao: "Aprovado"}).getRawMany();
                    
                     dataEstimada[0].data.setDate(dataEstimada[0].data.getDate() + 15);
                     var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                     html = html.toString().replace("*|ESTIMATED_DELIVERY_DATE|*", new this.Intl.DateTimeFormat('pt-BR', options).format(dataEstimada[0].data));
-                    let hist = await _repHistorico.find({where: {pedido: pedido}});
+                    let hist = await _repHistorico.find({where: {pedido: [{uid: _pedido.uid}]}});
                     hist.forEach(async (historico) => {
                         history = history + "<tr>" + 
                                     "<td>" + historico.cidade + "</td>" +
@@ -190,16 +174,17 @@ export class PedidosController extends BaseController<Pedidos> {
                                     "<td>" + historicoPedido.situacao + "</td>" + 
                                     "</tr>";
                     html = html.toString().replace("*|HISTORY_HTML|*", history);
-                    html = html.toString().replace("*|TOTAL|*", new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(pedido.valor_pedido));
+                    html = html.toString().replace("*|TOTAL|*", new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(_pedido.valor_pedido));
                    
-                } else if (pedido.status_pedido == 4) {
+                } else if (_pedido.status_pedido == 4) {
                     arqHtml = path.join(path.dirname(__dirname),"templates") + "/email_pedido_transito.html";
                     html = fs.readFileSync(arqHtml);
                     itens.forEach(async (item) => {
+                        let produto = await item.produto;
                         if (!item.excluido) {
                             table =  table + "<tr>" +
-                                    "<td width='50' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + item.produto.codigo + "</b></td>" + 
-                                    "<td width='150' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + item.produto.nome + "</b></td>" + 
+                                    "<td width='50' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + produto.codigo + "</b></td>" + 
+                                    "<td width='150' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + produto.nome + "</b></td>" + 
                                     "<td width='30' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + item.qtd_produto + "</b></td>" + 
                                     "<td width='100' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" +new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(item.valor_unitario) + "</b></td>" + 
                                     "<td width='100' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(item.valor_total) + "</b></td>" +
@@ -209,13 +194,13 @@ export class PedidosController extends BaseController<Pedidos> {
                     html = html.toString().replace("*|ITENS|*", table);
                     let dataEstimada = await _repHistorico.createQueryBuilder("historico")
                                                             .select(["data"])
-                                                            .where("historico.pedidoUid = :uid", {uid: pedido.uid})
+                                                            .where("historico.pedidoUid = :uid", {uid: _pedido.uid})
                                                             .andWhere("historico.situacao = :situacao", {situacao: "Aprovado"}).getRawMany();
                    
                     dataEstimada[0].data.setDate(dataEstimada[0].data.getDate() + 15);                
                     var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                     html = html.toString().replace("*|ESTIMATED_DELIVERY_DATE|*", new this.Intl.DateTimeFormat('pt-BR', options).format(dataEstimada[0].data));
-                    let hist = await _repHistorico.find({where: {pedido: pedido}});
+                    let hist = await _repHistorico.find({where: {pedido: [{uid: _pedido.uid}]}});
                     hist.forEach(async (historico) => {
                         history = history + "<tr>" + 
                                     "<td>" + historico.cidade + "</td>" +
@@ -236,15 +221,16 @@ export class PedidosController extends BaseController<Pedidos> {
                                     "<td>" + historicoPedido.situacao + "</td>" + 
                                     "</tr>";
                     html = html.toString().replace("*|HISTORY_HTML|*", history);
-                    html = html.toString().replace("*|TOTAL|*", new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(pedido.valor_pedido));
+                    html = html.toString().replace("*|TOTAL|*", new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(_pedido.valor_pedido));
                 } else {
                     arqHtml = path.join(path.dirname(__dirname),"templates") + "/email_pedido_entregue.html";
                     html = fs.readFileSync(arqHtml);
                     itens.forEach(async (item) => {
+                        let produto = await item.produto;
                         if (!item.excluido) {
                             table =  table + "<tr>" +
-                                    "<td width='50' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + item.produto.codigo + "</b></td>" + 
-                                    "<td width='150' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + item.produto.nome + "</b></td>" + 
+                                    "<td width='50' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + produto.codigo + "</b></td>" + 
+                                    "<td width='150' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + produto.nome + "</b></td>" + 
                                     "<td width='30' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + item.qtd_produto + "</b></td>" + 
                                     "<td width='100' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" +new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(item.valor_unitario) + "</b></td>" + 
                                     "<td width='100' style='font-family:Arial, sans-serif;font-size:14px;line-height:20px;'><b>" + new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(item.valor_total) + "</b></td>" +
@@ -254,10 +240,10 @@ export class PedidosController extends BaseController<Pedidos> {
                     html = html.toString().replace("*|ITENS|*", table);
                     let dataEstimada = await _repHistorico.createQueryBuilder("historico")
                                                             .select(["data"])
-                                                            .where("historico.pedidoUid = :uid", {uid: pedido.uid})
+                                                            .where("historico.pedidoUid = :uid", {uid: _pedido.uid})
                                                             .andWhere("historico.situacao = :situacao", {situacao: "Aprovado"}).getRawMany();
                    
-                    dataEstimada[0].data.setDate(dataEstimada[0].data.getDate() + (pedido.previsao_entrega ? pedido.previsao_entrega : 15));
+                    dataEstimada[0].data.setDate(dataEstimada[0].data.getDate() + (_pedido.previsao_entrega ? _pedido.previsao_entrega : 15));
                     let dataEntrega: any = new Date();
                     let diffData = (dataEstimada[0].data.getTime() - dataEntrega.getTime()) / dia
                     let totalDias = parseInt(diffData.toString());
@@ -276,7 +262,7 @@ export class PedidosController extends BaseController<Pedidos> {
                     }
                     html = html.toString().replace("*|ESTIMATED_DELIVERY_DATE|*", new this.Intl.DateTimeFormat('pt-BR', options).format(dataEntrega) + txtEntrega);
     
-                    let hist = await _repHistorico.find({where: {pedido: pedido}});
+                    let hist = await _repHistorico.find({where: {pedido: [{uid: _pedido.uid}]}});
                     hist.forEach(async (historico) => {
                         history = history + "<tr>" + 
                                     "<td>" + historico.cidade + "</td>" +
@@ -297,29 +283,23 @@ export class PedidosController extends BaseController<Pedidos> {
                                     "<td>" + historicoPedido.situacao + "</td>" + 
                                     "</tr>";
                     html = html.toString().replace("*|HISTORY_HTML|*", history);
-                    html = html.toString().replace("*|TOTAL|*", new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(pedido.valor_pedido));
+                    html = html.toString().replace("*|TOTAL|*", new this.Intl.NumberFormat("pt-BR", {style: "currency", currency: "BRL"}).format(_pedido.valor_pedido));
                 }
-                html = html.toString().replace("*|ORDER_NUMBER|*",pedido.num_pedido);
+                html = html.toString().replace("*|ORDER_NUMBER|*",_pedido.num_pedido);
                 const mensagem = {
                     from: "vendas@murau.com.br",
-                    to: pedido.cliente.email,
-                    subject: "Seu pedido " + pedido.num_pedido,
+                    to: cliente.email,
+                    subject: "Seu pedido " + _pedido.num_pedido,
                     html: html
                 }       
-                let sendMail = this._func.Email(mensagem);
+                let sendMail = this.func.Email(mensagem);
                 let retornoEmail = await sendMail;
                 console.log(retornoEmail);
-                return super.save(ped);
-            })
-            
-        } else {
-            return super.save(_pedido);
-        }
-        
+                return super.save(_pedido);
 
     }
     async pedidosDia(request: Request) {
-        if (!this._func.Permissao(request, "Pedidos", "V")) {
+        if (!this.func.Permissao(request, "Pedidos", "V")) {
             return { status: 400, errors: ["Você não tem permissão para acessar os registros"]}
         }
         const dataAtual = new Date();
@@ -329,7 +309,7 @@ export class PedidosController extends BaseController<Pedidos> {
                                 .getMany();
     }
     async filtro(request: Request) {
-        if (!this._func.Permissao(request, "Pedidos", "V")) {
+        if (!this.func.Permissao(request, "Pedidos", "V")) {
             return { status: 400, errors: ["Você não tem permissão para acessar os registros"]}
         }
         let filtro = request.params.filtro;
@@ -357,7 +337,7 @@ export class PedidosController extends BaseController<Pedidos> {
         }
         else {
             let data: string;
-            if (!this._func.ValidaDat(valor)) {
+            if (!this.func.ValidaDat(valor)) {
                 let arrayData = valor.split("/");
                 data = arrayData[1].toString() +  "-" + 
                        arrayData[0].substring(1,4) + "-" +

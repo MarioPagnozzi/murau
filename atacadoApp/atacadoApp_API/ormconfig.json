@@ -7,7 +7,7 @@
     "database": "db_atacadoapp",
     "synchronize": true,
     "logging": false,
-    "cache": true,
+    "cache": false,
     "entities": [
         "src/entity/**/*.ts"
     ],

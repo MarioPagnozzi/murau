@@ -188,7 +188,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                                                                 
                                                                 if (empresauid) {
                                                                     let _repProdutosEmpresas: Repository<ProdutosEmpresas> = getRepository(ProdutosEmpresas);
-                                                                    let produtosEmpresas = await _repProdutosEmpresas.findOne({where: {produto: prod, empresa: empresauid, valor: Not(vlPreco)}});
+                                                                    let produtosEmpresas = await _repProdutosEmpresas.findOne({where: {produto: [{uid: prod.uid}], empresa: [{uid: empresauid.uid}], valor: Not(vlPreco)}});
                             
                                                                     if (produtosEmpresas) {
                                                                         produtosEmpresas.valor = vlPreco;
@@ -241,7 +241,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                                                             
                                                                 if (empresauid) {
                                                                     let _repProdutosEmpresas: Repository<ProdutosEmpresas> = getRepository(ProdutosEmpresas);
-                                                                    let produtosEmpresas = await _repProdutosEmpresas.findOne({where: {produto: prod, empresa: empresauid, estoque: Not(qtEstoque)}});
+                                                                    let produtosEmpresas = await _repProdutosEmpresas.findOne({where: {produto: [{uid: prod.uid}], empresa: [{uid: empresauid.uid}], estoque: Not(qtEstoque)}});
                             
                                                                     if (produtosEmpresas) {
                                                                         produtosEmpresas.estoque = qtEstoque;
@@ -297,7 +297,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                                     let _repImagensProduto: Repository<ImagensProduto> = getRepository(ImagensProduto);
                                     let imagemProduto: ImagensProduto;
         
-                                    let imagens = await _repImagensProduto.find({where: {produto: prod}});
+                                    let imagens = await _repImagensProduto.find({where: {produto: [{uid: prod.uid}]}});
         
                                     if (imagens.length > 0) {
                                        if (ImageUrl) {
@@ -305,7 +305,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                                             if (!imagem) {                                       
                                                     imagemProduto = new ImagensProduto();
                                                     imagemProduto.caminho = ImageUrl;
-                                                    imagemProduto.produto = prod;
+                                                    imagemProduto.produto = Promise.resolve(prod);
                                                     _repImagensProduto.save(imagemProduto);
                                             }
                                        }
@@ -315,7 +315,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                                             if (!imagem) {
                                                 imagemProduto = new ImagensProduto();
                                                 imagemProduto.caminho = ImageUrl;
-                                                imagemProduto.produto = prod;
+                                                imagemProduto.produto = Promise.resolve(prod);;
                                                 _repImagensProduto.save(imagemProduto);
                                             }
                                        }
@@ -323,14 +323,14 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                                         if (ImageUrl) {
                                             imagemProduto = new ImagensProduto();
                                             imagemProduto.caminho = ImageUrl;
-                                            imagemProduto.produto = prod;
+                                            imagemProduto.produto = Promise.resolve(prod);
                                             _repImagensProduto.save(imagemProduto);
                                         }
         
                                         for (let img in Images) {
                                             imagemProduto = new ImagensProduto();
                                             imagemProduto.caminho = Images[img].ImageUrl;
-                                            imagemProduto.produto = prod;
+                                            imagemProduto.produto = Promise.resolve(prod);
                                             _repImagensProduto.save(imagemProduto);
                                         }
                                     }
@@ -417,8 +417,8 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                                                                 empProd = new ProdutosEmpresas();
                 
                                                                 empProd.valor = vlPreco;
-                                                                empProd.empresa = _empresa;
-                                                                empProd.produto = prod;
+                                                                empProd.empresa = Promise.resolve(_empresa);
+                                                                empProd.produto = Promise.resolve(prod);
                 
                                                                 _repProdEmp.save(empProd);
                                                             }
@@ -467,7 +467,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                                                             
                                                                 if (empresauid) {
                                                                     let _repProdutosEmpresas: Repository<ProdutosEmpresas> = getRepository(ProdutosEmpresas);
-                                                                    let produtosEmpresas = await _repProdutosEmpresas.findOne({where: {produto: prod, empresa: empresauid, estoque: Not(qtEstoque)}});
+                                                                    let produtosEmpresas = await _repProdutosEmpresas.findOne({where: {produto: [{uid: prod.uid}], empresa: [{uid: empresauid.uid}], estoque: Not(qtEstoque)}});
                         
                                                                     if (produtosEmpresas) {
                                                                         produtosEmpresas.estoque = qtEstoque;
@@ -508,7 +508,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                                                             if (ImageUrl) {
                                                                 imagemProduto = new ImagensProduto();
                                                                 imagemProduto.caminho = ImageUrl;
-                                                                imagemProduto.produto = prod;
+                                                                imagemProduto.produto = Promise.resolve(prod);
                                                                 _repImagensProduto.save(imagemProduto);
                                                             }
                                                                 
@@ -516,7 +516,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                                                                 for (let img in Images) {
                                                                     imagemProduto = new ImagensProduto();
                                                                     imagemProduto.caminho = Images[img].ImageUrl;
-                                                                    imagemProduto.produto = prod;
+                                                                    imagemProduto.produto = Promise.resolve(prod);
                                                                     _repImagensProduto.save(imagemProduto);
                                                                 }
                                                         }

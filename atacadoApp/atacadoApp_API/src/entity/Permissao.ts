@@ -21,5 +21,5 @@ export class Permissao extends BaseEntity {
     inserir: boolean
 
     @ManyToOne(type => Grupos, grupo => grupo.permissoes)
-    grupo: Grupos
+    grupo: Promise<Grupos>
 }

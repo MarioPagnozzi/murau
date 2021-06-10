@@ -1,11 +1,12 @@
 import { ProdutosEmpresas } from './ProdutosEmpresas';
 import { ImagensProduto } from './imagesProduto';
-import {  Index, OneToMany } from 'typeorm';
+import {  Index, JoinColumn, JoinTable, ManyToMany, OneToMany } from 'typeorm';
 
 import { Column } from 'typeorm';
 import { Entity } from 'typeorm';
 import { BaseEntity } from './BaseEntity';
 import { ItemPedido } from './ItemPedido';
+import { Empresas } from './Empresas';
 @Entity({name: "produtos"})
 export class Produtos extends BaseEntity {
 
@@ -35,12 +36,18 @@ export class Produtos extends BaseEntity {
     preco: number
 
     @OneToMany(type => ProdutosEmpresas, produtosempresas => produtosempresas.produto)
-    produtosEmpresas: ProdutosEmpresas[]
+    produtosEmpresas: Promise<ProdutosEmpresas[]>
+    
+    @ManyToMany(type => Empresas, empresas => empresas.produtos)
+    @JoinTable({name: "produtos_empresas"})
+    empresas: Empresas[]
 
-    @OneToMany (type => ImagensProduto, imagem => imagem.produto, {eager: true})
-    imagens: ImagensProduto[]
+    @OneToMany (type => ImagensProduto, imagem => imagem.produto)
+    @JoinColumn()
+    imagens: Promise<ImagensProduto[]>
 
     @OneToMany (type => ItemPedido,  itemPedido => itemPedido.produto)
-    pedidos: ItemPedido[]
+    @JoinColumn()
+    pedidos: Promise<ItemPedido[]>
 
 }

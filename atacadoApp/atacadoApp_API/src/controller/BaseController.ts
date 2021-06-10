@@ -1,35 +1,33 @@
-import {getRepository, Repository} from "typeorm";
+import {getManager, getRepository, Repository} from "typeorm";
 import {NextFunction, Request, Response} from "express";
 import { BaseNotificacao } from "../entity/BaseNotificacao";
-import { functions } from "../configuracao/functions/globalFunctions"
+import * as _func from "../configuracao/functions/globalFunctions"
 import { Produtos } from "../entity/Produtos";
 
 var querystring = require("querystring");
 export abstract class BaseController<T> extends BaseNotificacao {
 
     private _repositorio: Repository<T>;
-    protected _func: functions;
+    protected func = require("../configuracao/functions/globalFunctions");
     constructor(entity: any) {
         super();
         this._repositorio = getRepository<T>(entity);
-        this._func = new functions();
     }
 
     async all(request: Request, restrito = true) {
         
         if (restrito) {
-            let tabela = this._func.Tabela(request);
-            if (!this._func.Permissao(request, tabela, "V")) 
+            let tabela = _func.Tabela(request);
+            if (!_func.Permissao(request, tabela, "V")) 
                 return {status: 400, errors: [{message: "Você não tem permissão para acessar os registros"}]}
         }
-      
-        return this._repositorio.find();
+        return this._repositorio.find()
     }
 
     async one(request: Request, restrito = true) {
         if (restrito) {
-            let tabela = this._func.Tabela(request);
-            if (!this._func.Permissao(request, tabela, "V")) 
+            let tabela = _func.Tabela(request);
+            if (!_func.Permissao(request, tabela, "V")) 
                 return {status: 400, errors: [{message: "Você não tem permissão para acessar os registros"}]}
         }
         return this._repositorio.findOne(request.params.id);
@@ -58,8 +56,8 @@ async save(model: any) {
 
     async remove(request: Request, restrito = true) {
         if (restrito) {
-            let tabela = this._func.Tabela(request);
-            if (!this._func.Permissao(request, tabela, "E")) 
+            let tabela = _func.Tabela(request);
+            if (!_func.Permissao(request, tabela, "E")) 
                 return {status: 400, errors: [{message: "Você não tem permissão para excluir o registro"}]}
         }
         let uid = request.params.id;

@@ -10,6 +10,7 @@ import { IImagesProduto } from 'src/app/interfaces/IImagesProduto';
 import { UsuariosService } from 'src/app/services/usuarios.service';
 import { Router } from '@angular/router';
 import { ProdutosModel } from 'src/app/models/produtosModel';
+import { ImagesProdutoModel } from 'src/app/models/imagesProdutoModel';
 
 //declare var google: any;
 @Component({
@@ -26,7 +27,7 @@ export class HomeComponent implements OnInit {
   sortOpicao: SelectItem[] = [];
   sortOrdem = 0;
   sortField = "";
-
+  imagens: ImagesProdutoModel[] = []
   private geoCoder: any;
   
   @ViewChild('search')
@@ -51,6 +52,7 @@ export class HomeComponent implements OnInit {
         this.homeService.getObservable().subscribe({
           next: (produtos) => {
             this.produtos = produtos as ProdutosModel[];
+            
           }
         })
         this.sortOpicao = [

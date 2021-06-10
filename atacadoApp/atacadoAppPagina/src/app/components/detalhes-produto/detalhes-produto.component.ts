@@ -35,14 +35,14 @@ export class DetalhesProdutoComponent implements OnInit {
 
   onFullScreenListener: any;
 
-  produtosExtras: ProdutosModel[] = [];
-  produtos: ProdutosModel[] = [];
+  produtosExtras: any[] = [];
+  produtos: any[] = [];
   isLogged = false;
   subscrip: Subscription = new Subscription();
 
-  produto: ProdutosModel = new ProdutosModel();
-  produtosModelo: ProdutosModel[] = [];
-  prodModelo: ProdutosModel[] = [];
+  produto: any;
+  produtosModelo: any[] = [];
+  prodModelo: any[] = [];
 
   @ViewChild('galleria') galleria: Galleria | any;
 
@@ -101,20 +101,20 @@ export class DetalhesProdutoComponent implements OnInit {
           this.produtosExtras = [];
           this.produtosModelo = [];
           
-          this.produto = produto as ProdutosModel;
-          
-          this.images = produto.imagens.length > 0 ? this.produto.imagens as ImagesProdutoModel[] : [{caminho: "./../../assets/images/img_nao_disp.jpg"}] as ImagesProdutoModel[];
+          this.produto = produto;
+         
+          this.images = (produto as any).__imagens__.length > 0 ? await this.produto.__imagens__ as ImagesProdutoModel[] : [{caminho: "./../../assets/images/img_nao_disp.jpg"}] as ImagesProdutoModel[];
           this.bindDocumentListeners();
-          const result_extra = await this.homeService.filtro("nome", (produto.nome?.substring(0, produto.nome?.indexOf(' '))));
+          const result_extra = await this.homeService.filtro("nome", ((produto as any).nome.substring(0, ((produto as any).nome.indexOf(' ')) >= 5 && (produto as any).nome?.indexOf(' ') ? (produto as ProdutosModel).nome?.indexOf(' ') : 5 )));
 
           if (result_extra.success) {
-            this.produtosExtras = result_extra.data as ProdutosModel[];
+            this.produtosExtras = result_extra.data as any[];
             this.produtosExtras = this.produtosExtras.filter(val => val.uid !== uid);
             this.produtos = this.produtosExtras.slice(0, 6);
 
-            const res_modelo = this.isLogged ? await this.produtosService.filtro("modelo", produto.nome) : await this.homeService.filtro("modelo", produto.nome);
+            const res_modelo = this.isLogged ? await this.produtosService.filtro("modelo", (produto as any).nome) : await this.homeService.filtro("modelo", (produto as any).nome);
             if (res_modelo.success) {
-                this.produtosModelo = res_modelo.data as ProdutosModel[];
+                this.produtosModelo = res_modelo.data as any[];
                 this.produtosModelo = this.produtosModelo.filter(val => val.uid !== uid);
             }
             this.prodModelo = this.produtosModelo.slice(0, 3);

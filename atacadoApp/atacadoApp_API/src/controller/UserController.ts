@@ -5,12 +5,12 @@ import { BaseController } from "./BaseController";
 import * as md5 from "md5";
 import { sign } from "jsonwebtoken";
 import config from "../configuracao/config";
-import {functions} from "../configuracao/functions/globalFunctions";
+import * as _fun from "../configuracao/functions/globalFunctions";
 import { FileHelper } from '../helpers/FileHelpers';
 export class UserController extends BaseController<User> {
 
     private _repositories: Repository<User> = getRepository(User);
-    private _fun = new functions();
+   
     constructor() {
        super(User);
    }
@@ -79,7 +79,7 @@ export class UserController extends BaseController<User> {
         
         let _user = <User>request.body;
         let {confirmaSenha} = request.body;
-        if (!this._fun.Permissao(request, "Usuarios", _user.uid ? "A" : "I")) {
+        if (!_fun.Permissao(request, "Usuarios", _user.uid ? "A" : "I")) {
             return {status: 400, errors:["Usuário não tem permissão para alterar ou inserir registros"]}
         }
         super.isRequired(_user.nome, "O nome do usuário é obrigatório");
@@ -112,13 +112,13 @@ export class UserController extends BaseController<User> {
         return super.save(_user);
    }
    async nome_like(request: Request) {
-       if (!this._fun.Permissao(request, "Usuarios", "V")) {
+       if (!_fun.Permissao(request, "Usuarios", "V")) {
            return {status: 400, errors: ["Usuário não tem permissão para acessar este cadastro"]}
        }
        return this._repositories.find({nome: Like("%" + request.params.nome + "%")});
    }
    async porGrupo(request: Request){
-        if (!this._fun.Permissao(request, "Usuarios", "V")) {
+        if (!_fun.Permissao(request, "Usuarios", "V")) {
             return {status: 400, errors: ["Usuário não tem permissão para acessar este cadastro"]}
         }
         return this._repositories.find({grupos: [{nome_grupo: request.params.nome_grupo}]});

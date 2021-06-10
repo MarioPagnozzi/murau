@@ -17,5 +17,5 @@ export class HistoricoPedido extends BaseEntity {
     situacao: string
 
     @ManyToOne(type => Pedidos, pedido => pedido.historico)
-    pedido: Pedidos
+    pedido: Promise<Pedidos>
 }

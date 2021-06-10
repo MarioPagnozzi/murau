@@ -22,19 +22,19 @@ export class Pedidos extends BaseEntity {
     @Column()
     previsao_entrega: number
 
-    @ManyToOne(type => Vendedores, vendedores => vendedores.pedidos, {eager: true})
-    vendedor: Vendedores
+    @ManyToOne(type => Vendedores, vendedores => vendedores.pedidos)
+    vendedor: Promise<Vendedores>
 
-    @ManyToOne(type => Clientes, clientes => clientes.pedidos, {eager: true})
-    cliente: Clientes
+    @ManyToOne(type => Clientes, clientes => clientes.pedidos)
+    cliente: Promise<Clientes>
 
-    @ManyToOne(type => Empresas, empresa => empresa.pedidos, {eager: true})
-    empresa: Empresas
+    @ManyToOne(type => Empresas, empresa => empresa.pedidos)
+    empresa: Promise<Empresas>
 
-    @OneToMany(type => ItemPedido, item => item.pedido, {eager: true})
-    itens: ItemPedido[]
+    @OneToMany(type => ItemPedido, item => item.pedido)
+    itens: Promise<ItemPedido[]>
 
-    @OneToMany(type => HistoricoPedido, historico => historico.pedido, {eager: true})
-    historico: HistoricoPedido[]
+    @OneToMany(type => HistoricoPedido, historico => historico.pedido)
+    historico: Promise<HistoricoPedido[]>
 
 }

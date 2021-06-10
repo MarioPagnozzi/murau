@@ -9,6 +9,6 @@ export class ImagensProduto extends BaseEntity {
     @Column({type: "varchar", length: 200})
     caminho: string
 
-    @ManyToOne(type => Produtos, produto => produto.imagens, { eager: false })
-    produto: Produtos
+    @ManyToOne(type => Produtos, produto => produto.imagens)
+    produto: Promise<Produtos>
 }
