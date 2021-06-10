@@ -14,7 +14,6 @@ import {job} from './middleware/cron_job';
 
 var querystring = require("querystring");
 var multer = require("multer");
-//var upload = multer();
 
 if (config.production) {
     process.env.target = "https://api.murau.com.br:9443";
@@ -115,7 +114,7 @@ https.createServer(obj_param,app).listen(config.port,'0.0.0.0', async () => {
         console.error("database not connected", error);
     }
     console.log(`API atacado App Rodando inicializada na porta ${config.port}`);
-    if (!config.production) {
+    if (config.production) {
         job();
     }
 })

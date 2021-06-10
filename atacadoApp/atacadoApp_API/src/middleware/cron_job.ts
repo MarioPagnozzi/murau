@@ -106,9 +106,8 @@ export async function job() {
                     _prod = result;
                 }).catch(async (err) => {
                     
-                        let set_Hora_inicio_atualiza = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_inicio_atualiza'}});
-                        let startTime: any = null;
-                        let endTime: any = null;
+                        set_Hora_inicio_atualiza = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_inicio_atualiza'}});
+                       
                         
 
                         if (set_Hora_inicio_atualiza && set_Hora_inicio_atualiza.valor !== "") {
@@ -118,7 +117,7 @@ export async function job() {
                             startTime = new Date().setUTCHours(+hora,+minuto,+segundo);
                         
                         }
-                        let set_Hora_fim_atualiza = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_fim_atualiza'}});
+                        set_Hora_fim_atualiza = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_fim_atualiza'}});
 
                         if (set_Hora_fim_atualiza && set_Hora_fim_atualiza.valor !== "") {
                             let hora = set_Hora_fim_atualiza.valor.split(',')[0];
@@ -128,11 +127,11 @@ export async function job() {
                         }
 
 
-                        let rule_atualiza_horas = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_horas'}});
-                        let rule_atualiza_minutos = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_minutos'}});
-                        let rule_atualiza_segundos = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_segundos'}});
-                        let rule_atualiza_diasSemanas = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_diasSemanas'}});
-                        var rule_atualiza = new cron_atualiza.RecurrenceRule();
+                        rule_atualiza_horas = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_horas'}});
+                        rule_atualiza_minutos = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_minutos'}});
+                        rule_atualiza_segundos = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_segundos'}});
+                        rule_atualiza_diasSemanas = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_diasSemanas'}});
+                        rule_atualiza = new cron_atualiza.RecurrenceRule();
 
                         if (rule_atualiza_horas && rule_atualiza_horas.valor !== "") {
                                 if(rule_atualiza_horas.valor.indexOf(',')) {
@@ -223,9 +222,20 @@ export async function job() {
                                     let retorno;
                                     try {
                                         retorno = await Promise.all([atualizaPreco, atualizaEstoque, atualizaImagem]).then(() => {
+                                            atualizaPreco = undefined;
+                                            atualizaEstoque = undefined;
+                                            atualizaImagem = undefined;
                                             return true;
-                                        }).catch(() => {return false});
+                                        }).catch(() => {
+                                            atualizaPreco = undefined;
+                                            atualizaEstoque = undefined;
+                                            atualizaImagem = undefined;
+                                            return false
+                                        });
                                     } catch (error) {
+                                        atualizaPreco = undefined;
+                                        atualizaEstoque = undefined;
+                                        atualizaImagem = undefined;
                                         throw new Error(error.message);
                                     }
                                     return retorno;
@@ -242,10 +252,7 @@ export async function job() {
                     }
             }).catch(async (error) => {
                 
-                    let set_Hora_inicio_atualiza = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_inicio_atualiza'}});
-                    let startTime: any = null;
-                    let endTime: any = null;
-                    
+                    set_Hora_inicio_atualiza = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_inicio_atualiza'}});
 
                     if (set_Hora_inicio_atualiza && set_Hora_inicio_atualiza.valor !== "") {
                         let hora = set_Hora_inicio_atualiza.valor.split(',')[0];
@@ -254,7 +261,7 @@ export async function job() {
                         startTime = new Date().setUTCHours(+hora,+minuto,+segundo);
                     
                     }
-                    let set_Hora_fim_atualiza = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_fim_atualiza'}});
+                    set_Hora_fim_atualiza = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_fim_atualiza'}});
 
                     if (set_Hora_fim_atualiza && set_Hora_fim_atualiza.valor !== "") {
                         let hora = set_Hora_fim_atualiza.valor.split(',')[0];
@@ -264,11 +271,11 @@ export async function job() {
                     }
 
 
-                    let rule_atualiza_horas = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_horas'}});
-                    let rule_atualiza_minutos = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_minutos'}});
-                    let rule_atualiza_segundos = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_segundos'}});
-                    let rule_atualiza_diasSemanas = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_diasSemanas'}});
-                    var rule_atualiza = new cron_atualiza.RecurrenceRule();
+                    rule_atualiza_horas = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_horas'}});
+                    rule_atualiza_minutos = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_minutos'}});
+                    rule_atualiza_segundos = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_segundos'}});
+                    rule_atualiza_diasSemanas = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_diasSemanas'}});
+                    rule_atualiza = new cron_atualiza.RecurrenceRule();
 
                     if (rule_atualiza_horas && rule_atualiza_horas.valor !== "") {
                             if(rule_atualiza_horas.valor.indexOf(',')) {
@@ -327,10 +334,7 @@ export async function job() {
             })
         },10000)
         
-            let set_Hora_inicio_atualiza = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_inicio_atualiza'}});
-            let startTime: any = null;
-            let endTime: any = null;
-            
+            set_Hora_inicio_atualiza = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_inicio_atualiza'}});
 
             if (set_Hora_inicio_atualiza && set_Hora_inicio_atualiza.valor !== "") {
                 let hora = set_Hora_inicio_atualiza.valor.split(',')[0];
@@ -339,7 +343,7 @@ export async function job() {
                 startTime = new Date().setUTCHours(+hora,+minuto,+segundo);
             
             }
-            let set_Hora_fim_atualiza = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_fim_atualiza'}});
+            set_Hora_fim_atualiza = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_fim_atualiza'}});
 
             if (set_Hora_fim_atualiza && set_Hora_fim_atualiza.valor !== "") {
                 let hora = set_Hora_fim_atualiza.valor.split(',')[0];
@@ -349,11 +353,11 @@ export async function job() {
             }
 
 
-            let rule_atualiza_horas = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_horas'}});
-            let rule_atualiza_minutos = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_minutos'}});
-            let rule_atualiza_segundos = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_segundos'}});
-            let rule_atualiza_diasSemanas = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_diasSemanas'}});
-            var rule_atualiza = new cron_atualiza.RecurrenceRule();
+            rule_atualiza_horas = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_horas'}});
+            rule_atualiza_minutos = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_minutos'}});
+            rule_atualiza_segundos = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_segundos'}});
+            rule_atualiza_diasSemanas = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_diasSemanas'}});
+            rule_atualiza = new cron_atualiza.RecurrenceRule();
 
             if (rule_atualiza_horas && rule_atualiza_horas.valor !== "") {
                     if(rule_atualiza_horas.valor.indexOf(',')) {
@@ -412,6 +416,7 @@ export async function job() {
     var job_atualiza = await cron_atualiza.scheduleJob({start: startTime, end: endTime, rule: rule_atualiza},async function() {
           await atualiza();
     });
+
     let set_Hora_inicio_insere = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_inicio_insere'}});
     if (set_Hora_inicio_insere && set_Hora_inicio_insere.valor !== "") {
         let hora = set_Hora_inicio_insere.valor.split(',')[0];
@@ -524,7 +529,9 @@ export async function job() {
             for (let i = 0; i < _cdProd.length; i++) {
 
                 let produtoExiste = new fun.insereNovoProduto(_cdProd[i], _token).insetNew();
+                produtoExiste = undefined;
             }
+            
         }).catch((error) => {console.log("Erro ao inserir produtos " + error)})
     })
   
