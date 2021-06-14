@@ -262,11 +262,10 @@ import { nextTick } from 'process';
                 configuracoes.nome_parametro = "qtd_lote_pesquisa";
                 configuracoes.valor = "1";
 
-                 _repConfig.save(configuracoes);           
+                 _repConfig.save(configuracoes);
             }
 
-            _parametro = undefined;
-        }
+                    }
         export async function cadastraVendedores(empresas, _repVendedor: Repository<Vendedores> = getRepository(Vendedores)) {
 
             let _vend: any;
