@@ -98,8 +98,7 @@ export async function job() {
                 
                     const obj = {
                         where: {
-                            ativo: true, excluido: false,
-                            data_alteracao: Not(new Date().getDate())
+                            ativo: true, excluido: false
                         }
                     }
                     let _prod;
