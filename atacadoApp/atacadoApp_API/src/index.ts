@@ -114,7 +114,7 @@ https.createServer(obj_param,app).listen(config.port,'0.0.0.0', async () => {
         console.error("database not connected", error);
     }
     console.log(`API atacado App Rodando inicializada na porta ${config.port}`);
-    if (config.production) {
+    if (!config.production) {
         job();
     }
 })

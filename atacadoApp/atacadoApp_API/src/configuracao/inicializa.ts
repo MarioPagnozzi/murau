@@ -52,13 +52,21 @@ import { nextTick } from 'process';
                         EntityEmp.telefone = _emp[10];
 
                         _repEmpresa.save(EntityEmp);
+                        EntityEmp = undefined;
                         i++
                     });
                     
                     setTimeout(() => {
                         console.log(i + "/" + emps.length + " empresas cadastradas");
+                        emp = undefined;
+                        emps = undefined;
+                        _emp = undefined;
+                        EntityEmp = undefined;
                     }, 10000)
+                    
                 }
+                _Empresa = undefined;
+                i = undefined;
         }
 
         export async function cadastraTabelas(_repTabelas: Repository<Tabelas> = getRepository(Tabelas)) {
@@ -72,8 +80,11 @@ import { nextTick } from 'process';
                     tabelas.tabela = tab;
 
                     _repTabelas.save(tabelas);
+                    tabelas = undefined;
                 }
+                _tabela = undefined;
             });
+            tabelas = undefined;
         }
 
         export async function cadastraConfig (_repConfig: Repository<Configuracoes> = getRepository(Configuracoes)) {
@@ -85,6 +96,7 @@ import { nextTick } from 'process';
                 configuracoes.nome_parametro = "cod_prod_busca";
                 configuracoes.valor = "0";
                 _repConfig.save(configuracoes);
+                configuracoes = undefined;
             }
 
             _parametro = await _repConfig.findOne({ nome_parametro: "host_api_totvs" });
@@ -96,36 +108,42 @@ import { nextTick } from 'process';
                 configuracoes.valor = "www30.bhan.com.br";
 
                  _repConfig.save(configuracoes);
+                 configuracoes = undefined;
 
                 configuracoes = new Configuracoes();
                 configuracoes.nome_parametro = "porta_api_totvs";
                 configuracoes.valor = "9443";
 
                  _repConfig.save(configuracoes);
+                 configuracoes = undefined;
 
                 configuracoes = new Configuracoes();
                 configuracoes.nome_parametro = "autorizacao_api_totvs_token";
                 configuracoes.valor = "/api/v1/autorizacao/token";
 
                  _repConfig.save(configuracoes);
+                 configuracoes = undefined;
 
                 configuracoes = new Configuracoes();
                 configuracoes.nome_parametro = "usuario_api_totvs_token";
                 configuracoes.valor = "planteamorws";
 
-                await _repConfig.save(configuracoes);
+                _repConfig.save(configuracoes);
+                configuracoes = undefined;
 
                 configuracoes = new Configuracoes();
                 configuracoes.nome_parametro = "senha_api_totvs_token";
                 configuracoes.valor = "896314";
 
                  _repConfig.save(configuracoes);
+                 configuracoes = undefined;
 
                 configuracoes = new Configuracoes();
                 configuracoes.nome_parametro = "rest_api_totvs";
                 configuracoes.valor = "/api/v1";
 
                  _repConfig.save(configuracoes);
+                 configuracoes = undefined;
             }
 
             _parametro = await _repConfig.findOne({ nome_parametro: "set_Hora_inicio_atualiza" });
@@ -136,6 +154,7 @@ import { nextTick } from 'process';
                 configuracoes.valor = "7,0,0";
 
                  _repConfig.save(configuracoes);
+                 configuracoes = undefined;
             }
 
             _parametro = await _repConfig.findOne({ nome_parametro: "set_Hora_fim_atualiza" });
@@ -146,6 +165,7 @@ import { nextTick } from 'process';
                 configuracoes.valor = "23,59,0";
 
                  _repConfig.save(configuracoes);
+                 configuracoes = undefined;
             }
 
             _parametro = await _repConfig.findOne({ nome_parametro: "rule_atualiza_horas" });
@@ -156,6 +176,7 @@ import { nextTick } from 'process';
                 configuracoes.valor = "";
 
                  _repConfig.save(configuracoes);
+                 configuracoes = undefined;
             }
 
             _parametro = await _repConfig.findOne({ nome_parametro: "rule_atualiza_minutos" });
@@ -166,6 +187,7 @@ import { nextTick } from 'process';
                 configuracoes.valor = "";
 
                  _repConfig.save(configuracoes);
+                 configuracoes = undefined;
             }
 
             _parametro = await _repConfig.findOne({ nome_parametro: "rule_atualiza_segundos" });
@@ -176,6 +198,7 @@ import { nextTick } from 'process';
                 configuracoes.valor = "0,30";
 
                  _repConfig.save(configuracoes);
+                 configuracoes = undefined;
             }
 
             _parametro = await _repConfig.findOne({ nome_parametro: "rule_atualiza_diasSemanas" });
@@ -186,6 +209,7 @@ import { nextTick } from 'process';
                 configuracoes.valor = "0,1,2,3,4,5,6";
 
                  _repConfig.save(configuracoes);
+                 configuracoes = undefined;
             }
 
             _parametro = await _repConfig.findOne({ nome_parametro: "set_Hora_inicio_insere" });
@@ -196,6 +220,7 @@ import { nextTick } from 'process';
                 configuracoes.valor = "7,0,0";
 
                  _repConfig.save(configuracoes);
+                 configuracoes = undefined;
             }
 
             _parametro = await _repConfig.findOne({ nome_parametro: "set_Hora_fim_insere" });
@@ -206,6 +231,7 @@ import { nextTick } from 'process';
                 configuracoes.valor = "23,59,0";
 
                 _repConfig.save(configuracoes);
+                configuracoes = undefined;
             }
 
             _parametro = await _repConfig.findOne({ nome_parametro: "rule_insere_horas" });
@@ -216,6 +242,7 @@ import { nextTick } from 'process';
                 configuracoes.valor = "";
 
                  _repConfig.save(configuracoes);
+                 configuracoes = undefined;
             }
 
             _parametro = await _repConfig.findOne({ nome_parametro: "rule_insere_minutos" });
@@ -226,6 +253,7 @@ import { nextTick } from 'process';
                 configuracoes.valor = "";
 
                  _repConfig.save(configuracoes);
+                 configuracoes = undefined;
             }
 
             _parametro = await _repConfig.findOne({ nome_parametro: "rule_insere_segundos" });
@@ -236,6 +264,7 @@ import { nextTick } from 'process';
                 configuracoes.valor = "0,10,20,30,40,50";
 
                  _repConfig.save(configuracoes);
+                 configuracoes = undefined;
             }
 
             _parametro = await _repConfig.findOne({ nome_parametro: "rule_insere_diasSemanas" });
@@ -246,6 +275,7 @@ import { nextTick } from 'process';
                 configuracoes.valor = "0,1,2,3,4,5,6";
 
                 _repConfig.save(configuracoes);
+                configuracoes = undefined;
             }
 
             _parametro = await _repConfig.findOne({ nome_parametro: "qtd_lote_pesquisa" });
@@ -256,7 +286,10 @@ import { nextTick } from 'process';
                 configuracoes.valor = "1";
 
                  _repConfig.save(configuracoes);
+                 configuracoes = undefined;
             }
+
+            _parametro = undefined;
         }
         export async function cadastraVendedores(empresas, _repVendedor: Repository<Vendedores> = getRepository(Vendedores)) {
 
@@ -285,13 +318,18 @@ import { nextTick } from 'process';
                     EntityVendedor.nome = _vend[1];
                     EntityVendedor.empresas = empresas
                    _repVendedor.save(EntityVendedor);
+                   EntityVendedor = undefined;
                    i++
                   
                 });
                 setTimeout(() => {
                     console.log(i + "/" + vendedores.length + " vendores cadastradas");
+                    vendedores = undefined;
+                    vend = undefined;
                 }, 10000)
             }
+            _vend = undefined;
+            EntityVendedor = undefined;
         }
         
         export async function cadastraProdutos(empresas, _repProduto: Repository<Produtos> = getRepository(Produtos)) {
@@ -322,13 +360,19 @@ import { nextTick } from 'process';
                     EntityProduto.empresas = empresas;
                     if (EntityProduto.nome) {
                         _repProduto.save(EntityProduto);
+                        EntityProduto = undefined;
                         i++
                     }
                 });
                 setTimeout(() => {
                     console.log(i + "/" + produtos.length +  " produtos cadastrados");
+                    _prod = undefined;
+                    EntityProduto  = undefined;
+                    produtos = undefined;
                 }, 10000)
             }
+            produto = undefined;
+            i = undefined;
         }
 
         export async function cadastroGrupo(nome_grupo: string[], _repGrupo: Repository<Grupos> = getRepository(Grupos),
@@ -342,6 +386,7 @@ import { nextTick } from 'process';
                     grupo.ativo = true;
                     grupo.nome_grupo = nome_grupo;
                     _repGrupo.save(grupo);
+                    grupo = undefined;
                 });
 
             }
@@ -364,6 +409,7 @@ import { nextTick } from 'process';
                             EntityPermissao.tabela = tabela.tabela;
 
                             _repPermissao.save(EntityPermissao);
+                            EntityPermissao = undefined;
 
                         } else if (grupo.nome_grupo == "Vendedores") {
 
@@ -398,6 +444,8 @@ import { nextTick } from 'process';
 
                             _repPermissao.save(EntityPermissao);
 
+                            EntityPermissao = undefined;
+
                         } else {
 
                             let EntityPermissao: Permissao = new Permissao();
@@ -431,6 +479,8 @@ import { nextTick } from 'process';
 
                             _repPermissao.save(EntityPermissao);
 
+                            EntityPermissao = undefined;
+
                         }
             }
         }
@@ -452,6 +502,8 @@ import { nextTick } from 'process';
                     usuario.grupos = Promise.resolve(grupo);
 
                     _repUsuario.save(usuario);
+
+                    usuario = undefined;
                 }
 
             }
@@ -478,9 +530,10 @@ import { nextTick } from 'process';
                     if (!permissao) {
                         cadastroPermissao(grupos[i], tabelas[j]);
                     }
+                    permissao = undefined;
                 }
             }
-            await cadastroUsuario(grupos);
+            await cadastroUsuario(grupos)
         }
 
  

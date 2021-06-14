@@ -43,8 +43,9 @@ var fs = require("fs");
                             });
                             res.on("end",() => {
                                 let body = Buffer.concat(chuncks);
-                                resolve(body.toString());
                                 clearInterval(interval);
+                                resolve(body.toString());
+                                
                             });
                         }
                         res.on("error", async (error) => {
@@ -55,6 +56,7 @@ var fs = require("fs");
                                 await request.httpRequest().then((response) => {
                                     body = response
                                 }).catch((error) => {throw new Error(`Erro ao acessar host: ${error}`)});
+                                clearInterval(interval);
                                 resolve(body);
                                 
                             }
@@ -83,6 +85,7 @@ var fs = require("fs");
                                 await request.httpRequest().then((response) => {
                                     body = response
                                 }).catch((error) => {throw new Error(`Erro ao acessar servidor: ${error}`)});
+                                //clearInterval(interval);
                                 resolve(body);
                                 
                             }
@@ -106,9 +109,11 @@ var fs = require("fs");
                             await request.httpRequest().then((response) => {
                                 body = response
                             }).catch((error) => {throw new Error(`Erro ao acessar host: ${error}`)});
+                            //clearInterval(interval);
                             resolve(body);
                         } else {
-                            reject(new Error(`Erro ao acessar host: ${error}`))                            
+                            //clearInterval(interval);
+                            reject(new Error(`Erro ao acessar host: ${error}`))
                         }
                     });
                     if (this.write != null) request.write(JSON.stringify(this.write));
@@ -116,6 +121,7 @@ var fs = require("fs");
                     request.setTimeout(this.ms);
                     request.end();
                 }, this.ms);
+                
             });
         }
         
@@ -125,6 +131,7 @@ var fs = require("fs");
         const parametros = async () => {
             let parametros = await _repParametros.find();
             const [params] = await Promise.all([parametros])
+            parametros = undefined;
             return params;
         }
         return parametros();
@@ -132,6 +139,7 @@ var fs = require("fs");
     export function setParametros(value) {
         let _repParametros: Repository<Configuracoes> = getRepository(Configuracoes);
         _repParametros.save(value);
+        _repParametros = undefined;
     }
     export class geraToken {
 
@@ -184,6 +192,8 @@ var fs = require("fs");
                         let request = new apiRequest(options);
                         let req = await request.httpRequest();
                         const [body] = await Promise.all([req]);
+                        request = undefined;
+                        req = undefined;
                         return body;
                     }
                     
@@ -206,6 +216,7 @@ var fs = require("fs");
                             }
                             
                             setParametros(config);
+                            config = undefined
                             config = parametros.filter(val => val.nome_parametro == "dtExpiracao")[0];
                             if (config) {
                                 config.valor = dtExpiracao;
@@ -215,23 +226,50 @@ var fs = require("fs");
                                 config.valor = dtExpiracao;
                             }
                             setParametros(config);
+                            config = undefined;
                             console.log("Token Criado!")
                         } else {
                             config = new Configuracoes();
                             config.nome_parametro = "cdToken";
                             config.valor = cdToken;
                             setParametros(config);
+                            config = undefined;
+
                             config = new Configuracoes();
                             config.nome_parametro = "dtExpiracao";
                             config.valor = dtExpiracao;
                             setParametros(config);
+                            config = undefined;
                             console.log("Token Criado!")
                         }
                         
                         return cdToken;
                     }
+                    _autorizacao_totvs = undefined
+                    _usuario_totvs = undefined
+                    _senha_totvs = undefined
+                    body = undefined;
                 }
-                let token = parametros.filter(val => val.nome_parametro == "cdToken")[0];
+                const token = parametros.filter(val => val.nome_parametro == "cdToken")[0];
+
+                parametros = undefined
+            
+                _hostname_totvs = undefined
+                _porta_totvs = undefined
+                _dttoken = undefined
+                _url = undefined
+                dtExpiracao = undefined
+                dataAtual = undefined
+            
+                dia = undefined
+                mes = undefined
+                ano = undefined
+                hora = undefined
+                min = undefined
+                seg = undefined
+                options = undefined
+                dataExpiracaoToken = undefined
+                
                 return token.valor;
             }
      
@@ -243,6 +281,7 @@ var fs = require("fs");
             const produtos = async () => {
                 let produtos = await _repProdutos.find(obj);
                 const [prods] = await Promise.all([produtos]);
+                produtos = undefined;
                 return prods
             }
             _produtos = produtos();
@@ -258,6 +297,7 @@ var fs = require("fs");
         const empresas = async () => {
             let empresas =  await _repEmpresas.find();
             const [emps] = await Promise.all([empresas])
+            empresas = undefined;
             return emps;
         }
         return empresas();
@@ -277,7 +317,7 @@ var fs = require("fs");
         }
             
         async insetNew() {
-            let parametros = await getParametros()
+                let parametros = await getParametros()
                 let empresas = await getEmpresas();
                 
                 let _hostname_totvs = parametros.filter(val => val.nome_parametro == "host_api_totvs")[0];
@@ -336,10 +376,23 @@ var fs = require("fs");
                             _produto.empresas = empresas;
                         
                             setProdutos(_produto,"Inserido com sucesso! [novo]");
+                            _produto = undefined;
                             return true;
                         }
                     }
+                    classificacoes = undefined
                 }
+                parametros = undefined
+                empresas = undefined
+                
+                _hostname_totvs = undefined
+                _porta_totvs = undefined
+                _restapi_totvs = undefined
+                _url = undefined
+                
+                options = undefined;
+                obj = undefined;
+
                 return false;
         }       
       
@@ -350,6 +403,7 @@ var fs = require("fs");
         const produtoEmpresa = async () => {
             let produtoEmpresa = await _repProdutosEmpresas.findOne(_where);
             const [prodEmp] = await Promise.all([produtoEmpresa]);
+            produtoEmpresa = undefined;
             return prodEmp;
         }
         return produtoEmpresa();
@@ -361,6 +415,7 @@ var fs = require("fs");
         const empresa = async () => {
             let empresa = await _repEmpresas.findOne(_where);
             const [emp] = await Promise.all([empresa]);
+            empresa = undefined
             return emp;
         }
         return empresa();
@@ -383,6 +438,8 @@ var fs = require("fs");
                 let parametros = await getParametros();
                 let _empresas = await getEmpresas();
                 const [parms, emps] = await Promise.all([parametros, _empresas]);
+                parametros = undefined
+                _empresas = undefined
                 return {parms, emps};
             }
             let paramEmps;
@@ -474,12 +531,18 @@ var fs = require("fs");
                                 }).catch((err) => {throw new Error(`Erro ao buscar empresa [Produto]: ${err}`)})
 
                                 const [produ, prodEmp, emp] = await Promise.all([produtos, produtoEmpresa, empresa]);
+                                objWhere = undefined
+                                objWhereEmp = undefined
+                                produtos = undefined
+                                produtoEmpresa = undefined
+                                empresa = undefined
                                 return {
                                     produ,
                                     prodEmp,
                                     emp
                                 }
                             }
+
                             let dados = await getDados();
                             let produtos = dados.produ;
                             let prod = produtos.filter(val => val.codigo == cdSKU)[0];
@@ -493,6 +556,7 @@ var fs = require("fs");
                                     try {
                                         produtoEmpresa.valor = vlPreco;
                                         setProdutoEmpresa(produtoEmpresa, `Preço do produto ${prod.codigo} atualizado para a empresa ${empresa.nome_fantasia}`);
+                                        produtoEmpresa = undefined;
                                     } catch (err) {throw new Error(`Erro ao gravar o Preço do Produto ${prod.codigo} para a empresa ${empresa.nome_fantasia}: ${err}`);}
                                 } else {
                                     if (prod && empresa)  {
@@ -502,6 +566,7 @@ var fs = require("fs");
                                             entityProdutoEmpresa.produto = Promise.resolve(prod);
                                             entityProdutoEmpresa.valor = vlPreco;
                                             setProdutoEmpresa(entityProdutoEmpresa,`Preço do produto ${prod.codigo} atualizado para a empresa ${empresa.nome_fantasia}`);
+                                            entityProdutoEmpresa = undefined
                                         } catch (err){
                                             throw new Error(`Erro ao gravar o Preço do Produto ${prod.codigo} para a empresa ${empresa.nome_fantasia}: ${err}`);
                                         }
@@ -509,17 +574,37 @@ var fs = require("fs");
                                     
                                 
                                 }
+                                empresa = undefined;
+                                produtoEmpresa = undefined;
                             }
+                            dados = undefined;
+                            produtos = undefined;
+                            prod = undefined;
                         }
                        
                     }
                 }
+                parametros = undefined
+                _empresas = undefined 
+
+                _hostname_totvs = undefined
+                _porta_totvs = undefined
+                _restapi_totvs = undefined
+                
+                _url = undefined
+                options: undefined
+                api = undefined
+                body = undefined
+                _obj = undefined
+                
         }
         async estoque() {
             const params = async () => {
                 let parametros = await getParametros();
                 let empresas = await getEmpresas();
                 const [parms, emps] = await Promise.all([parametros, empresas]);
+                parametros = undefined
+                empresas = undefined
                 return {parms, emps};
             }
             let paramEmps = await params();
@@ -618,6 +703,7 @@ var fs = require("fs");
                                     try {
                                         produtoEmpresa.estoque = qtEstoque;
                                         setProdutoEmpresa(produtoEmpresa,`Estoque do produtos ${prod.codigo} atualizado para a empresa ${empresa.nome_fantasia}`);
+                                        produtoEmpresa = undefined;
                                     } catch (err) {
                                         throw new Error(`Erro ao gravar o Estoque do Produto ${prod.codigo} para a empresa ${empresa.nome_fantasia}: ${err}`);
                                     }
@@ -630,17 +716,32 @@ var fs = require("fs");
                                             entityProdutoEmpresa.produto = Promise.resolve(prod);
                                             entityProdutoEmpresa.estoque = qtEstoque;
                                             setProdutoEmpresa(entityProdutoEmpresa, `Estoque do produtos ${prod.codigo} atualizado para a empresa ${empresa.nome_fantasia}`)
+                                            entityProdutoEmpresa = undefined;
                                         } catch (err) {
                                             throw new Error(`Erro ao gravar o Estoque do Produto ${prod.codigo} para a empresa ${empresa.nome_fantasia}: ${err}`);
                                         }
                                         
                                     }
                                 }
+                                empresa = undefined;
+                                produtoEmpresa = undefined;
                             }
                         }
                     }
                     
                 }
+                parametros = undefined
+                _empresas = undefined 
+
+                _hostname_totvs = undefined
+                _porta_totvs = undefined
+                _restapi_totvs = undefined
+                
+                _url = undefined
+                options: undefined
+                api = undefined
+                body = undefined
+                _obj = undefined
         }
         async imagens() {
             const obj = {
@@ -718,8 +819,10 @@ var fs = require("fs");
                                                         imagemProduto.caminho = img.imageUrl;
                                                         imagemProduto.produto = Promise.resolve(_produto);
                                                         setImagemProduto(imagemProduto, `Nova imagem inserida para o produto ${_produto.codigo}`)
+                                                        imagemProduto = undefined
                                                         
                                                     }
+                                                    imagem = undefined
                                                 }
                                             } else {
                                                 if (img.imageUrl) {
@@ -727,17 +830,25 @@ var fs = require("fs");
                                                     imagemProduto.caminho = img.imageUrl;
                                                     imagemProduto.produto = Promise.resolve(_produto);
                                                     setImagemProduto(imagemProduto, `Imagens do Produto ${_produto.codigo} foi atualizada`)
+                                                    imagemProduto = undefined
                                                     
                                                 }
                                             }
+                                            imagens = undefined
                                         }
+                                        imagemProduto = undefined
                                     }
                                 }
+                                _produto = undefined
                             }
                         } 
-                    })
+                    });
+                    retornoBody = undefined;
                 }
+                body = undefined
+                api = undefined
             }
+            
             if(cdProdSemEstoque.length > 0) {
                 for (let prod of cdProdSemEstoque) {
                     options = {
@@ -771,7 +882,7 @@ var fs = require("fs");
                             if (ProductDescription) {
                                 if (_produto.descricao != ProductDescription) {
                                     _produto.descricao = ProductDescription;
-                                    setProdutos(_produto,'Teve a sua descrição atualizada');
+                                    setProdutos(_produto,'Teve a sua descrição atualizada');                                    
                                     
                                 }
                             }
@@ -788,8 +899,10 @@ var fs = require("fs");
                                         imagemProduto.caminho = ImageUrl;
                                         imagemProduto.produto = Promise.resolve(_produto);
                                         setImagemProduto(imagemProduto,`Nova imagem inserida para o produto ${_produto.codigo}`);
+                                        imagemProduto = undefined;
                                         
                                     }
+                                    imagem = undefined
                                 }
                                 if (Images) {
                                     for (let img in Images) {
@@ -800,10 +913,12 @@ var fs = require("fs");
                                             imagemProduto.caminho = Images[img].ImageUrl;
                                             imagemProduto.produto = Promise.resolve(_produto);
                                             setImagemProduto(imagemProduto, `Imagens do produto ${_produto.codigo} atualizada`);
+                                            imagemProduto = undefined;
                                             
                                         }
-                    
+                                        imagem = undefined
                                     }
+                                   
                                 }
                             } else {
                                 if (ImageUrl) {
@@ -811,6 +926,7 @@ var fs = require("fs");
                                     imagemProduto.caminho = ImageUrl;
                                     imagemProduto.produto = Promise.resolve(_produto);
                                     setImagemProduto(imagemProduto,`Imagem do produto ${_produto.codigo} foi atualizada`)
+                                    imagemProduto = undefined;
                                     
                                 }
                                 if (Images) {
@@ -819,14 +935,21 @@ var fs = require("fs");
                                         imagemProduto.caminho = Images[img].ImageUrl;
                                         imagemProduto.produto = Promise.resolve(_produto);
                                         setImagemProduto(imagemProduto,`Nova imagem para o produto ${_produto.codigo} foi inserida`)
+                                        imagemProduto = undefined;
                                         
                                     }
                                 }
                             }
+                            imagemProduto = undefined
+                            imagens = undefined
                         }
+                        _produto = undefined;                        
                     }
+                    api = undefined
+                    body = undefined
                 }
             }
+            produtos = await getProdutos(obj)            
         }
        
     }

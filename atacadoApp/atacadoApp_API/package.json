@@ -39,6 +39,7 @@
         "vhost": "^3.0.2"
     },
     "scripts": {
+        "size":"--max_old_space_size=8192",
         "start": "ts-node src/index.ts",
         "server": "nodemon --watch src/**/*.ts --exec ts-node --delay 3 src/index.ts",
         "build": "tsc --build tsconfig.json"
