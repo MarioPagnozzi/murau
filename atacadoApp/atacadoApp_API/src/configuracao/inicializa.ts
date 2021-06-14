@@ -291,7 +291,7 @@ import { nextTick } from 'process';
 
                     EntityVendedor.endereco = "Cadastro Automático";
                     EntityVendedor.nome = _vend[1];
-                    EntityVendedor.empresas = empresas
+                    EntityVendedor.empresas = Promise.resolve(empresas);
                    _repVendedor.save(EntityVendedor);                   
                    i++
                   

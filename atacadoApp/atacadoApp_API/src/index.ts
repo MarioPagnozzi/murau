@@ -87,16 +87,16 @@ https.createServer(obj_param,app).listen(config.port,'0.0.0.0', async () => {
     try {
         await conexao.createConnection()
                     .then(async () => {
-                        start();
+                        await start();
                     })
                     .then(async () =>{
-                       cadastraTabelas();
+                       await cadastraTabelas();
                     })
                     .then(async () => {
-                        cadastraConfig();
+                        await cadastraConfig();
                     })
                     .then(async () => {
-                        cadastroGrupo(["Super Usuário", "Vendedores", "Clientes"]).then(() => {
+                        await cadastroGrupo(["Super Usuário", "Vendedores", "Clientes"]).then(() => {
                             console.log("Grupos ['Super Usuário', 'Vendedores', 'Clientes'] cadastrado")
                         });
                     })
