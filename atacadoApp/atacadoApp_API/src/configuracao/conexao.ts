@@ -18,7 +18,6 @@ import { User } from './../entity/User';
 import { createConnection } from 'typeorm';
 import config from "./config";
 import { Promocao } from '../entity/Promocao';
-import { vProdutos } from '../viewEntity/viewProduto';
 
 
 
@@ -38,6 +37,7 @@ export default {
             subscribers: cfg.subscribers,
             migrations: cfg.migrations,
             cli: cfg.cli,
+            acquireTimeout: cfg.acquireTimeout,
             entities: [
                 User,
                 Clientes,
@@ -55,8 +55,7 @@ export default {
                 Configuracoes,
                 ProdutosEmpresas,
                 HistoricoPedido,
-                Promocao,
-                vProdutos
+                Promocao
             ]
         });
         console.log("Database connected");

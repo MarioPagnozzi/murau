@@ -1,7 +1,6 @@
 import { Request } from 'express';
 import { getManager, getRepository, Like, Repository } from 'typeorm';
 import { Empresas } from '../entity/Empresas';
-import { vProdutos } from '../viewEntity/viewProduto';
 import { Produtos } from './../entity/Produtos';
 import { BaseController } from "./BaseController";
 

@@ -2,7 +2,7 @@ import {getManager, getRepository, Repository} from "typeorm";
 import {NextFunction, Request, Response} from "express";
 import { BaseNotificacao } from "../entity/BaseNotificacao";
 import * as _func from "../configuracao/functions/globalFunctions"
-import { Produtos } from "../entity/Produtos";
+
 
 var querystring = require("querystring");
 export abstract class BaseController<T> extends BaseNotificacao {

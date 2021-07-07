@@ -10,7 +10,7 @@ DROP TABLE pedidos;
 DROP TABLE clientes; 
 DROP TABLE estoque_preco_prodemp;
 DROP TABLE empresas;
-DROP TABLE vendedores;
+DROP TABLE vendedores; 
 DROP TABLE permissao;
 DROP TABLE grupos;
 DROP TABLE configuracao;
@@ -18,6 +18,7 @@ DROP TABLE imagensproduto;
 DROP TABLE produtos;
 DROP TABLE tabelas;
 DROP TABLE promocao;
+DROP TABLE typeorm_metadata;
 
 
 

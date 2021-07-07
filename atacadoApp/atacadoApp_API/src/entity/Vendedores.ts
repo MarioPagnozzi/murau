@@ -48,8 +48,7 @@ export class Vendedores extends BaseEntity {
     @OneToMany(type => Pedidos, pedidos => pedidos.vendedor, {nullable: true})
     pedidos: Promise<Pedidos[]>
 
-    /*@OneToMany(type => VendedoresEmpresas, vendedoresEmpresas => vendedoresEmpresas.vendedor,{eager: true})
-    empresas: VendedoresEmpresas[]*/
+
     @ManyToMany(type => Empresas, empresas => empresas.vendedores)
     @JoinTable({name: "vendedores_empresas"})
     empresas: Promise<Empresas[]>

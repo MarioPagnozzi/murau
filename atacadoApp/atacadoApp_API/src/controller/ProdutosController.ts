@@ -1,4 +1,4 @@
-import { Configuracoes } from './../entity/Configuracoes';
+
 import { Request, Response, NextFunction } from 'express';
 import { getRepository, Like, Repository, In } from 'typeorm';
 import { Produtos } from './../entity/Produtos';

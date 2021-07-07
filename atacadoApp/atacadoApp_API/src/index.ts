@@ -7,13 +7,9 @@ import {Routes} from "./routes";
 import config from "./configuracao/config";
 import auth from "./middleware/auth"
 import conexao from "./configuracao/conexao";
-import {start, cadastraTabelas, cadastraConfig, cadastroGrupo, cadastroFilhas}  from "./configuracao/inicializa";
+import {start, cadastraTabelas, cadastraConfig, cadastroGrupo, cadastraPermissao, cadastroVendedores, cadastroUsuarios, cadastroProduto, cadastraProdutos}  from "./configuracao/inicializa";
 import {job} from './middleware/cron_job';
 
-
-
-var querystring = require("querystring");
-var multer = require("multer");
 
 if (config.production) {
     process.env.target = "https://api.murau.com.br:9443";
@@ -85,30 +81,25 @@ if (config.production) {
 https.createServer(obj_param,app).listen(config.port,'0.0.0.0', async () => {
 
     try {
-        await conexao.createConnection()
-                    .then(async () => {
-                        await start();
-                    })
-                    .then(async () =>{
-                       await cadastraTabelas();
-                    })
-                    .then(async () => {
-                        await cadastraConfig();
-                    })
-                    .then(async () => {
-                        await cadastroGrupo(["Super Usuário", "Vendedores", "Clientes"]).then(() => {
-                            console.log("Grupos ['Super Usuário', 'Vendedores', 'Clientes'] cadastrado")
-                        });
-                    })
-                    .then(async () => {
-                        await cadastroFilhas();
-                    })
-                    .then(async () => {
-                        console.log("Data base conectado");
-                    })
-                    .catch((err) => {
-                        console.error("API não iniciada corretamente: " + err);
-                    });
+        await conexao.createConnection().then(async () => {
+
+            let empresas = await start()
+            let config = await cadastraConfig();
+            let tabelas = await cadastraTabelas();
+            let vendedores = await cadastroVendedores()
+            let produtos = await cadastroProduto()
+            let grupos = await cadastroGrupo(["Supoer Usuário", "Vendedores", "Clientes"])
+            let permissao = await cadastraPermissao();
+            let usuario = await cadastroUsuarios();
+
+            await Promise.all([empresas, config, tabelas, vendedores, produtos, grupos, permissao, usuario])
+        })
+        .then(async () => {
+            console.log("Data base conectado");
+        })
+        .catch((err) => {
+            console.error("API não iniciada corretamente: " + err);
+        })
     }
     catch (error) {
         console.error("database not connected", error);

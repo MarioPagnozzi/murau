@@ -1,5 +1,4 @@
 import { Repository, getRepository, Not, OneToMany, In, Unique } from 'typeorm';
-import { Request, Response, NextFunction } from 'express';
 import { Configuracoes } from '../entity/Configuracoes';
 import * as fun from '../configuracao/functions/globalFunctions';
 
@@ -92,23 +91,40 @@ export async function job() {
    }
     const atualiza = async () => {
         
-       setTimeout(async () => {
-            job_atualiza.cancel(true);
+       let timeout = setTimeout(async () => {
+            job_atualiza.cancel();
                 await new fun.geraToken().token().then(async (_token) => {
-                
+                    
+                    let parametros = await fun.getParametros();
+                    let skip_qtd_busca_produto = +parametros.filter(val => val.nome_parametro === "skip_qtd_busca_produto")[0].valor;
+                    let take_qtd_busca_produto = +parametros.filter(val => val.nome_parametro === "take_qtd_busca_produto")[0].valor;
+                    
                     const obj = {
                         where: {
                             ativo: true, excluido: false
-                        }
+                        },
+                        order: {data_inclusao: 'DESC'},
+                        skip: skip_qtd_busca_produto,
+                        take: take_qtd_busca_produto
                     }
-                    let _prod;
-                    await fun.getProdutos(obj).then(async (result) => {
-                        _prod = result;
-                    }).catch(async (err) => {
-                            job_atualiza.reschedule({start: startTime, end: endTime, rule: rule_atualiza});
-                        throw new Error(err.message);
-                    })
-                    
+                    let _prod = await fun.getProdutos(obj);
+
+                    let qtd_produtos = await fun.getProdutos({where: { ativo: true, excluido: false}});
+
+                    if (skip_qtd_busca_produto >= qtd_produtos.length) {
+                        skip_qtd_busca_produto = 0;
+                    } else {
+                        skip_qtd_busca_produto = +skip_qtd_busca_produto + +take_qtd_busca_produto;
+                    }
+
+                    let _repParametros: Repository<Configuracoes> = getRepository(Configuracoes);
+                    let param = await _repParametros.findOne({where: {nome_parametro: "skip_qtd_busca_produto"}});
+                    param.valor = skip_qtd_busca_produto.toString();
+                    await _repParametros.save(param);
+                   
+
+                    const executa_alteracoes = async () => {
+
                         if (_prod.length > 0) {
                             job_atualiza.cancel();
                             let cdProdutos: Array<any> = [];
@@ -118,59 +134,47 @@ export async function job() {
                             let _cdProdutos: Array<any> = [];
                             for (let i = 0; i < cdProdutos.length; i++) {
                                 _cdProdutos.push(cdProdutos[i]);
+
                                 if (_cdProdutos.length === 49 || (i === (cdProdutos.length - 1))) {
-                                let lote_cdProdutos = _cdProdutos;
-                                _cdProdutos = [];
                                 
                                         const atualizacoes = async () => {
-
-                                            //setTimeout(() => {
-                                              await  new fun.atualizaProduto(lote_cdProdutos, _token).preco()
-                                                .then(async () => {
-                                                    await new fun.atualizaProduto(lote_cdProdutos, _token).estoque()
-                                                    .then(async () => {
-                                                        await new fun.atualizaProduto(lote_cdProdutos, _token).imagens()
-                                                        .then(() => {
-                                                            lote_cdProdutos = undefined;
-                                                        })
-                                                        .catch(() => {
-                                                            lote_cdProdutos = undefined;
-                                                            throw new Error("Erro ao atualizar as imagnes")
-                                                        })
-                                                    })
-                                                    .catch(() => {
-                                                        lote_cdProdutos = undefined;
-                                                        throw new Error("Erro ao atualizar os estoques")
-                                                    })
-                                                })
-                                                .catch(() => {
-                                                    lote_cdProdutos = undefined;
-                                                    throw new Error("Erro ao atualizar produtos")
-                                                })
-                                            //}, 10000)
+                                            let updateProduto = new fun.atualizaProduto(_cdProdutos, _token);
+                                            let preco = await updateProduto.preco();
+                                            let estoque = await updateProduto.estoque();
+                                            let images = await updateProduto.imagens();
+                                             
+                                            await Promise.all([preco, estoque, images]).finally(() => {
+                                                _cdProdutos = [];
+                                            })
+                                            
                                         }
-            
-                                    await atualizacoes();
+                                        
+                                    let exec = await atualizacoes();
+                                    await Promise.all([exec])
                                 } 
-                                if (i == cdProdutos.length -1) {
-                                    job_atualiza.reschedule({start: startTime, end: endTime, rule: rule_atualiza});
-                                }
+                                
                             }
-                            _cdProdutos = undefined
-                            cdProdutos = undefined
+                           
                         }
-                        _prod = undefined;
+                    }
+                    let executa = await executa_alteracoes();
+                    await Promise.all([parametros, _prod, qtd_produtos, param, executa]).finally(() => {
+                        clearTimeout(timeout);
+                        //job_atualiza.reschedule({start: startTime, end: endTime, rule: rule_atualiza});
+                    })
                 })
                 .catch(async (error) => {
-                        
-                        job_atualiza.reschedule({start: startTime, end: endTime, rule: rule_atualiza});
-                        throw new Error("erro ao carregar produtos: " + error)
+                    clearTimeout(timeout);
+                    //job_atualiza.reschedule({start: startTime, end: endTime, rule: rule_atualiza});
+                    throw new Error("erro ao carregar produtos: " + error)
                 })
        }, 3000);
     } 
     var job_atualiza = await cron_atualiza.scheduleJob({start: startTime, end: endTime, rule: rule_atualiza},async function() {
-          console.log("Estou funcionando")
-          atualiza();
+          console.log("Atualizando...")
+          await Promise.all([atualiza()]).finally(() => {
+            job_atualiza.reschedule({start: startTime, end: endTime, rule: rule_atualiza});
+          });
     });
 
     let set_Hora_inicio_insere = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_inicio_insere'}});
@@ -248,63 +252,69 @@ export async function job() {
    }
     const insert = async () => {
 
-        setTimeout(async () => {
+        let timeout = setTimeout(async () => {
             job_insere.cancel();
             await new fun.geraToken().token().then(async (_token) => {
             
                 let parametros = await fun.getParametros();
                 let ultimoNumero = parametros.filter(val => val.nome_parametro == "cod_prod_busca")[0];
                 
-                if (ultimoNumero.valor === "0") {
-                    try {
-                        let maxCodigo = await fun.getMaxCodigo();
+                const executa_novosReg = async () => {
+                    if (ultimoNumero.valor === "0") {
+                        try {
+                            let maxCodigo = await fun.getMaxCodigo();
+                            
+                            ultimoNumero.valor = (+maxCodigo["maxCodigo"]).toString();
+                            console.log(maxCodigo);
+                          
+                        } catch (error) {
+                            console.log(error)
+                        }
                         
-                        ultimoNumero.valor = (+maxCodigo["maxCodigo"]).toString();
-                        console.log(maxCodigo);
-                        maxCodigo = undefined;
-                    } catch (error) {
-                        console.log(error)
+                    }
+                    let _cdProd: Array<any> = [];
+                    let strUltimoN: string = ultimoNumero.valor;  
+                    let qtd_lote_pesquisa = parametros.filter(val => val.nome_parametro == "qtd_lote_pesquisa")[0];
+                    
+                    for (let i = 0; i < (qtd_lote_pesquisa.valor !== "" ? +qtd_lote_pesquisa.valor : 1); i++) {
+        
+                        ultimoNumero.valor = (+ultimoNumero.valor + 1).toString();
+                        let codigo = ultimoNumero.valor;
+                        strUltimoN = codigo;
+                        _cdProd.push((codigo).toString());
+                       
                     }
                     
-                }
-                let _cdProd: Array<any> = [];           
-                let strUltimoN: string = ultimoNumero.valor;  
-                let qtd_lote_pesquisa = parametros.filter(val => val.nome_parametro == "qtd_lote_pesquisa")[0];
-                
-                for (let i = 0; i < (qtd_lote_pesquisa.valor !== "" ? +qtd_lote_pesquisa.valor : 1); i++) {
-    
-                    ultimoNumero.valor = (+ultimoNumero.valor + 1).toString();
-                    let codigo = ultimoNumero.valor;
-                    strUltimoN = codigo;
-                    _cdProd.push((codigo).toString());
-                    codigo = undefined
-                }
-                
-                ultimoNumero = parametros.filter(val => val.nome_parametro == "cod_prod_busca")[0];
-                ultimoNumero.valor = strUltimoN.toString();
-                fun.setParametros(ultimoNumero);
-                
-                strUltimoN = undefined;
-                qtd_lote_pesquisa = undefined
-                for (let i = 0; i < _cdProd.length; i++) {
-    
-                    let produtoExiste = new fun.insereNovoProduto(_cdProd[i], _token).insetNew();
-                    produtoExiste = undefined;
-                    if (i == _cdProd.length - 1) {
-                        job_insere.reschedule({start: startTime, end: endTime, rule: rule_insere})
+                    ultimoNumero = parametros.filter(val => val.nome_parametro == "cod_prod_busca")[0];
+                    ultimoNumero.valor = strUltimoN.toString();
+                    fun.setParametros(ultimoNumero);
+                    
+                   
+                    for (let i = 0; i < _cdProd.length; i++) {
+        
+                        let produtoExiste = new fun.insereNovoProduto(_cdProd[i], _token).insetNew();
+                        await Promise.all([produtoExiste]);
+                        
                     }
                 }
-                ultimoNumero = undefined;            
-                parametros = undefined;
+               let executa = await executa_novosReg();
+               await Promise.all([parametros, executa]).finally(() => {
+                   clearTimeout(timeout);
+                   //job_insere.reschedule({start: startTime, end: endTime, rule: rule_insere})
+               })
+               
             }).catch((error) => {
-                job_insere.reschedule({start: startTime, end: endTime, rule: rule_insere})
+                clearTimeout(timeout);
+                //job_insere.reschedule({start: startTime, end: endTime, rule: rule_insere})
                 throw new Error("Erro ao inserir produtos " + error)
             })
         }, 3000)
        
     }
     var job_insere = await cron_insere.scheduleJob({start: startTime, end: endTime, rule: rule_insere}, async function () {      
-        insert();
+       await Promise.all([insert()]).finally(() => {
+            job_insere.reschedule({start: startTime, end: endTime, rule: rule_insere})
+       });
     })
   
 }

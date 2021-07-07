@@ -21,6 +21,7 @@
         "entitiesDir": "src/entity",
         "migrationsDir": "src/migration",
         "subscribersDir": "src/subscriber"
-    }
+    },
+    "acquireTimeout": 50000
 
 }
