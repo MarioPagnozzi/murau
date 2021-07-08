@@ -61,8 +61,8 @@
                 
                 <p-card header="{{prod.nome}}" subheader="Ref.: {{prod.referencia}}" [style]="{width: '360px', 'margin-top': '10px'}" styleClass="p-card">
                     <ng-template pTemplate="header">
-                        <img *ngIf="prod.__imagens__.length > 0" src="{{prod.__imagens__[0].caminho}}" style="height: 400px" />
-                        <img *ngIf="prod.__imagens__.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
+                        <img *ngIf="prod.imagens.length > 0" src="{{prod.imagens[0].caminho}}" style="height: 400px" />
+                        <img *ngIf="prod.imagens.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
                     </ng-template>
                     <p style="font-size: .9rem;">Tamanho: {{prod.tamanho}} - Cor: {{prod.cor}}</p>
                     <p>{{prod.descricao?.substring(0, 80)}}...</p>
@@ -85,8 +85,8 @@
                 
                 <p-card header="{{prod.nome}}" subheader="Ref.: {{prod.referencia}}" [style]="{width: '360px', 'margin-top': '10px'}" styleClass="p-card">
                     <ng-template pTemplate="header">
-                        <img *ngIf="prod.__imagens__.length > 0" src="{{prod.__imagens__[0].caminho}}" style="height: 400px" />
-                        <img *ngIf="prod.__imagens__.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
+                        <img *ngIf="prod.imagens.length > 0" src="{{prod.imagens[0].caminho}}" style="height: 400px" />
+                        <img *ngIf="prod.imagens.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
                     </ng-template>
                     <p>{{prod.descricao?.substring(0, 80)}}...</p>
                     <ng-template pTemplate="footer">

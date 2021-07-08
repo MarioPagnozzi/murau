@@ -35,14 +35,14 @@ export class DetalhesProdutoComponent implements OnInit {
 
   onFullScreenListener: any;
 
-  produtosExtras: any[] = [];
-  produtos: any[] = [];
+  produtosExtras: ProdutosModel[] = [];
+  produtos: ProdutosModel[] = [];
   isLogged = false;
   subscrip: Subscription = new Subscription();
 
-  produto: any;
-  produtosModelo: any[] = [];
-  prodModelo: any[] = [];
+  produto: ProdutosModel = new ProdutosModel();
+  produtosModelo: ProdutosModel[] = [];
+  prodModelo: ProdutosModel[] = [];
 
   @ViewChild('galleria') galleria: Galleria | any;
 
@@ -101,9 +101,9 @@ export class DetalhesProdutoComponent implements OnInit {
           this.produtosExtras = [];
           this.produtosModelo = [];
           
-          this.produto = produto;
+          this.produto = produto as ProdutosModel;
          
-          this.images = (produto as any).__imagens__.length > 0 ? await this.produto.__imagens__ as ImagesProdutoModel[] : [{caminho: "./../../assets/images/img_nao_disp.jpg"}] as ImagesProdutoModel[];
+          this.images = this.produto.imagens.length > 0 ?  this.produto.imagens : [{caminho: "./../../assets/images/img_nao_disp.jpg"}] as ImagesProdutoModel[];
           this.bindDocumentListeners();
           const result_extra = await this.homeService.filtro("nome", ((produto as any).nome.substring(0, ((produto as any).nome.indexOf(' ')) >= 5 && (produto as any).nome?.indexOf(' ') ? (produto as ProdutosModel).nome?.indexOf(' ') : 5 )));
 
@@ -143,7 +143,7 @@ export class DetalhesProdutoComponent implements OnInit {
     }   
     if (result.success) {
        this.produto = result.data as ProdutosModel;
-       this.images = this.produto.imagens.length > 0 ? this.produto.imagens as ImagesProdutoModel[] : [{caminho: "./../../assets/images/img_nao_disp.jpg"}] as ImagesProdutoModel[];
+       this.images = await this.produto.imagens.length > 0 ? await this.produto.imagens as ImagesProdutoModel[] : [{caminho: "./../../assets/images/img_nao_disp.jpg"}] as ImagesProdutoModel[];
       
        const result_extra = await this.homeService.filtro("nome", (this.produto.nome?.substring(0, this.produto.nome?.indexOf(' ') + 1)));
 

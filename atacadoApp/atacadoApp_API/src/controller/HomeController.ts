@@ -1,6 +1,7 @@
 import { Request } from 'express';
 import { getManager, getRepository, Like, Repository } from 'typeorm';
 import { Empresas } from '../entity/Empresas';
+import { ImagensProduto } from '../entity/imagesProduto';
 import { Produtos } from './../entity/Produtos';
 import { BaseController } from "./BaseController";
 
@@ -23,12 +24,24 @@ export class HomeController extends BaseController<Produtos> {
                                             .distinct(true)
                                             .getMany();
         console.log(produtos)
+        
         return produtos;
         
     }    
     async one(request: Request) {
-        return this._repProdutos.findOne({relations: ["imagens","empresas","produtosEmpresas"],
-                                            where: {uid: request.params.id}})
+        const produto = await this._repProdutos.findOne({relations: ["imagens","empresas","produtosEmpresas"],
+                                            where: {uid: request.params.id}});
+        let _produto: any = {...produto};
+
+        delete _produto.imagens;
+        delete _produto.empresas;
+        delete _produto.produtosEmpresas;
+
+        _produto.imagens = await produto.imagens;
+        _produto.empresas = await produto.empresas;
+        _produto.produtosEmpresas = await produto.produtosEmpresas;
+       
+        return _produto;
     }
     async filtro(request: Request) {
 

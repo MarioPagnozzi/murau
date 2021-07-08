@@ -4,7 +4,7 @@
     "port": 3306,
     "username": "root",
     "password": "m4r101979",
-    "database": "db_appmurau",
+    "database": "db_atacadoapp",
     "synchronize": true,
     "logging": false,
     "cache": false,

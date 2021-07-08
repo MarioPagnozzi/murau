@@ -50,25 +50,5 @@ export class Produtos extends BaseEntity {
 
     @OneToMany (type => ItemPedido,  itemPedido => itemPedido.produto, {nullable: true})
     pedidos: Promise<ItemPedido[]>
-
-    @AfterInsert()
-    async updateProd() {
-        let timerout = setTimeout(async () => {
-            
-            const _geraToken = new geraToken();
-            const token = await _geraToken.token();
-
-            const update = new atualizaProduto(this.codigo, token);
-            const preco = await update.preco();
-            const saldo = await update.estoque();
-            const imagens = await update.imagens();
-
-            await Promise.all([token, preco, saldo, imagens]).finally(() => {                
-                clearImmediate(timerout);
-                
-            })
-        }, 5000)
-        
-    }
    
 }
