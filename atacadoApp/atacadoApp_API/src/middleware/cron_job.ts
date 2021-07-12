@@ -9,86 +9,90 @@ var cron_insere = require("node-schedule");
 
 export async function job() {
 
-   let _repParametros: Repository<Configuracoes> = getRepository(Configuracoes);
-   let set_Hora_inicio_atualiza = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_inicio_atualiza'}});
-   let startTime: any = null;
-   let endTime: any = null;
- 
-
-   if (set_Hora_inicio_atualiza && set_Hora_inicio_atualiza.valor !== "") {
-       let hora = set_Hora_inicio_atualiza.valor.split(',')[0];
-       let minuto = set_Hora_inicio_atualiza.valor.split(',')[1];
-       let segundo = set_Hora_inicio_atualiza.valor.split(',')[2];
-       startTime = new Date().setUTCHours(+hora,+minuto,+segundo);
+   const config_atualiza = async () => {
+        let _repParametros: Repository<Configuracoes> = getRepository(Configuracoes);
+        let set_Hora_inicio_atualiza = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_inicio_atualiza'}});
+        let startTime: any = null;
+        let endTime: any = null;
+    
+    
+        if (set_Hora_inicio_atualiza && set_Hora_inicio_atualiza.valor !== "") {
+            let hora = set_Hora_inicio_atualiza.valor.split(',')[0];
+            let minuto = set_Hora_inicio_atualiza.valor.split(',')[1];
+            let segundo = set_Hora_inicio_atualiza.valor.split(',')[2];
+            startTime = new Date().setUTCHours(+hora,+minuto,+segundo);
+        
+        }
+        let set_Hora_fim_atualiza = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_fim_atualiza'}});
+    
+        if (set_Hora_fim_atualiza && set_Hora_fim_atualiza.valor !== "") {
+        let hora = set_Hora_fim_atualiza.valor.split(',')[0];
+        let minuto = set_Hora_fim_atualiza.valor.split(',')[1];
+        let segundo = set_Hora_fim_atualiza.valor.split(',')[2];
+        endTime = new Date().setUTCHours(+hora,+minuto,+segundo);
+        }
+    
+    
+        let rule_atualiza_horas = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_horas'}});
+        let rule_atualiza_minutos = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_minutos'}});
+        let rule_atualiza_segundos = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_segundos'}});
+        let rule_atualiza_diasSemanas = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_diasSemanas'}});
+        var rule_atualiza = new cron_atualiza.RecurrenceRule();
+    
+        if (rule_atualiza_horas && rule_atualiza_horas.valor !== "") {
+            if(rule_atualiza_horas.valor.indexOf(',')) {
+                let rules = rule_atualiza_horas.valor.split(',');
+                let _rules = [];
+                for (let i = 0; i < rules.length; i++) {
+                    _rules.push(+rules[i]);
+                }
+                rule_atualiza.hour = _rules
+            } else {
+                rule_atualiza.hour = +rule_atualiza_horas.valor;
+            }
+        }
+    
+        if (rule_atualiza_minutos && rule_atualiza_minutos.valor !== "") {
+            if (rule_atualiza_minutos.valor.indexOf(',')) {
+                let rules = rule_atualiza_minutos.valor.split(',');
+                let _rules = [];
+                for (let i = 0; i < rules.length; i++) {
+                    _rules.push(+rules[i]);
+                }
+                rule_atualiza.minute = _rules
+            } else {
+                rule_atualiza.minute = rule_atualiza_minutos.valor;
+            }
+        }
+    
+        if (rule_atualiza_segundos && rule_atualiza_segundos.valor !== "") {
+            if (rule_atualiza_segundos.valor.indexOf(',')) {
+                let rules = rule_atualiza_segundos.valor.split(',');
+                let _rules = [];
+                for (let i = 0; i < rules.length; i++) {
+                    _rules.push(+rules[i]);
+                }
+                rule_atualiza.second = _rules
+            } else {
+                rule_atualiza.second = rule_atualiza_segundos.valor;
+            }
+        }
+    
+        if (rule_atualiza_diasSemanas && rule_atualiza_diasSemanas.valor !== "") {
+            if (rule_atualiza_diasSemanas.valor.indexOf(',')) {
+                let rules = rule_atualiza_diasSemanas.valor.split(',');
+                let _rules = [];
+                for (let i = 0; i < rules.length; i++) {
+                    _rules.push(+rules[i]);
+                }
+                rule_atualiza.dayOfWeek = _rules
+            } else {
+                rule_atualiza.dayOfWeek = +rule_atualiza_diasSemanas.valor;
+            }
+        }
+        return {start: startTime, end: endTime, rule: rule_atualiza};
+   }
    
-   }
-   let set_Hora_fim_atualiza = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_fim_atualiza'}});
-
-   if (set_Hora_fim_atualiza && set_Hora_fim_atualiza.valor !== "") {
-    let hora = set_Hora_fim_atualiza.valor.split(',')[0];
-    let minuto = set_Hora_fim_atualiza.valor.split(',')[1];
-    let segundo = set_Hora_fim_atualiza.valor.split(',')[2];
-    endTime = new Date().setUTCHours(+hora,+minuto,+segundo);
-   }
-
-
-   let rule_atualiza_horas = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_horas'}});
-   let rule_atualiza_minutos = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_minutos'}});
-   let rule_atualiza_segundos = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_segundos'}});
-   let rule_atualiza_diasSemanas = await _repParametros.findOne({where: {nome_parametro: 'rule_atualiza_diasSemanas'}});
-   var rule_atualiza = new cron_atualiza.RecurrenceRule();
-
-   if (rule_atualiza_horas && rule_atualiza_horas.valor !== "") {
-        if(rule_atualiza_horas.valor.indexOf(',')) {
-            let rules = rule_atualiza_horas.valor.split(',');
-            let _rules = [];
-            for (let i = 0; i < rules.length; i++) {
-                _rules.push(+rules[i]);
-            }
-            rule_atualiza.hour = _rules
-        } else {
-            rule_atualiza.hour = +rule_atualiza_horas.valor;
-        }
-   }
-
-   if (rule_atualiza_minutos && rule_atualiza_minutos.valor !== "") {
-       if (rule_atualiza_minutos.valor.indexOf(',')) {
-           let rules = rule_atualiza_minutos.valor.split(',');
-           let _rules = [];
-            for (let i = 0; i < rules.length; i++) {
-                _rules.push(+rules[i]);
-            }
-            rule_atualiza.minute = _rules
-        } else {
-           rule_atualiza.minute = rule_atualiza_minutos.valor;
-       }
-   }
-
-   if (rule_atualiza_segundos && rule_atualiza_segundos.valor !== "") {
-       if (rule_atualiza_segundos.valor.indexOf(',')) {
-           let rules = rule_atualiza_segundos.valor.split(',');
-           let _rules = [];
-           for (let i = 0; i < rules.length; i++) {
-               _rules.push(+rules[i]);
-           }
-           rule_atualiza.second = _rules
-       } else {
-           rule_atualiza.second = rule_atualiza_segundos.valor;
-       }
-   }
-
-   if (rule_atualiza_diasSemanas && rule_atualiza_diasSemanas.valor !== "") {
-        if (rule_atualiza_diasSemanas.valor.indexOf(',')) {
-            let rules = rule_atualiza_diasSemanas.valor.split(',');
-            let _rules = [];
-            for (let i = 0; i < rules.length; i++) {
-                _rules.push(+rules[i]);
-            }
-            rule_atualiza.dayOfWeek = _rules
-        } else {
-            rule_atualiza.dayOfWeek = +rule_atualiza_diasSemanas.valor;
-        }
-   }
     const atualiza = async () => {
         
        let timeout = setTimeout(async () => {
@@ -158,98 +162,104 @@ export async function job() {
                         }
                     }
                     let executa = await executa_alteracoes();
-                    await Promise.all([parametros, _prod, qtd_produtos, param, executa]).finally(() => {
+                    await Promise.all([parametros, _prod, qtd_produtos, param, executa]).finally(async () => {
                         clearTimeout(timeout);
-                        //job_atualiza.reschedule({start: startTime, end: endTime, rule: rule_atualiza});
+                        job_atualiza.reschedule(await config_atualiza());
                     })
                 })
                 .catch(async (error) => {
                     clearTimeout(timeout);
-                    //job_atualiza.reschedule({start: startTime, end: endTime, rule: rule_atualiza});
+                    job_atualiza.reschedule(await config_atualiza());
                     throw new Error("erro ao carregar produtos: " + error)
                 })
        }, 3000);
     } 
-    var job_atualiza = await cron_atualiza.scheduleJob({start: startTime, end: endTime, rule: rule_atualiza},async function() {
+    var job_atualiza = await cron_atualiza.scheduleJob(await config_atualiza(),async function() {
           console.log("Atualizando...")
-          await Promise.all([atualiza()]).finally(() => {
-            job_atualiza.reschedule({start: startTime, end: endTime, rule: rule_atualiza});
-          });
+          await Promise.all([atualiza()]);
     });
 
-    let set_Hora_inicio_insere = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_inicio_insere'}});
-    if (set_Hora_inicio_insere && set_Hora_inicio_insere.valor !== "") {
-        let hora = set_Hora_inicio_insere.valor.split(',')[0];
-        let minuto = set_Hora_inicio_insere.valor.split(',')[1];
-        let segundo = set_Hora_inicio_insere.valor.split(',')[2];
-        startTime = new Date().setUTCHours(+hora,+minuto,+segundo);
+    const config_insere = async () => {
+        let _repParametros: Repository<Configuracoes> = getRepository(Configuracoes);
+        let set_Hora_inicio_insere = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_inicio_insere'}});
+        let startTime: any = null;
+        let endTime: any = null;
+
+        if (set_Hora_inicio_insere && set_Hora_inicio_insere.valor !== "") {
+            let hora = set_Hora_inicio_insere.valor.split(',')[0];
+            let minuto = set_Hora_inicio_insere.valor.split(',')[1];
+            let segundo = set_Hora_inicio_insere.valor.split(',')[2];
+            startTime = new Date().setUTCHours(+hora,+minuto,+segundo);
+        
+        }
+        let set_Hora_fim_insere = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_fim_insere'}});
+        if (set_Hora_fim_insere && set_Hora_fim_insere.valor !== "") {
+        let hora = set_Hora_fim_insere.valor.split(',')[0];
+        let minuto = set_Hora_fim_insere.valor.split(',')[1];
+        let segundo = set_Hora_fim_insere.valor.split(',')[2];
+        endTime = new Date().setUTCHours(+hora,+minuto,+segundo);
+        }
+
+        let rule_insere_horas = await _repParametros.findOne({where: {nome_parametro: 'rule_insere_horas'}});
+        let rule_insere_minutos = await _repParametros.findOne({where: {nome_parametro: 'rule_insere_minutos'}});
+        let rule_insere_segundos = await _repParametros.findOne({where: {nome_parametro: 'rule_insere_segundos'}});
+        let rule_insere_diasSemanas = await _repParametros.findOne({where: {nome_parametro: 'rule_insere_diasSemanas'}});
+        var rule_insere = new cron_insere.RecurrenceRule();
+
+        if (rule_insere_horas && rule_insere_horas.valor !== "") {
+            if (rule_insere_horas.valor.indexOf(',')) {
+                let rules = rule_insere_horas.valor.split(',');
+                let _rules = [];
+                for (let i = 0; i < rules.length; i++) {
+                    _rules.push(+rules[i]);
+                }
+                rule_insere.hour = _rules
+            } else {
+                rule_insere.hour = +rule_insere_horas.valor;
+            }
+        }
+
+        if (rule_insere_minutos && rule_insere_minutos.valor !== "") {
+            if (rule_insere_minutos.valor.indexOf(',')) {
+                let rules = rule_insere_minutos.valor.split(',');
+                let _rules = [];
+                    for (let i = 0; i < rules.length; i++) {
+                        _rules.push(+rules[i]);
+                    }
+                    rule_insere.minute = _rules
+            } else {
+                rule_insere.minute = +rule_insere_minutos.valor;
+            }
+        }
+
+        if (rule_insere_segundos && rule_insere_segundos.valor !== "") {
+            if (rule_insere_segundos.valor.indexOf(',')) {
+                let rules = rule_insere_segundos.valor.split(',');
+                let _rules = [];
+                    for (let i = 0; i < rules.length; i++) {
+                        _rules.push(+rules[i]);
+                    }
+                    rule_insere.second = _rules
+            } else {
+                rule_insere.second = +rule_insere_segundos.valor;
+            }
+        }
+
+        if (rule_insere_diasSemanas && rule_insere_diasSemanas.valor !== "") {
+                if (rule_insere_diasSemanas.valor.indexOf(',')) {
+                    let rules = rule_insere_diasSemanas.valor.split(',');
+                    let _rules = [];
+                    for (let i = 0; i < rules.length; i++) {
+                        _rules.push(+rules[i]);
+                    }
+                    rule_insere.dayOfWeek = _rules
+                } else {
+                    rule_insere.dayOfWeek = +rule_insere_diasSemanas.valor;
+                }
+        }
+        return {start: startTime, end: endTime, rule: rule_insere};
+    }
     
-    }
-    let set_Hora_fim_insere = await _repParametros.findOne({where: {nome_parametro: 'set_Hora_fim_insere'}});
-    if (set_Hora_fim_insere && set_Hora_fim_insere.valor !== "") {
-     let hora = set_Hora_fim_insere.valor.split(',')[0];
-     let minuto = set_Hora_fim_insere.valor.split(',')[1];
-     let segundo = set_Hora_fim_insere.valor.split(',')[2];
-     endTime = new Date().setUTCHours(+hora,+minuto,+segundo);
-    }
-
-    let rule_insere_horas = await _repParametros.findOne({where: {nome_parametro: 'rule_insere_horas'}});
-    let rule_insere_minutos = await _repParametros.findOne({where: {nome_parametro: 'rule_insere_minutos'}});
-    let rule_insere_segundos = await _repParametros.findOne({where: {nome_parametro: 'rule_insere_segundos'}});
-    let rule_insere_diasSemanas = await _repParametros.findOne({where: {nome_parametro: 'rule_insere_diasSemanas'}});
-    var rule_insere = new cron_insere.RecurrenceRule();
-
-    if (rule_insere_horas && rule_insere_horas.valor !== "") {
-        if (rule_insere_horas.valor.indexOf(',')) {
-            let rules = rule_insere_horas.valor.split(',');
-            let _rules = [];
-            for (let i = 0; i < rules.length; i++) {
-                _rules.push(+rules[i]);
-            }
-            rule_insere.hour = _rules
-        } else {
-            rule_insere.hour = +rule_atualiza_horas.valor;
-        }
-   }
-
-   if (rule_insere_minutos && rule_insere_minutos.valor !== "") {
-       if (rule_insere_minutos.valor.indexOf(',')) {
-           let rules = rule_insere_minutos.valor.split(',');
-           let _rules = [];
-            for (let i = 0; i < rules.length; i++) {
-                _rules.push(+rules[i]);
-            }
-            rule_insere.minute = _rules
-       } else {
-           rule_insere.minute = +rule_atualiza_minutos.valor;
-       }
-   }
-
-   if (rule_insere_segundos && rule_insere_segundos.valor !== "") {
-       if (rule_insere_segundos.valor.indexOf(',')) {
-           let rules = rule_insere_segundos.valor.split(',');
-           let _rules = [];
-            for (let i = 0; i < rules.length; i++) {
-                _rules.push(+rules[i]);
-            }
-            rule_insere.second = _rules
-       } else {
-           rule_insere.second = +rule_insere_segundos.valor;
-       }
-   }
-
-   if (rule_insere_diasSemanas && rule_insere_diasSemanas.valor !== "") {
-        if (rule_insere_diasSemanas.valor.indexOf(',')) {
-            let rules = rule_insere_diasSemanas.valor.split(',');
-            let _rules = [];
-            for (let i = 0; i < rules.length; i++) {
-                _rules.push(+rules[i]);
-            }
-            rule_insere.dayOfWeek = _rules
-        } else {
-            rule_insere.dayOfWeek = +rule_insere_diasSemanas.valor;
-        }
-   }
     const insert = async () => {
 
         let timeout = setTimeout(async () => {
@@ -298,23 +308,21 @@ export async function job() {
                     }
                 }
                let executa = await executa_novosReg();
-               await Promise.all([parametros, executa]).finally(() => {
+               await Promise.all([parametros, executa]).finally(async () => {
                    clearTimeout(timeout);
-                   //job_insere.reschedule({start: startTime, end: endTime, rule: rule_insere})
+                   job_insere.reschedule(await config_insere())
                })
                
-            }).catch((error) => {
+            }).catch(async (error) => {
                 clearTimeout(timeout);
-                //job_insere.reschedule({start: startTime, end: endTime, rule: rule_insere})
+                job_insere.reschedule(await config_insere())
                 throw new Error("Erro ao inserir produtos " + error)
             })
         }, 3000)
        
     }
-    var job_insere = await cron_insere.scheduleJob({start: startTime, end: endTime, rule: rule_insere}, async function () {      
-       await Promise.all([insert()]).finally(() => {
-            job_insere.reschedule({start: startTime, end: endTime, rule: rule_insere})
-       });
+    var job_insere = await cron_insere.scheduleJob(await config_insere(), async function () {      
+       await Promise.all([insert()]);
     })
   
 }
