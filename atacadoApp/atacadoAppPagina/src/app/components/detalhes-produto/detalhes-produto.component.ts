@@ -102,6 +102,7 @@ export class DetalhesProdutoComponent implements OnInit {
           this.produtosModelo = [];
           
           this.produto = produto as ProdutosModel;
+          this.produto.imagens = (produto as any).__imagens__ as ImagesProdutoModel[]
          
           this.images = this.produto.imagens.length > 0 ?  this.produto.imagens : [{caminho: "./../../assets/images/img_nao_disp.jpg"}] as ImagesProdutoModel[];
           this.bindDocumentListeners();
@@ -110,12 +111,18 @@ export class DetalhesProdutoComponent implements OnInit {
           if (result_extra.success) {
             this.produtosExtras = result_extra.data as any[];
             this.produtosExtras = this.produtosExtras.filter(val => val.uid !== uid);
+            this.produtosExtras.forEach(async (produto) => {
+              produto.imagens = ((result_extra.data as any[]).filter(val => val.codigo === produto.codigo)[0] as any).__imagens__ as ImagesProdutoModel[];
+            })
             this.produtos = this.produtosExtras.slice(0, 6);
 
             const res_modelo = this.isLogged ? await this.produtosService.filtro("modelo", (produto as any).nome) : await this.homeService.filtro("modelo", (produto as any).nome);
             if (res_modelo.success) {
                 this.produtosModelo = res_modelo.data as any[];
                 this.produtosModelo = this.produtosModelo.filter(val => val.uid !== uid);
+                this.produtosModelo.forEach(async (produto) => {
+                  produto.imagens = ((res_modelo.data as any[]).filter(val => val.codigo === produto.codigo)[0] as any).__imagens__ as ImagesProdutoModel[];
+                })
             }
             this.prodModelo = this.produtosModelo.slice(0, 3);
           }
@@ -135,31 +142,7 @@ export class DetalhesProdutoComponent implements OnInit {
         
       }
     )
-    /*let result;
-    if (this.isLogged) {
-        result = await this.produtosService.getById(uid);
-    } else {
-        result = await this.homeService.getById(uid);
-    }   
-    if (result.success) {
-       this.produto = result.data as ProdutosModel;
-       this.images = await this.produto.imagens.length > 0 ? await this.produto.imagens as ImagesProdutoModel[] : [{caminho: "./../../assets/images/img_nao_disp.jpg"}] as ImagesProdutoModel[];
-      
-       const result_extra = await this.homeService.filtro("nome", (this.produto.nome?.substring(0, this.produto.nome?.indexOf(' ') + 1)));
-
-       if (result_extra.success) {
-         this.produtosExtras = result_extra.data as ProdutosModel[];
-         this.produtosExtras = this.produtosExtras.filter(val => val.uid !== uid);
-         this.produtos = this.produtosExtras.slice(0, 6);
-
-         const res_modelo = this.isLogged ? await this.produtosService.filtro("modelo", this.produto.nome) : await this.homeService.filtro("modelo", this.produto.nome);
-         if (res_modelo.success) {
-            this.produtosModelo = res_modelo.data as ProdutosModel[];
-            this.produtosModelo = this.produtosModelo.filter(val => val.uid !== uid);
-         }
-         this.prodModelo = this.produtosModelo.slice(0, 3);
-      }
-    }*/
+    
   }
 
   onThumbnailButtonClick() {
@@ -240,10 +223,12 @@ export class DetalhesProdutoComponent implements OnInit {
   }
 
   onPageChange(event: any) {
-    this.produtos = this.produtosExtras.slice(event.first, (event.first + event.rows))
+    this.produtos = this.produtosExtras.slice(event.first, (event.first + event.rows));
+    document.getElementById("prodExtras")?.scrollIntoView();
   }
   onPageChangeT(event: any) {
     this.prodModelo = this.produtosModelo.slice(event.first, (event.first + event.rows));
+    document.getElementById("prodModelos")?.scrollIntoView();
   }
 
 }

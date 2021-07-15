@@ -52,6 +52,10 @@ export class HomeComponent implements OnInit {
         this.homeService.getObservable().subscribe({
           next: (produtos) => {
             this.produtos = produtos as ProdutosModel[];
+            this.produtos.forEach(async (produto) => {
+               produto.imagens = (produtos.filter(val => val.codigo === produto.codigo)[0] as any).__imagens__ as ImagesProdutoModel[];
+                
+            })
             
           }
         })
@@ -71,11 +75,14 @@ export class HomeComponent implements OnInit {
     } else {
       this.sortOrdem = 1;
       this.sortField = value;
-    }
+    }   
   }
   @ViewChild("dv") public dv: any;
   applyFilter($event: Event) {
-     this.dv.filter(($event.target as HTMLInputElement).value);
+     this.dv.filter(($event.target as HTMLInputElement).value);     
+  }
+  onPageChange() {
+    document.getElementById("prodListas")?.scrollIntoView();
   }
   
 }

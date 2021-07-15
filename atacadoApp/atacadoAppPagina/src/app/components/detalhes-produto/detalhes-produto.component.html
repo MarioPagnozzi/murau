@@ -52,7 +52,7 @@
     </div>
     <hr />
    
-    <div class="row container" *ngIf="produtosModelo.length > 0">
+    <div id="prodModelos" class="row container" *ngIf="produtosModelo.length > 0">
         <h2> Conheça outros tamanhos e outras cores deste modelo</h2>
         
         <div class="row container">
@@ -76,7 +76,7 @@
         <p-paginator *ngIf="produtosModelo.length > 3" [rows]='3' [totalRecords]="produtosModelo.length" (onPageChange)="onPageChangeT($event)" [ngStyle]="{width: '100%'}"></p-paginator>
     </div>
     <hr />
-    <div class="row container">
+    <div id="prodExtras" class="row container">
         <h3>As pessoas que visualizaram este produto também visualizaram</h3>
         
         <div class="row container">

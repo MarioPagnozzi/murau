@@ -16,32 +16,21 @@ export class HomeController extends BaseController<Produtos> {
         return _repProdutosRelations.find({relations: ["imagens","empresas"]})
     }
     async allDistinct(request: Request) {
-        let produtos = await this._repProdutos.createQueryBuilder("produtos")
+        return this._repProdutos.createQueryBuilder("produtos")
                                             .leftJoinAndSelect("produtos.imagens","imagens").addSelect("imagens.caminho")
                                             .leftJoinAndSelect("produtos.produtosEmpresas", "prodemp").addSelect(["prodemp.valor","prodemp.estoque"])
                                             .leftJoinAndSelect("prodemp.empresa","emp").addSelect(["emp.codigo","emp.nome_fantasia"])
                                             .distinctOn(["produtos.nome"])
                                             .distinct(true)
                                             .getMany();
-        console.log(produtos)
-        
-        return produtos;
+      
+       
         
     }    
     async one(request: Request) {
-        const produto = await this._repProdutos.findOne({relations: ["imagens","empresas","produtosEmpresas"],
+        return this._repProdutos.findOne({relations: ["imagens","empresas","produtosEmpresas"],
                                             where: {uid: request.params.id}});
-        let _produto: any = {...produto};
-
-        delete _produto.imagens;
-        delete _produto.empresas;
-        delete _produto.produtosEmpresas;
-
-        _produto.imagens = await produto.imagens;
-        _produto.empresas = await produto.empresas;
-        _produto.produtosEmpresas = await produto.produtosEmpresas;
-       
-        return _produto;
+      
     }
     async filtro(request: Request) {
 
@@ -49,7 +38,7 @@ export class HomeController extends BaseController<Produtos> {
         let valor = request.params.valor;
         
         if (filtro == "nome") {
-            return await this._repProdutos.createQueryBuilder("produtos")
+             return this._repProdutos.createQueryBuilder("produtos")
                                     .leftJoinAndSelect("produtos.imagens","imagens").addSelect("imagens.caminho")
                                     .leftJoinAndSelect("produtos.produtosEmpresas", "prodemp").addSelect(["prodemp.valor","prodemp.estoque"])
                                     .leftJoinAndSelect("prodemp.empresa","emp").addSelect(["emp.codigo","emp.nome_fantasia"])
@@ -58,48 +47,62 @@ export class HomeController extends BaseController<Produtos> {
                                      .having("produtos.nome like :valor", {valor: '%' + valor + '%'})
                                      .cache(false)
                                     .getMany();
-        }
+          
+        }   
         
         if (filtro == "descricao") {
-            return this._repProdutos.find({where: {descricao: Like("%" + valor + "%")}})
+            return this._repProdutos.find({relations: ["imagens","empresas","produtosEmpresas"],
+                                                                where: {descricao: Like("%" + valor + "%")}});
+       
         }
 
         if (filtro == "referencia") {
-            return this._repProdutos.findOne({where: {referencia: valor}})
+           return this._repProdutos.findOne({relations: ["imagens","empresas","produtosEmpresas"], 
+                                                where: {referencia: valor}})
+        
         }
 
         if (filtro == "codigo") {
-            return this._repProdutos.findOne({where: {codigo: valor}})
+           return this._repProdutos.findOne({relations: ["imagens", "empresas", "produtosEmpresas"], 
+                                                                where: {codigo: valor}})
+         
         }
 
         if (filtro == "tamanho") {
-            return this._repProdutos.find({where: { tamanho: valor}})
+           return this._repProdutos.find({relations: ["imagens","empresas", "produtosEmpresas"], where: { tamanho: valor}})
+          
         }
 
         if (filtro == "cor") {
-            return this._repProdutos.find({where: {cor: valor}})
+            return this._repProdutos.find({relations:["imagens", "empresas", "produtosEmpresas"], where: {cor: valor}})
+            
         }
 
         if (filtro == "modelo") {
             return this._repProdutos.find({relations: ["imagens","produtosEmpresas"], where: {
                 nome: valor
             }})
+          
         }
 
         if (filtro === "cidade") {
-            return this._repEmpresa.find({where: {cidade: valor, ativo: true, excluido: false}});
+            return this._repEmpresa.find({relations:["produtos", "produtosempresas"], where: {cidade: valor, ativo: true, excluido: false}});
+            
+          
         }
 
         if (filtro === "endereco") {
-            return this._repEmpresa.find({where: {endereco: valor, ativo: true, excluido: false}})
+            return this._repEmpresa.find({relations: ["produtos", "produtosempresas"], where: {endereco: valor, ativo: true, excluido: false}})
+
         }
 
         if (filtro === "empresas") {
-            return this._repEmpresa.find({where: {ativo: true, excluido: false}})
+            return this._repEmpresa.find({relations: ["produtos","produtosempresas"], where: {ativo: true, excluido: false}})
         }
 
         if (filtro === "empresaById") {
-            return this._repEmpresa.findOne({where: {uid: valor}});
+            return this._repEmpresa.findOne({relations: ["produtos", "produtosempresas"], where: {uid: valor}});
+         
         }
 
         return {status: 400, errors: "Parâmetros fornecidos não satisfazem a pesquisa."};

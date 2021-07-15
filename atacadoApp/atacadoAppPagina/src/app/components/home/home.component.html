@@ -2,9 +2,9 @@
   [fullScreen]="true">
   <p style="font-size: 20px; color: white">Aguarde ...</p>
 </ngx-spinner>
-<div class="card">
+<div id="prodListas" class="card">
   <p-dataView #dv [value]="produtos" [paginator]="true" [rows]="12" filterBy="nome,referencia,codigo"
-    [sortField]="sortField" [sortOrder]="sortOrdem" layout="grid">
+    [sortField]="sortField" [sortOrder]="sortOrdem" layout="grid" (onPage)="onPageChange();">
     <ng-template pTemplate="header">
       <div class="p-d-flex p-flex-column p-flex-md-row p-jc-md-between">
         <span class="p-input-icon-left p-mb-2 p-mb-md-0">
@@ -21,8 +21,8 @@
          
             <span class="product-image">
               <a routerLink="/produto/detalhes/{{produto.uid}}" fragment="topo" routerLinkActive="router-link-active">
-              <img *ngIf="produto.__imagens__.length > 0" src="{{produto.__imagens__[0].caminho}}" />
-              <img *ngIf="produto.__imagens__.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
+              <img *ngIf="produto.imagens.length > 0" src="{{produto.imagens[0].caminho}}" />
+              <img *ngIf="produto.imagens.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
              </a>
             </span>
          
@@ -54,8 +54,8 @@
           </div>
           <div class="product-grid-item-content">
             <a routerLink="/produto/detalhes/{{produto.uid}}" routerLinkActive>
-              <img *ngIf="produto.__imagens__.length > 0" src="{{produto.__imagens__[0].caminho}}" />
-              <img *ngIf="produto.__imagens__.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
+              <img *ngIf="produto.imagens.length > 0" src="{{produto.imagens[0].caminho}}" />
+              <img *ngIf="produto.imagens.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
              </a>
             <div class="product-name">{{produto.nome}}</div>
             <div class="product-description">{{produto.descricao}}</div>

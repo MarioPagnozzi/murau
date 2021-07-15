@@ -373,12 +373,12 @@ export class PedidoComponent implements OnInit, AfterViewInit {
     }
     
   }
-  filtraEmpresaProduto() {
+  async filtraEmpresaProduto() {
     this.empresaPadrao = new EmpresasModel();
     this.empresasVendedor = [];
-    this.empresaPadrao = this.produto.produtosEmpresas?.filter(val => val.empresa?.uid === this.cliente.empresa?.uid)[0] as ProdutosEmpresasModel;
+    this.empresaPadrao = (await this.produto.produtosEmpresas as ProdutosEmpresasModel[]).filter(val => val.empresa?.uid === this.cliente.empresa?.uid)[0] as ProdutosEmpresasModel;
     for (let i of this.vendedor.empresas ? this.vendedor.empresas : []) {
-      this.empresasVendedor.push(this.produto.produtosEmpresas?.filter(val => val.empresa?.uid === i.uid)[0] as ProdutosEmpresasModel);
+      this.empresasVendedor.push((await this.produto.produtosEmpresas as ProdutosEmpresasModel[]).filter(val => val.empresa?.uid === i.uid)[0] as ProdutosEmpresasModel);
     }
     const selEmpPadrao: ProdutosEmpresasModel[] = [this.empresasVendedor.filter(val => val.empresa?.uid === this.empresaPadrao.empresa?.uid)[0]];
     this.empresasVendedor = this.empresasVendedor.filter(val => !selEmpPadrao.includes(val));
