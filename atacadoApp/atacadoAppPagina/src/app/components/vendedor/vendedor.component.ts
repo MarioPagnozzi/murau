@@ -139,7 +139,6 @@ export class VendedorComponent implements OnInit {
               pedido = pedidos.data[i] as PedidosModel;
               pedido.cliente = _cliente.data as ClienteModel;
               this.pedidos.push(pedido);
-
             }
           }
         }
