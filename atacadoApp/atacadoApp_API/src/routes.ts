@@ -12,7 +12,7 @@ import { PromocaoController } from './controller/PromocaoController';
 export const Routes = [
 
     //roteamento liberado home
-    {method: "get", route: "/home", controller: HomeController, action: "allDistinct"},
+    {method: "get", route: "/home", controller: HomeController, action: "all"},
     
     {method: "get", route: "/home/:id", controller: HomeController, action: "one"},   
     {method: "get", route: "/home/:valor/:filtro/filtro", controller: HomeController, action: "filtro"},

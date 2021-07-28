@@ -15,6 +15,6 @@ export class ProdutosModel extends BaseModel {
     preco?: number
     empresas: EmpresasModel[] = []
     produtosEmpresas?: ProdutosEmpresasModel[]
-    imagens: ImagesProdutoModel[] = []
+    imagens: ImagesProdutoModel[] = [new ImagesProdutoModel()]
     pedidos: PedidosModel[] = []
 }

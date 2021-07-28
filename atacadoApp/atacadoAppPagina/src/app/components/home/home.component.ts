@@ -11,6 +11,7 @@ import { UsuariosService } from 'src/app/services/usuarios.service';
 import { Router } from '@angular/router';
 import { ProdutosModel } from 'src/app/models/produtosModel';
 import { ImagesProdutoModel } from 'src/app/models/imagesProdutoModel';
+import { ImagemProdutosService } from 'src/app/services/imagem-produtos.service';
 
 //declare var google: any;
 @Component({
@@ -39,7 +40,7 @@ export class HomeComponent implements OnInit {
                private messageService: MessageService,
                private mapsAPILoader: MapsAPILoader,
                private primengConfig: PrimeNGConfig,
-               private usuariosService: UsuariosService,
+               private usuariosService: UsuariosService,             
                private router: Router){}
 
   async ngOnInit() {
@@ -53,7 +54,12 @@ export class HomeComponent implements OnInit {
           next: (produtos) => {
             this.produtos = produtos as ProdutosModel[];
             this.produtos.forEach(async (produto) => {
-               produto.imagens = (produtos.filter(val => val.codigo === produto.codigo)[0] as any).__imagens__ as ImagesProdutoModel[];
+                produto.imagens = [];
+                let imagem = await this.homeService.filtro("imagens", produto.uid);
+                if (imagem.data && imagem.data != null) {
+                    
+                    produto.imagens = imagem.data;
+                }
                 
             })
             
@@ -65,6 +71,7 @@ export class HomeComponent implements OnInit {
         ];
         this.primengConfig.ripple = true;
       }
+      document.getElementById("prodListas")?.scrollIntoView();
   }
   onSortChange(event: any) {
     const value = event.value;

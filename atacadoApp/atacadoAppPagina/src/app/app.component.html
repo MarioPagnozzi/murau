@@ -71,7 +71,7 @@
                 <agm-map [latitude]="lat" [longitude]="lng" [zoom]="zoom" [scrollwheel]="false" >
               
                         <agm-marker *ngFor="let marker of markers" [latitude]="marker.lat" [longitude]="marker.lng"
-                        iconUrl="./assets/images/logo.png"
+                        iconUrl="./assets/images/logo_1.png"
                         [markerDraggable]="true">
                             <agm-info-window [disableAutoPan]="true">
                                 <h6>Filial: {{marker.nome_fantasia}}</h6>
@@ -80,7 +80,7 @@
                                 <h6>Endereço: {{marker.endereco}}, {{marker.numero}}</h6>
                                 <h6 *ngIf="marker.complemento">Complemento: {{marker.complemento}}</h6>
                                 <h6>Telefone: {{marker.telefone}}</h6>
-                                <h6>Distância: A nossa filial está a {{marker.dist}}km de você</h6>
+                                <h6>Distância: A nossa filial está a {{marker.dist | number: '0.2-3':'pt'}} km de você</h6>
                             </agm-info-window>
                         </agm-marker>
                 

@@ -74,3 +74,19 @@
 .container {
   max-width: 100% !important;
 }
+
+.square_tamanho {
+  width: 15%;
+  height: 0;
+  padding-bottom: 15%;
+  margin: 5%;
+  float: left;
+  position: relative;
+  font-size: .9rem;
+}
+.text_tamanho {
+  text-align: center;
+  vertical-align: middle;
+  align-items: center;
+  align-content: middle;
+}

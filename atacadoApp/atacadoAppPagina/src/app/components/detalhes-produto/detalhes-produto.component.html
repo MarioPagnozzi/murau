@@ -39,7 +39,8 @@
             </div>
             <div class="row container">
                 <div class="col-sm">
-                    <h3>Tamanho: {{produto.tamanho}}</h3>
+                    <h3>Tamanhos</h3>
+                    <div class="col-sm" *ngFor="let tamanho of tamanhos"><span class="square_tamanho" [id]="tamanho.tamanho"><p class="text_tamanho">{{tamanho.tamanho}}</p></span></div>
                 </div>
                 <div class="col-sm" style="text-align: right">
                     <h3>Cor: {{produto.cor}}</h3>
@@ -51,51 +52,63 @@
         </div>
     </div>
     <hr />
-   
+
     <div id="prodModelos" class="row container" *ngIf="produtosModelo.length > 0">
         <h2> Conheça outros tamanhos e outras cores deste modelo</h2>
-        
+
         <div class="row container">
-          
+
             <div class="col-sm" *ngFor="let prod of prodModelo">
-                
-                <p-card header="{{prod.nome}}" subheader="Ref.: {{prod.referencia}}" [style]="{width: '360px', 'margin-top': '10px'}" styleClass="p-card">
+
+                <p-card header="{{prod.nome}}" subheader="Ref.: {{prod.referencia}}"
+                    [style]="{width: '360px', 'margin-top': '10px'}" styleClass="p-card">
                     <ng-template pTemplate="header">
-                        <img *ngIf="prod.imagens.length > 0" src="{{prod.imagens[0].caminho}}" style="height: 400px" />
-                        <img *ngIf="prod.imagens.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
+                        <img *ngIf="prod.imagens && prod.imagens.length > 0" src="{{prod.imagens[0].caminho}}"
+                            style="height: 400px" />
+                        <img *ngIf="!prod.imagens || (prod.imagens && prod.imagens.length <= 0)"
+                            src="./../../assets/images/img_nao_disp.jpg" />
                     </ng-template>
                     <p style="font-size: .9rem;">Tamanho: {{prod.tamanho}} - Cor: {{prod.cor}}</p>
                     <p>{{prod.descricao?.substring(0, 80)}}...</p>
                     <ng-template pTemplate="footer">
-                        <p-button routerLink="/produto/detalhes/{{prod.uid}}" routerLinkActive="router-link-active" label="Ver Detalhes" icon="pi pi-check" styleClass="p-button-outlined p-button-primary"></p-button>
-                        
+                        <p-button routerLink="/produto/detalhes/{{prod.uid}}" routerLinkActive="router-link-active"
+                            label="Ver Detalhes" icon="pi pi-check" styleClass="p-button-outlined p-button-primary">
+                        </p-button>
+
                     </ng-template>
                 </p-card>
             </div>
         </div>
-        <p-paginator *ngIf="produtosModelo.length > 3" [rows]='3' [totalRecords]="produtosModelo.length" (onPageChange)="onPageChangeT($event)" [ngStyle]="{width: '100%'}"></p-paginator>
+        <p-paginator *ngIf="produtosModelo.length > 3" [rows]='3' [totalRecords]="produtosModelo.length"
+            (onPageChange)="onPageChangeT($event)" [ngStyle]="{width: '100%'}"></p-paginator>
     </div>
     <hr />
     <div id="prodExtras" class="row container">
         <h3>As pessoas que visualizaram este produto também visualizaram</h3>
-        
+
         <div class="row container">
-          
+
             <div class="col-sm" *ngFor="let prod of produtos">
-                
-                <p-card header="{{prod.nome}}" subheader="Ref.: {{prod.referencia}}" [style]="{width: '360px', 'margin-top': '10px'}" styleClass="p-card">
+
+                <p-card header="{{prod.nome}}" subheader="Ref.: {{prod.referencia}}"
+                    [style]="{width: '360px', 'margin-top': '10px'}" styleClass="p-card">
                     <ng-template pTemplate="header">
-                        <img *ngIf="prod.imagens.length > 0" src="{{prod.imagens[0].caminho}}" style="height: 400px" />
-                        <img *ngIf="prod.imagens.length <= 0" src="./../../assets/images/img_nao_disp.jpg" />
+                        <img *ngIf="prod.imagens && prod.imagens.length > 0" src="{{prod.imagens[0].caminho}}"
+                            style="height: 400px" />
+                        <img *ngIf="!prod.imagens || (prod.imagens && prod.imagens.length <= 0)"
+                            src="./../../assets/images/img_nao_disp.jpg" />
                     </ng-template>
                     <p>{{prod.descricao?.substring(0, 80)}}...</p>
                     <ng-template pTemplate="footer">
-                        <p-button routerLink="/produto/detalhes/{{prod.uid}}" routerLinkActive="router-link-active" label="Ver Detalhes" icon="pi pi-check" styleClass="p-button-outlined p-button-primary"></p-button>
-                        
+                        <p-button routerLink="/produto/detalhes/{{prod.uid}}" routerLinkActive="router-link-active"
+                            label="Ver Detalhes" icon="pi pi-check" styleClass="p-button-outlined p-button-primary">
+                        </p-button>
+
                     </ng-template>
                 </p-card>
             </div>
         </div>
-        <p-paginator [rows]='6' [totalRecords]="produtosExtras.length" (onPageChange)="onPageChange($event)" [ngStyle]="{width: '100%'}"></p-paginator>
+        <p-paginator [rows]='6' [totalRecords]="produtosExtras.length" (onPageChange)="onPageChange($event)"
+            [ngStyle]="{width: '100%'}"></p-paginator>
     </div>
 </div>

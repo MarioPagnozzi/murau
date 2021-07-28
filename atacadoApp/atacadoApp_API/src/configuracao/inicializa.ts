@@ -66,7 +66,7 @@ var progressBar = require("progress");
                                 await _repEmpresa.save(EntityEmp);
                                 
                             if (bar.complete) {
-                                    clearInterval(time);                                
+                                    clearInterval(time);
                             } else if (bar.curr == (bar.total / 2)) {
                                 bar.interrupt(`${bar.curr}/${bar.total} de empresas cadastradas: [chegamos à metade de empresas cadastradas]`);
                             }
@@ -556,7 +556,7 @@ var progressBar = require("progress");
                     usuario.isRoot = true;
                     usuario.nome = "Super Admin";
                     usuario.senha = md5("admin");
-                    usuario.status_usuario = 1;
+                    usuario.status_usuario = 2;
                     usuario.grupos = Promise.resolve(grupo);
 
                     await _repUsuario.save(usuario);
