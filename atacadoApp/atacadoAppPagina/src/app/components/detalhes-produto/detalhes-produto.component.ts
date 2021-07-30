@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild, OnChanges } from '@angular/core';
 import { ActivatedRoute, Router, Scroll, RouterEvent, NavigationEnd } from '@angular/router';
 import { Galleria } from 'primeng/galleria';
 import { Subscription } from 'rxjs';
@@ -26,7 +26,7 @@ interface document {
 export class DetalhesProdutoComponent implements OnInit {
 
   images: ImagesProdutoModel[] = [];
-
+  no_images: ImagesProdutoModel = new ImagesProdutoModel();
   showThumbnails: boolean = false;
 
   fullscreen: boolean = false;
@@ -35,17 +35,19 @@ export class DetalhesProdutoComponent implements OnInit {
 
   onFullScreenListener: any;
 
-  produtosExtras: ProdutosModel[] = [];
-  produtos: ProdutosModel[] = [];
+  produtosExtras: ProdutosModel[] = [new ProdutosModel()];
+  produtos: ProdutosModel[] = [new ProdutosModel()];
   isLogged = false;
   subscrip: Subscription = new Subscription();
 
   produto: ProdutosModel = new ProdutosModel();
-  produtosModelo: ProdutosModel[] = [];
-  prodModelo: ProdutosModel[] = [];
+  produtosModelo: ProdutosModel[] = [new ProdutosModel()];
+  prodModelo: ProdutosModel[] = [new ProdutosModel()];
 
-  @ViewChild('galleria') galleria: Galleria | any;
+  @ViewChild('galleria')
+  galleria!: Galleria;
 
+  tamanhos: any[] = [];
 
   constructor(private homeService: HomeService,
               private produtosService: ProdutosService,
@@ -70,21 +72,25 @@ export class DetalhesProdutoComponent implements OnInit {
   ];
   ngOnInit() {
     
-    this.images = [];
-    this.produtos = [];
-    this.prodModelo = [];
-    this.activeIndex = 0;
-    this.produtosExtras = [];
-    this.produtosModelo = [];
+    //this.no_images.caminho = "./../../assets/images/img_nao_disp.jpg";
+    this.images.push(this.no_images);
+    //this.unbindDocumentListeners();
     // tslint:disable-next-line: deprecation
-    this.active.params.subscribe(p => this.getUid(p.uid));
+    this.active.params.subscribe({
+      next: (p) => {
+        this.getUid(p.uid);
+      },
+      error: (error) => {
+        console.log(error)
+      }
+    });
+    //this.bindDocumentListeners();
     this.isLogged = this.usuarioService.isStaticLogged;
     // tslint:disable-next-line: deprecation
     this.subscrip = this.usuarioService.isLogged.subscribe(log => {
-      this.isLogged = log;     
-    })
-    
-    //this.bindDocumentListeners();
+      this.isLogged = log;
+    });
+    document.getElementById("detalhesProduto")?.scrollIntoView();
   }
 
   async getUid(uid: string) {
@@ -92,57 +98,83 @@ export class DetalhesProdutoComponent implements OnInit {
     this.homeService.getObservableById(uid).subscribe(
       {
         next: async (produto) => {
-         
+
           this.unbindDocumentListeners();
-          this.activeIndex = 0;
-          this.images = [];
-          this.produtos = [];
-          this.prodModelo = [];
-          this.produtosExtras = [];
-          this.produtosModelo = [];
-          
+          this.activeIndex = -1;
           this.produto = produto as ProdutosModel;
-          this.produto.imagens = (produto as any).__imagens__ as ImagesProdutoModel[]
+          //this.images = [];
+          //this.images.push(this.no_images)
+          //this.produtos = [];
+          //this.prodModelo = [];
+          //this.produtosExtras = [];
+          //this.produtosModelo = [];
+
+          if ((produto as ProdutosModel).imagens && (produto as ProdutosModel).imagens.length > 0) {
+            this.images = (produto as ProdutosModel).imagens as ImagesProdutoModel[];
+          }
          
-          this.images = this.produto.imagens.length > 0 ?  this.produto.imagens : [{caminho: "./../../assets/images/img_nao_disp.jpg"}] as ImagesProdutoModel[];
-          this.bindDocumentListeners();
-          const result_extra = await this.homeService.filtro("nome", ((produto as any).nome.substring(0, ((produto as any).nome.indexOf(' ')) >= 5 && (produto as any).nome?.indexOf(' ') ? (produto as ProdutosModel).nome?.indexOf(' ') : 5 )));
+          const result_extra = await this.homeService.filtro("nome", (produto as ProdutosModel).nome?.substring(0, (produto as any).nome?.indexOf(' ') >= 5 && (produto as ProdutosModel).nome?.indexOf(' ') ? (produto as ProdutosModel).nome?.indexOf(' ') : 5 ));
 
           if (result_extra.success) {
-            this.produtosExtras = result_extra.data as any[];
+            this.produtosExtras = result_extra.data as ProdutosModel[];
             this.produtosExtras = this.produtosExtras.filter(val => val.uid !== uid);
-            this.produtosExtras.forEach(async (produto) => {
-              produto.imagens = ((result_extra.data as any[]).filter(val => val.codigo === produto.codigo)[0] as any).__imagens__ as ImagesProdutoModel[];
+            this.produtosExtras.forEach(async (produto) => {             
+              let imagens = await this.homeService.filtro("imagens", produto.uid)
+              if (imagens.data && imagens.data != null && imagens.data.length > 0) {
+                produto.imagens = imagens.data as ImagesProdutoModel[];
+              }
+              
             })
             this.produtos = this.produtosExtras.slice(0, 6);
-
-            const res_modelo = this.isLogged ? await this.produtosService.filtro("modelo", (produto as any).nome) : await this.homeService.filtro("modelo", (produto as any).nome);
-            if (res_modelo.success) {
-                this.produtosModelo = res_modelo.data as any[];
-                this.produtosModelo = this.produtosModelo.filter(val => val.uid !== uid);
-                this.produtosModelo.forEach(async (produto) => {
-                  produto.imagens = ((res_modelo.data as any[]).filter(val => val.codigo === produto.codigo)[0] as any).__imagens__ as ImagesProdutoModel[];
-                })
-            }
-            this.prodModelo = this.produtosModelo.slice(0, 3);
           }
-          this.router.events.subscribe((event) => {
-      
-            //let nvEnd: NavigationEnd = new NavigationEnd(2, this.router.url, this.router.url)
-      
-            //let scroll: Scroll = new Scroll(nvEnd, [0, 0], "detalhesProduto");
-            //onsole.log(scroll)
-            if (!(event instanceof NavigationEnd)) {
-              return;
+          const res_modelo = this.isLogged ? await this.produtosService.filtro("modelo", (produto as ProdutosModel).nome) : await this.homeService.filtro("modelo", (produto as ProdutosModel).nome);
+          if (res_modelo.success) {
+              this.produtosModelo = res_modelo.data as ProdutosModel[];
+              this.produtosModelo = this.produtosModelo.filter(val => val.uid !== uid);
+              this.produtosModelo.forEach(async (produto) => {               
+                let imagens = await this.homeService.filtro("imagens", produto.uid)
+                if (imagens.data && imagens.data != null && imagens.data.length > 0) {
+                  produto.imagens = imagens.data as ImagesProdutoModel[];
+                }
+              })
+              this.prodModelo = this.produtosModelo.slice(0, 3);
           }
-          document.getElementById("detalhesProduto")?.scrollIntoView();
-           //window.scrollTo(scroll.position ? scroll.position[0] : 0, scroll.position ? scroll.position[1] : 0);
-          })
-        }
+          const tamanhos = await this.homeService.filtro("tamanhos", (produto as ProdutosModel).referencia);
+          if (tamanhos.success) {
+            this.tamanhos = tamanhos.data;           
+          }
+          
+          this.bindDocumentListeners();
+          this.activeIndex = 0;
+          this.router.events.subscribe({
+            next: (event) => {
+              //this.unbindDocumentListeners();
+              //let nvEnd: NavigationEnd = new NavigationEnd(2, this.router.url, this.router.url)
         
+              //let scroll: Scroll = new Scroll(nvEnd, [0, 0], "detalhesProduto");
+              //onsole.log(scroll)
+              document.getElementById("detalhesProduto")?.scrollIntoView();
+              if (!(event instanceof NavigationEnd)) {
+                return;
+              }
+            }
+            
+          })
+        },
+        error: (error) => {
+          console.log(error)
+        }
       }
-    )
+    );
     
+  }
+
+  random_bgcolor() {
+    const x = Math.floor(Math.random() * 256);
+    const y = Math.floor(Math.random() * 256);
+    const z = Math.floor(Math.random() * 256);
+   
+    return "rgb(" + x + "," + y + "," + z + ")";
   }
 
   onThumbnailButtonClick() {
@@ -199,7 +231,7 @@ export class DetalhesProdutoComponent implements OnInit {
     document.addEventListener("fullscreenchange", this.onFullScreenListener);
     document.addEventListener("mozfullscreenchange", this.onFullScreenListener);
     document.addEventListener("webkitfullscreenchange", this.onFullScreenListener);
-    document.addEventListener("msfullscreenchange", this.onFullScreenListener);
+    document.addEventListener("msfullscreenchange", this.onFullScreenListener); 
   }
 
   unbindDocumentListeners() {
