@@ -2,7 +2,7 @@
     <div class="row container">
         <div class="col-sm-7">
             <p-galleria #galleria [value]="images" [(activeIndex)]="activeIndex" [numVisible]="5"
-                [containerStyle]="{'max-width':'640px','box-shadow' : '0 0 13px #3e2723, 0 0 15px #4e324e'}"
+                [containerStyle]="{'max-width':'640px','box-shadow' : '0 0 13px  rgba(75, 46, 40, 0.5), 0 0 15px rgba(75, 46, 40, 0.5)'}"
                 [containerClass]="galleriaClass()" [showThumbnails]="showThumbnails" [showItemNavigators]="true"
                 [showItemNavigatorsOnHover]="true" [circular]="true" [autoPlay]="true" [transitionInterval]="3000">
                 <ng-template pTemplate="item" let-item>
@@ -39,14 +39,15 @@
             </div>
             <div class="row container">
                 <div class="col-sm">
-                    <h3>Tamanhos</h3>
-                    <div class="col-sm" *ngFor="let tamanho of tamanhos"><span class="square_tamanho" [id]="tamanho.tamanho"><p class="text_tamanho">{{tamanho.tamanho}}</p></span></div>
+                   <div *ngFor="let tamanho of tamanhos" id="{{tamanho.tamanho}}" class="square_tamanho container">
+                        <span>{{tamanho.tamanho}}</span>
+                   </div>
                 </div>
                 <div class="col-sm" style="text-align: right">
                     <h3>Cor: {{produto.cor}}</h3>
                 </div>
             </div>
-            <div class="row container" style="text-align: justify; text-justify: inter-word; font-size: .99rem">
+            <div class="row container" style="text-align: justify; text-justify: inter-word; font-size: .99rem; margin-top: 15px">
                 {{produto.descricao}}
             </div>
         </div>

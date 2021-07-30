@@ -112,6 +112,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
                   nome_fantasia: empresa.nome_fantasia,
                   telefone: empresa.telefone,
+                  cnpj: empresa.cnpj,
                   cep: empresa.cep,
                   endereco: empresa.endereco,
                   numero: empresa.numero,
@@ -234,6 +235,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
               nome_fantasia: empresa.nome_fantasia,
               telefone: empresa.telefone,
+              cnpj: empresa.cnpj,
               cep: empresa.cep,
               endereco: empresa.endereco,
               numero: empresa.numero,

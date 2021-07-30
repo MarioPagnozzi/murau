@@ -1,6 +1,6 @@
 {
   "name": "atacado-app-pagina",
-  "version": "1.0.1507211556",
+  "version": "1.0.300720211720",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

@@ -74,7 +74,7 @@ export class DetalhesProdutoComponent implements OnInit {
     
     //this.no_images.caminho = "./../../assets/images/img_nao_disp.jpg";
     this.images.push(this.no_images);
-    this.unbindDocumentListeners();
+    //this.unbindDocumentListeners();
     // tslint:disable-next-line: deprecation
     this.active.params.subscribe({
       next: (p) => {
@@ -84,13 +84,13 @@ export class DetalhesProdutoComponent implements OnInit {
         console.log(error)
       }
     });
-    this.bindDocumentListeners();
+    //this.bindDocumentListeners();
     this.isLogged = this.usuarioService.isStaticLogged;
     // tslint:disable-next-line: deprecation
     this.subscrip = this.usuarioService.isLogged.subscribe(log => {
       this.isLogged = log;
     });
-    
+    document.getElementById("detalhesProduto")?.scrollIntoView();
   }
 
   async getUid(uid: string) {
@@ -141,10 +141,9 @@ export class DetalhesProdutoComponent implements OnInit {
           }
           const tamanhos = await this.homeService.filtro("tamanhos", (produto as ProdutosModel).referencia);
           if (tamanhos.success) {
-            this.tamanhos = tamanhos.data;
+            this.tamanhos = tamanhos.data;           
           }
-          // tslint:disable-next-line: no-non-null-assertion
-          document.getElementById('P')!.style.background = this.random_bgcolor()
+          
           this.bindDocumentListeners();
           this.activeIndex = 0;
           this.router.events.subscribe({
@@ -177,6 +176,7 @@ export class DetalhesProdutoComponent implements OnInit {
    
     return "rgb(" + x + "," + y + "," + z + ")";
   }
+
   onThumbnailButtonClick() {
     this.showThumbnails = !this.showThumbnails;
   }
@@ -231,7 +231,7 @@ export class DetalhesProdutoComponent implements OnInit {
     document.addEventListener("fullscreenchange", this.onFullScreenListener);
     document.addEventListener("mozfullscreenchange", this.onFullScreenListener);
     document.addEventListener("webkitfullscreenchange", this.onFullScreenListener);
-    document.addEventListener("msfullscreenchange", this.onFullScreenListener);
+    document.addEventListener("msfullscreenchange", this.onFullScreenListener); 
   }
 
   unbindDocumentListeners() {
