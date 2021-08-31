@@ -1,4 +1,6 @@
 import { IGrupos } from "../interfaces/IGrupos";
+import { GrupoModel } from "../models/grupoModel";
+import { PermissaoModel } from "../models/permissaoModel";
 
 declare var google: any;
 export function RetornaDadosUsuario() {
@@ -30,73 +32,78 @@ export function RetornaGruposUsuario() {
     return grupos;
 }
 export function Permissao(tabela: string, acao: string): boolean {
+
     if (localStorage.getItem("murau:grupo") == null) {
         return false;
     }
-    const json = JSON.parse(localStorage.getItem("murau:grupo") as string);
-    let hasPermissao = false;
-    const grupos: IGrupos[] = json.map((g: IGrupos) => {
-            return {
-                nome_grupo: g.nome_grupo,
-                permissoes: g.permissoes
-            }
+
+    const json = JSON.parse(localStorage.getItem("murau:grupo") as string);  
+    const grupos: GrupoModel[] = json as GrupoModel[];
+
+
+        let hasPermissao: boolean = false;
+        console.log(grupos)
+        if (acao === "V") { 
             
-        });
-
-    if (acao === "V") { 
-        
-        grupos.forEach((grupo) => {
-            grupo.permissoes?.forEach((perm) => {
-                if (perm.tabela?.toLowerCase() === tabela.toLowerCase()) {
-                    if (perm.visualizar) {
-                        hasPermissao = true;
+            for (let i = 0; i < grupos.length - 1; i++) {
+                const permissoes = grupos[i].permissoes ? grupos[i].permissoes as PermissaoModel[] : [] as PermissaoModel[];
+                for (let i = 0; i < permissoes.length - 1; i++) {
+                    // tslint:disable-next-line: curly
+                    if (permissoes[i].tabela?.toLowerCase() === tabela.toLowerCase()) {
+                        console.log("visualizar")
+                        console.log(permissoes[i].visualizar)
+                        if (permissoes[i].visualizar) {
+                            console.log(permissoes[i].visualizar)
+                            hasPermissao = true;
+                        }
                     }
+                    
                 }
-            })
-        })
-        return hasPermissao;
-    }
-    if (acao === "I") {
+            }
+            return hasPermissao;
+        }
+        if (acao === "I") {
 
-        grupos.forEach((grupo) => {
-            grupo.permissoes?.forEach((perm) => {
-                if (perm.tabela?.toLowerCase() === tabela.toLowerCase()) {
-                    if (perm.inserir) {
-                        hasPermissao = true;
+            grupos.forEach((grupo) => {
+                grupo.permissoes?.forEach((perm) => {
+                    if (perm.tabela?.toLowerCase() === tabela.toLowerCase()) {
+                        if (perm.inserir) {
+                            hasPermissao = true;
+                        }
                     }
-                }
+                })
             })
-        })
-        return hasPermissao;
-    }
-    if (acao === "A") {
+            return hasPermissao;
+        }
+        if (acao === "A") {
 
-        grupos.forEach((grupo) => {
-            grupo.permissoes?.forEach((perm) => {
-                if (perm.tabela?.toLowerCase() === tabela.toLowerCase()) {
-                    if (perm.alterar) {
-                        hasPermissao = true;
+            grupos.forEach((grupo) => {
+                grupo.permissoes?.forEach((perm) => {
+                    if (perm.tabela?.toLowerCase() === tabela.toLowerCase()) {
+                        if (perm.alterar) {
+                            hasPermissao = true;
+                        }
                     }
-                }
+                })
             })
-        })
-        return hasPermissao;
-    }
-        
-    if (acao === "E") {
+            return hasPermissao;
+        }
+            
+        if (acao === "E") {
 
-        grupos.forEach((grupo) => {
-            grupo.permissoes?.forEach((perm) => {
-                if (perm.tabela?.toLowerCase() === tabela.toLowerCase()) {
-                    if (perm.excluir) {
-                        hasPermissao = true;
+            grupos.forEach((grupo) => {
+                grupo.permissoes?.forEach((perm) => {
+                    if (perm.tabela?.toLowerCase() === tabela.toLowerCase()) {
+                        if (perm.excluir) {
+                            hasPermissao = true;
+                        }
                     }
-                }
+                })
             })
-        })
+            return hasPermissao;
+        }
         return hasPermissao;
-    }
-    return hasPermissao;
+ 
 }
 interface IChildrenPai {
     label?: string,
@@ -178,9 +185,9 @@ export function montaMenu() {
         })
    }
 
-   if (Permissao("Grupo", "V")) {
+   if (Permissao("Grupos", "V")) {
         const children: IChildren[] = [];
-        if (Permissao("Grupo", "I")) {
+        if (Permissao("Grupos", "I")) {
             children.push({
                 label: "Novo",
                 icon: "pi pi-plus",
@@ -202,7 +209,6 @@ export function montaMenu() {
             children: children
         })
     }
-
    if (Permissao("Permissoes", "V")) {
         const children: IChildren[] = [];
         if (Permissao("Permissoes", "I")) {
@@ -315,7 +321,7 @@ export function montaMenu() {
 }
 export function getAddress(latitude: number, longitude: number): Promise<Array<any>> {
    const geoCoder = new google.maps.Geocoder();
-  return new Promise<Array<any>>( async (resolve, reject) => {       
+  return new Promise<Array<any>>( async (resolve, reject) => {
        geoCoder.geocode({ "location" : { lat: latitude, lng: longitude } }, (results: any, status: any) => {
             if (status === 'OK') {
                 if (results[0]) {

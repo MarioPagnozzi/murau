@@ -18,6 +18,7 @@ export abstract class BaseController<T> extends BaseNotificacao {
         
         if (restrito) {
             let tabela = _func.Tabela(request);
+            console.log(_func.Permissao(request, tabela, "V"))
             if (!_func.Permissao(request, tabela, "V")) 
                 return {status: 400, errors: [{message: "Você não tem permissão para acessar os registros"}]}
         }

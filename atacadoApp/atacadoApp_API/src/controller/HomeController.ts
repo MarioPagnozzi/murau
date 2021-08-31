@@ -16,7 +16,7 @@ export class HomeController extends BaseController<Produtos> {
        
         let produtos = await this._repProdutos.find()
         let _produtos = produtos;
-        return  _produtos.filter((prod, i, produtos) => produtos.findIndex(p => p.nome === prod.nome) === i );
+        return  _produtos; //.filter((prod, i, produtos) => produtos.findIndex(p => p.nome === prod.nome) === i );
     }
     async allDistinct(request: Request) {
         return this._repProdutos.createQueryBuilder("produtos")

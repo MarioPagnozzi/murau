@@ -8,6 +8,8 @@ import { Observable, Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { UsuarioModel } from '../models/usuarioModel';
 import { HttpClient } from '@angular/common/http';
+import { GrupoModel } from '../models/grupoModel';
+import { PermissaoModel } from '../models/permissaoModel';
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +36,18 @@ export class UsuariosService extends BaseService<IUsuarios | UsuarioModel> {
      localStorage.setItem('murau:user', JSON.stringify(user));
      const grupos = await this.http.get(`${environment.url_api}/grupos/usuarios/${user.uid}`);
      if (grupos.data) {
-        localStorage.setItem('murau:grupo', JSON.stringify(grupos.data));
+        let _grupos = grupos.data as GrupoModel[];
+        let grps: GrupoModel[] = [];
+        let grupo: any;
+        // tslint:disable-next-line: prefer-for-of
+        for (let i = 0; i < _grupos.length; i++) {
+         console.log(_grupos[i].uid)
+          const permissoes = await this.http.get(`${environment.url_api}/grupos/permissoes/${_grupos[i].uid}`);
+          _grupos[i].permissoes = permissoes.data;
+          grps.push(_grupos[i]);
+        }
+      
+        localStorage.setItem('murau:grupo', JSON.stringify(grps));
      }
      const usuarios = await this.http.get(`${environment.url_api}/users/${user.uid}`);
      localStorage.setItem('murau:isroot', usuarios.data.isRoot);

@@ -1,5 +1,5 @@
 import { Request } from 'express';
-import { getRepository, Repository } from 'typeorm';
+import { getManager, getRepository, Repository } from 'typeorm';
 import { Permissao } from '../entity/Permissao';
 import { User } from '../entity/User';
 import { Grupos } from './../entity/Grupos';
@@ -41,8 +41,14 @@ export class GrupoController extends BaseController<Grupos> {
     }
     async usuarios(request: Request) {
         const usuarioId = request.params.user;
-        let usuario = await this._repUsuario.findOne({where: {uid: usuarioId}});
-        
+        let usuario = await this._repUsuario.findOne({where: {uid: usuarioId}, relations: ['grupos']});
         return usuario.grupos;
+    }
+    async permissoes(request: Request) {
+        const grupoUid = request.params.grupo;
+        let grupo = await this._repGrupos.findOne({relations: ["permissoes"], where: {uid: grupoUid}});
+        const perm = await grupo.permissoes;
+        console.log(perm)
+        return grupo.permissoes;
     }
 }

@@ -18,7 +18,7 @@ DROP TABLE imagensproduto;
 DROP TABLE produtos;
 DROP TABLE tabelas;
 DROP TABLE promocao;
-DROP TABLE typeorm_metadata;
+/*DROP TABLE typeorm_metadata;*/
 
 
 

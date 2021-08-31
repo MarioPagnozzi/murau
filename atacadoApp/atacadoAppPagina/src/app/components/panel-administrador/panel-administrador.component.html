@@ -1,0 +1,114 @@
+<div class="murau__panel_admin">
+    <p-fieldset>
+        <ng-template pTemplate="header">Administrador</ng-template>
+        <div class="row content bottom-border">
+            <span class="titulo">Cadastros</span>
+            <div class="col icone">
+                <a routerLink="/clientes">
+                    <img id="listaclientes" src="./assets/images/icons/listaclientes.png" />
+                    <label for="listaclientes" class="legenda">Lista de Clientes</label>
+                </a>
+            </div>
+            <div class="col icone">
+                <a routerLink="/cliente/novo">
+                    <img id="cliente" src="./assets/images/icons/cliente.png" />
+                    <label for="cliente" class="legenda">Cliente/Novo</label>
+                </a>
+            </div>
+            <div class="col icone">
+                <a routerLink="/vendedores">
+                    <img id="listavendedores" src="./assets/images/icons/listavendedores.png" />
+                    <label for="listavendedores" class="legenda">Lista de Vendedores</label>
+                </a>
+            </div>
+            <div class="col icone">
+                <a routerLink="/vendedor/novo">
+                    <img id="vendedor" src="./assets/images/icons/vendedor.png" />
+                    <label for="vendedor" class="legenda">Vendedor/Novo</label>
+                </a>
+            </div>
+            <div class="col icone">
+                <a routerLink="/usuarios">
+                    <img id="listausuarios" src="./assets/images/icons/listausuarios.png" />
+                    <label for="listausuarios" class="legenda">Lista de Usuários</label>
+                </a>
+            </div>
+            <div class="col icone">
+                <a routerLink="/usuario/novo">
+                    <img id="usuario" src="./assets/images/icons/usuario.png" />
+                    <label for="usuario" class="legenda">Usuário/Novo</label>
+                </a>
+            </div>
+            <div class="col icone">
+                <a routerLink="/produtos"  [matBadge]="8" matBadgeColor="warn" [matBadgeHidden]="false" matBadgeHint="Produtos Novos" matBadgeDescription="Produtos Novos" >
+                    <img id="listaprodutos" src="./assets/images/icons/listaprodutos.png" />
+                    <label for="listaprodutos" class="legenda">Lista de Produtos</label>
+                </a>
+            </div>
+            <div class="col icone">
+                <a routerLink="/produto/novo">
+                    <img id="produto" src="./assets/images/icons/produto.png" />
+                    <label for="produto" class="legenda">Produto/Novo</label>
+                </a>
+            </div>
+            <div class="col icone">
+                <a routerLink="/empresas">
+                    <img id="listaempresas" src="./assets/images/icons/listaempresas.png" />
+                    <label for="listaempresas" class="legenda">Lista de Empresas</label>
+                </a>
+            </div>
+            <div class="col icone">
+                <a routerLink="/empresa/novo">
+                    <img id="empresa" src="./assets/images/icons/empresa.png" />
+                    <label for="empresa" class="legenda">Empresa/Novo</label>
+                </a>
+            </div>
+        </div>
+        <div class="row content bottom-border">
+            <span class="titulo">Vendas</span>
+            <div class="col icone">
+                <a routerLink="/pedidos" [matBadge]="80" matBadgeColor="warn" [matBadgeHidden]="false" matBadgeHint="Pedidos Novos" matBadgeDescription="Pedidos Novos">
+                    <img id="listapedidos" src="./assets/images/icons/listapedidos.png" />
+                    <label for="listapedidos" class="legenda">Lista de Pedidos</label>
+                </a>
+            </div>
+            <div class="col icone">
+                <a routerLink="/pedido/novo">
+                    <img id="pedido" src="./assets/images/icons/pedido.png" />
+                    <label for="pedido" class="legenda">Pedido/Novo</label>
+                </a>
+            </div>
+            <div class="col icone">
+                <a routerLink="/aprovar" [matBadge]="18" matBadgeColor="warn" [matBadgeHidden]="false" matBadgeHint="Clintes Novos" matBadgeDescription="Clientes Novos">
+                    <img id="clientesnovos" src="./assets/images/icons/listaclientes.png" />
+                    <label for="clientesnovos" class="legenda">Clientes Pendentes</label>
+                </a>
+            </div>
+            <div class="col icone">
+                <a routerLink="/promocoes">
+                    <img id="promocao" src="./assets/images/icons/promocao.png" />
+                    <label for="promocao" class="legenda">Promoções</label>
+                </a>
+            </div>
+        </div>
+        <div class="row content bottom-border">
+            <span class="titulo">Utilitários</span>
+            <div class="col icone">
+                <a routerLink="/agenda" [matBadge]="5" matBadgeColor="warn" [matBadgeHidden]="false" matBadgeHint="Clintes Novos" matBadgeDescription="Clientes Novos">
+                    <img id="config" src="./assets/images/icons/agenda.png" />
+                    <label for="config" class="legenda">Agenda/Compromissos</label>
+                </a>
+            </div>
+        </div>
+        <div class="row content bottom-border">
+            <span class="titulo">Ferramentas do Sistema</span>
+            <div class="col icone">
+                <a routerLink="/configuracoes">
+                    <img id="config" src="./assets/images/icons/ferramenta11.jpg" />
+                    <label for="config" class="legenda">Configurações</label>
+                </a>
+            </div>
+        </div>
+    </p-fieldset>
+</div>
+

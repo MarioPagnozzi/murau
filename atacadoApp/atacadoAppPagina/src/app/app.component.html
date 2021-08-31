@@ -67,43 +67,39 @@
         </mat-sidenav>
         <mat-sidenav-content>
             <router-outlet></router-outlet>
-            <div class="container-map" *ngIf="!isLogged">
-                <agm-map [latitude]="lat" [longitude]="lng" [zoom]="zoom" [scrollwheel]="false" >
-              
-                        <agm-marker *ngFor="let marker of markers" [latitude]="marker.lat" [longitude]="marker.lng"
-                        iconUrl="./assets/images/logo_1.png"
-                        [markerDraggable]="true">
-                            <agm-info-window [disableAutoPan]="true">
-                                <h6><strong>Filial:</strong> {{marker.nome_fantasia}}</h6>
-                                <h6><strong>Cidade:</strong> {{marker.cidade}}/{{marker.uf}}</h6>
-                                <h6><strong>CEP:</strong> {{marker.cep | mask: '00000-000'}}</h6>
-                                <h6><strong>Endereço</strong>: {{marker.endereco}}, {{marker.numero}}</h6>
-                                <h6 *ngIf="marker.complemento"><strong>Complemento:</strong> {{marker.complemento}}</h6>
-                                <h6><strong>Telefone:</strong> {{marker.telefone | mask: '(00) 0000-0000 || (00) 0 0000-0000'}}</h6>
-                                <h6>Distância: A nossa filial está a {{marker.dist | number: '0.2-3':'pt'}} km de você</h6>
-                            </agm-info-window>
-                        </agm-marker>
-                
-                  
-                </agm-map>
+            <div class="container_map" *ngIf="!isLogged">
+                <app-google-maps></app-google-maps>
             </div>
              <!-- footer -->
             <footer [ngClass]="{'page-footer': !isLogged, 'page-footer-logged': isLogged}">
+                <div class="container">
+                    <div class="row">
+                        <div class="col" *ngFor="let cidade of cidadesEmpresas">
+                            <h5 class="title_cidade">{{cidade.cidade + '-' + cidade.uf}}</h5>
+                            <div class="content content-address" *ngFor="let empresa of empresas">
+                                <address *ngIf="empresa.cidade === cidade.cidade && empresa.uf === cidade.uf">
+                                    <h6 class="title_loja" *ngIf="empresa.cidade === cidade.cidade && empresa.uf === cidade.uf">{{empresa.nome_fantasia }}</h6>
+                                    <p class="text_loja" *ngIf="empresa.cidade === cidade.cidade && empresa.uf === cidade.uf">{{empresa.endereco + ' - ' + empresa.bairro}}<br />
+                                    {{empresa.telefone | mask: '(00) 0000-0000 || (00) 0 0000-0000'}}<br />
+                                    {{empresa.cep | mask: '00000-000'}}</p>
+                                </address>
+                            </div>
+                        </div>
+                    </div>
                 
-                <div class="container" *ngIf="!isLogged">
                     <div class="row col-xs-12 col-sm-12 col-md-12 col-lg-12" align="center">
                       <div class="col-md-12 flex-center">
-                           <a class="col-md col-sm">
-                                <fa-icon [icon]="['fab','facebook']"></fa-icon>
+                           <a class="col-md col-sm" href="https://www.facebook.com/MurauOficial/">
+                                <fa-icon [icon]="['fab','facebook']" style="font-size: 25px"></fa-icon>
                             </a>
                             <a class="col-md col-sm">
-                                <fa-icon [icon]="['fab', 'linkedin']"></fa-icon>
+                                <fa-icon [icon]="['fab', 'linkedin']" style="font-size: 25px"></fa-icon>
                             </a>
-                            <a class="col-md col-sm">
-                                <fa-icon [icon]="['fab', 'twitter']"></fa-icon>
+                            <a class="col-md col-sm" href="https://br.pinterest.com/MurauOficial/" >
+                                <fa-icon [icon]="['fab', 'pinterest']" style="font-size: 25px"></fa-icon>
                             </a>
-                            <a class="col-md col-sm">
-                                <fa-icon [icon]="['fab', 'instagram']"></fa-icon>
+                            <a class="col-md col-sm" href="https://www.instagram.com/murauoficial/">
+                                <fa-icon [icon]="['fab', 'instagram']" style="font-size: 25px"></fa-icon>
                             </a> 
                       </div>
                     </div>
@@ -115,8 +111,8 @@
                     </div>
                 </div>
             </footer>
-           
         </mat-sidenav-content>
+        
     </mat-sidenav-container>
    
 </div>

@@ -2,11 +2,13 @@ import { getRepository, Like, Repository } from 'typeorm';
 import {NextFunction, Request, Response} from "express";
 import { User } from "../entity/User";
 import { BaseController } from "./BaseController";
-import * as md5 from "md5";
+//import * as md5 from "md5";
 import { sign } from "jsonwebtoken";
 import config from "../configuracao/config";
 import * as _fun from "../configuracao/functions/globalFunctions";
 import { FileHelper } from '../helpers/FileHelpers';
+
+const md5 = require("md5")
 export class UserController extends BaseController<User> {
 
     private _repositories: Repository<User> = getRepository(User);
@@ -57,7 +59,7 @@ export class UserController extends BaseController<User> {
     user.email = email;
     user.foto = foto;
     user.status_usuario = status_usuario;
-    user.grupos = grupos;
+    user.grupos = Promise.resolve(grupos);
 
     if (senha != confirmaSenha )
         return {status: 400, errors: [{message: 'A senha e a confirmação são diferentes!'}]};

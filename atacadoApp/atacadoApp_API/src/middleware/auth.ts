@@ -26,11 +26,10 @@ export default async (req: Request, res: Response, next: NextFunction) => {
                 let _userAuth = verify(token, config.secretkey);
                 req.userAuth = _userAuth;
 
-                let _usuario = await _repUsuario.findOne({where: { uid: _userAuth.uid }});
+                let _usuario = await _repUsuario.findOne({relations: ["grupos"], where: { uid: _userAuth.uid }});
                 req.isRoot = _usuario.isRoot;
-
-                req.grupos = _usuario.grupos;
                 
+                req.grupos = await _usuario.grupos;
 
                 next();
             }

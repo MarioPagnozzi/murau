@@ -8,7 +8,7 @@ import * as fs from "fs";
 import { Grupos } from '../entity/Grupos';
 import { Permissao } from '../entity/Permissao';
 import { Tabelas } from '../entity/Tabelas';
-import * as md5 from "md5";
+//import * as md5 from "md5";
 import config from "./config";
 import * as fun from "./functions/globalFunctions";
 
@@ -17,7 +17,7 @@ import * as fun from "./functions/globalFunctions";
 import process = require("process");
 import { clear } from 'console';
 var progressBar = require("progress");
-
+var md5 = require("md5");
 
 
         export async function start(_repEmpresa: Repository<Empresas> = getRepository(Empresas)) {
@@ -67,11 +67,11 @@ var progressBar = require("progress");
                                 
                             if (bar.complete) {
                                     clearInterval(time);
+                                    resolve("Cadastro de Empresas completo");
                             } else if (bar.curr == (bar.total / 2)) {
                                 bar.interrupt(`${bar.curr}/${bar.total} de empresas cadastradas: [chegamos à metade de empresas cadastradas]`);
                             }
                             });
-                            resolve("Cadastro de Empresas completo");
                         }, 5000)
                 }
                 else {
@@ -105,12 +105,12 @@ var progressBar = require("progress");
                         }
                         if (bar.complete) {
                             clearInterval(timer);
+                            resolve("Cadastro de Tabelas completo")
                         } else if (bar.curr == (bar.total / 2)) {
                             bar.interrupt(`${bar.curr}/${bar.total} de empresas cadastradas: [chegamos à metade de tabelas cadastradas]`)
                         }
                         
                     });
-                    resolve("Cadastro de Tabelas completo")
                 }, 5000)
                 
             })
@@ -326,11 +326,7 @@ var progressBar = require("progress");
             return new Promise<any>(async (resolve, reject) => {
                 let _vend: any;
                 let EntityVendedor: Vendedores;
-
-
                 let _temVendedor = await _repVendedor.findOne();
-                let i = 0;
-                
                 if (!_temVendedor) {
                     let vend = fs.readFileSync(__dirname + "/arquivos/vendedores.csv", "utf8");
                     let vendedores = vend.split(/\n/);
@@ -339,10 +335,9 @@ var progressBar = require("progress");
                         complete: "=",
                         incomplete: " ",
                         width: 30
-
                     });
                     let timer = setInterval(() => {
-                        vendedores.forEach(async function (dadosvend) {
+                        vendedores.forEach(async (dadosvend) => {
                             bar.tick();
                             _vend = dadosvend.split(";");
         
@@ -358,18 +353,17 @@ var progressBar = require("progress");
                             EntityVendedor.endereco = "Cadastro Automático";
                             EntityVendedor.nome = _vend[1];
                             EntityVendedor.empresas = Promise.resolve(empresas);
-                        await _repVendedor.save(EntityVendedor);                   
-                        i++
-                        if (bar.complete) {
-                            clearInterval(timer);
-                        } else if (bar.curr == (bar.total / 2)) {
-                            bar.interrupt(`${bar.curr}/${bar.total} de vendedores cadastrados: [chegamos à metade de vendedores cadastrados]`);
-                        }
+                            _repVendedor.save(EntityVendedor);
+                            if (bar.complete) {
+                                clearInterval(timer);
+                                resolve("Cadastro de Vendedores completo")
+                            } else if (bar.curr == (bar.total / 2)) {
+                                bar.interrupt(`${bar.curr}/${bar.total} de vendedores cadastrados: [chegamos à metade de vendedores cadastrados]`);
+                            }
                         
                         });
-                        resolve("Cadastro de Vendedores completo")
+                        
                     }, 5000)
-                    
                 }
                 else {
                     reject("Vendedores já foram cadastrados")
@@ -379,15 +373,12 @@ var progressBar = require("progress");
         
         export async function cadastraProdutos(empresas, _repProduto: Repository<Produtos> = getRepository(Produtos)) {
             return new Promise(async (resolve, reject) => {
+                let _prod: any;
+                let EntityProduto: Produtos;
                 let produto = await _repProduto.findOne();
-                let i = 0;
-            
                 if (!produto) {
                     let prod = fs.readFileSync(__dirname + "/arquivos/produtos.csv", "utf8");
                     let produtos = prod.split(/\n/);
-                    
-                    let _prod: any;
-                    let EntityProduto: Produtos;
                     let bar = new progressBar("[:bar] :current/:total de produtos cadastrados", {
                         total: produtos.length,
                         complete: "=",
@@ -395,10 +386,9 @@ var progressBar = require("progress");
                         width: 30
                     })
                     let timer = setInterval(() => {
-                        produtos.forEach(async function (dadosprod) {
-                        bar.tick();
+                        produtos.forEach(async (dadosprod) => {
+                            bar.tick();
                             _prod = dadosprod.split(";");
-                        
                             EntityProduto = new Produtos();
                             EntityProduto.ativo = true;
                             EntityProduto.codigo = _prod[1];
@@ -412,19 +402,20 @@ var progressBar = require("progress");
                             EntityProduto.referencia = _prod[0];
                             EntityProduto.tamanho = _prod[3];
                             EntityProduto.empresas = Promise.resolve(empresas);
+                            
                             if (EntityProduto.nome) {
-                                await _repProduto.save(EntityProduto);
-                                i++
+                                _repProduto.save(EntityProduto);
                             }
+                            
                             if (bar.complete) {
                                 clearInterval(timer);
-                            } else if (bar.curr == (bar.total/2)) {
-                                bar.interrupt(`${bar.curr}/${bar.total} de produtos cadastrados: [chegamos à metade de produtos cadastrados]`)
+                                resolve("Cadastros de Produtos completo")
+                            }  else if (bar.curr == (bar.total / 2)) {
+                                bar.interrupt(`${bar.curr}/${bar.total} de produtos cadastrados: [chegamos à metade de produtos cadastrados]`);
                             }
                         });
-                        resolve("Cadastros de Produtos completo")
+                        
                     }, 5000)
-                    
                 }
                 else {
                     reject("Produtos já foram cadastrados")
@@ -434,138 +425,143 @@ var progressBar = require("progress");
 
         export async function cadastroGrupo(nome_grupo: string[], _repGrupo: Repository<Grupos> = getRepository(Grupos),
             _repUsuario: Repository<User> = getRepository(User)) {
-            let temUsuario = await _repUsuario.findOne();
-            let temgrupo = await _repGrupo.findOne();
+            return new Promise<any>(async (resolve, reject) => {
+                let temUsuario = await _repUsuario.findOne();
+                let temgrupo = await _repGrupo.findOne();
 
-            if (!temUsuario && !temgrupo) {
-                nome_grupo.forEach(async (nome_grupo) => {
-                    let grupo: Grupos = new Grupos();
-                    grupo.ativo = true;
-                    grupo.nome_grupo = nome_grupo;
-                    await _repGrupo.save(grupo);
-                   
-                });
-
-            }
-            return;
+                if (!temUsuario && !temgrupo) {
+                    nome_grupo.forEach(async (nome_grupo) => {
+                        let grupo: Grupos = new Grupos();
+                        grupo.ativo = true;
+                        grupo.nome_grupo = nome_grupo;
+                        _repGrupo.save(grupo);
+                    
+                    });
+                    resolve("Grupos de usuários cadastrados")
+                } else {
+                    reject("Grupos já foram cadastrados")
+                }
+            })
         }
         export async function cadastroPermissao(grupo: Grupos, tabela: Tabelas,
                                         _repPermissao: Repository<Permissao> = getRepository(Permissao),
                                         _repGrupo: Repository<Grupos> = getRepository(Grupos)) {
-          
-            if (grupo && tabela) {
+          return new Promise<any>(async (resolve, reject) => {
+                if (grupo && tabela) {
 
-                
-                        if (grupo.nome_grupo == "Super Usuário") {
+                    
+                    if (grupo.nome_grupo == "Super Usuário") {
 
-                            let EntityPermissao: Permissao = new Permissao();
-                            EntityPermissao.visualizar = true;
-                            EntityPermissao.inserir = true;
-                            EntityPermissao.alterar = true;
-                            EntityPermissao.excluir = true;
-                            EntityPermissao.grupo = Promise.resolve(grupo);
-                            EntityPermissao.tabela = tabela.tabela;
+                        let EntityPermissao: Permissao = new Permissao();
+                        EntityPermissao.visualizar = true;
+                        EntityPermissao.inserir = true;
+                        EntityPermissao.alterar = true;
+                        EntityPermissao.excluir = true;
+                        EntityPermissao.grupo = Promise.resolve(grupo);
+                        EntityPermissao.tabela = tabela.tabela;
 
-                            await _repPermissao.save(EntityPermissao);
-                         
+                        _repPermissao.save(EntityPermissao);
+                    
 
-                        } else if (grupo.nome_grupo == "Vendedores") {
+                    } else if (grupo.nome_grupo == "Vendedores") {
 
-                            let EntityPermissao: Permissao = new Permissao();
-                            EntityPermissao.visualizar = tabela.tabela == "Vendedores" ? false : 
-                                                tabela.tabela == "Clientes" ? true : 
-                                                tabela.tabela == "Produtos" ? true :
-                                                tabela.tabela == "Perdidos" ? true : 
-                                                tabela.tabela == "Usuarios" ? false :
-                                                tabela.tabela == "Empresas" ? true :
-                                                tabela.tabela == "Grupos" ? false : 
-                                                tabela.tabela == "Configuracao" ? false : false;
-                            EntityPermissao.inserir = tabela.tabela == "Vendedores" ? false : 
+                        let EntityPermissao: Permissao = new Permissao();
+                        EntityPermissao.visualizar = tabela.tabela == "Vendedores" ? false : 
                                             tabela.tabela == "Clientes" ? true : 
-                                            tabela.tabela == "Produtos" ? false :
+                                            tabela.tabela == "Produtos" ? true :
                                             tabela.tabela == "Perdidos" ? true : 
                                             tabela.tabela == "Usuarios" ? false :
-                                            tabela.tabela == "Empresas" ? false :
+                                            tabela.tabela == "Empresas" ? true :
                                             tabela.tabela == "Grupos" ? false : 
                                             tabela.tabela == "Configuracao" ? false : false;
-                            EntityPermissao.excluir = false;
-                            EntityPermissao.alterar = tabela.tabela == "Vendedores" ? false : 
-                                            tabela.tabela == "Clientes" ? true : 
-                                            tabela.tabela == "Produtos" ? false :
-                                            tabela.tabela == "Perdidos" ? true : 
-                                            tabela.tabela == "Usuarios" ? false :
-                                            tabela.tabela == "Empresas" ? false :
-                                            tabela.tabela == "Grupos" ? false : 
-                                            tabela.tabela == "Configuracao" ? false : false;
-                            EntityPermissao.grupo = Promise.resolve(grupo);
-                            EntityPermissao.tabela = tabela.tabela;
+                        EntityPermissao.inserir = tabela.tabela == "Vendedores" ? false : 
+                                        tabela.tabela == "Clientes" ? true : 
+                                        tabela.tabela == "Produtos" ? false :
+                                        tabela.tabela == "Perdidos" ? true : 
+                                        tabela.tabela == "Usuarios" ? false :
+                                        tabela.tabela == "Empresas" ? false :
+                                        tabela.tabela == "Grupos" ? false : 
+                                        tabela.tabela == "Configuracao" ? false : false;
+                        EntityPermissao.excluir = false;
+                        EntityPermissao.alterar = tabela.tabela == "Vendedores" ? false : 
+                                        tabela.tabela == "Clientes" ? true : 
+                                        tabela.tabela == "Produtos" ? false :
+                                        tabela.tabela == "Perdidos" ? true : 
+                                        tabela.tabela == "Usuarios" ? false :
+                                        tabela.tabela == "Empresas" ? false :
+                                        tabela.tabela == "Grupos" ? false : 
+                                        tabela.tabela == "Configuracao" ? false : false;
+                        EntityPermissao.grupo = Promise.resolve(grupo);
+                        EntityPermissao.tabela = tabela.tabela;
 
-                            await _repPermissao.save(EntityPermissao);
+                        _repPermissao.save(EntityPermissao);
 
-                         
+                    
 
-                        } else {
+                    } else {
 
-                            let EntityPermissao: Permissao = new Permissao();
-                            EntityPermissao.visualizar = tabela.tabela == "Vendedores" ? false : 
-                                                tabela.tabela == "Clientes" ? false : 
-                                                tabela.tabela == "Produtos" ? true :
-                                                tabela.tabela == "Perdidos" ? true : 
-                                                tabela.tabela == "Usuarios" ? false :
-                                                tabela.tabela == "Empresas" ? false :
-                                                tabela.tabela == "Grupos" ? false : 
-                                                tabela.tabela == "Configuracao" ? false : false;
-                            EntityPermissao.inserir = tabela.tabela == "Vendedores" ? false : 
+                        let EntityPermissao: Permissao = new Permissao();
+                        EntityPermissao.visualizar = tabela.tabela == "Vendedores" ? false : 
                                             tabela.tabela == "Clientes" ? false : 
-                                            tabela.tabela == "Produtos" ? false :
+                                            tabela.tabela == "Produtos" ? true :
                                             tabela.tabela == "Perdidos" ? true : 
                                             tabela.tabela == "Usuarios" ? false :
                                             tabela.tabela == "Empresas" ? false :
                                             tabela.tabela == "Grupos" ? false : 
                                             tabela.tabela == "Configuracao" ? false : false;
-                            EntityPermissao.excluir = false;
-                            EntityPermissao.alterar = tabela.tabela == "Vendedores" ? false : 
-                                            tabela.tabela == "Clientes" ? false : 
-                                            tabela.tabela == "Produtos" ? false :
-                                            tabela.tabela == "Perdidos" ? true : 
-                                            tabela.tabela == "Usuarios" ? false :
-                                            tabela.tabela == "Empresas" ? false :
-                                            tabela.tabela == "Grupos" ? false : 
-                                            tabela.tabela == "Configuracao" ? false : false;
-                            EntityPermissao.grupo = Promise.resolve(grupo);
-                            EntityPermissao.tabela = tabela.tabela;
+                        EntityPermissao.inserir = tabela.tabela == "Vendedores" ? false : 
+                                        tabela.tabela == "Clientes" ? false : 
+                                        tabela.tabela == "Produtos" ? false :
+                                        tabela.tabela == "Perdidos" ? true : 
+                                        tabela.tabela == "Usuarios" ? false :
+                                        tabela.tabela == "Empresas" ? false :
+                                        tabela.tabela == "Grupos" ? false : 
+                                        tabela.tabela == "Configuracao" ? false : false;
+                        EntityPermissao.excluir = false;
+                        EntityPermissao.alterar = tabela.tabela == "Vendedores" ? false : 
+                                        tabela.tabela == "Clientes" ? false : 
+                                        tabela.tabela == "Produtos" ? false :
+                                        tabela.tabela == "Perdidos" ? true : 
+                                        tabela.tabela == "Usuarios" ? false :
+                                        tabela.tabela == "Empresas" ? false :
+                                        tabela.tabela == "Grupos" ? false : 
+                                        tabela.tabela == "Configuracao" ? false : false;
+                        EntityPermissao.grupo = Promise.resolve(grupo);
+                        EntityPermissao.tabela = tabela.tabela;
 
-                            await _repPermissao.save(EntityPermissao);
-
-                        
-
-                        }
-            }
+                        _repPermissao.save(EntityPermissao);
+                    }
+                    resolve("Tabelas cadastradas")
+                } else {
+                    reject("Grupo e Tabela devem ser informados")
+                }
+          })
         }
 
         export async function cadastroUsuario(grupo: Grupos[], _repUsuario: Repository<User> = getRepository(User)) {
+            return new Promise<any>(async (resolve, reject) => {
+                let temUuario = await _repUsuario.findOne();
 
-            let temUuario = await _repUsuario.findOne();
+                if (!temUuario) {
+                    if (grupo) {
+                        let usuario = new User();
 
-            if (!temUuario) {
-                if (grupo) {
-                    let usuario = new User();
+                        usuario.email = "admin@admin";
+                        usuario.ativo = true;
+                        usuario.isRoot = true;
+                        usuario.nome = "Super Admin";
+                        usuario.senha = md5("admin");
+                        usuario.status_usuario = 2;
+                        usuario.grupos = Promise.resolve(grupo);
 
-                    usuario.email = "admin@admin";
-                    usuario.ativo = true;
-                    usuario.isRoot = true;
-                    usuario.nome = "Super Admin";
-                    usuario.senha = md5("admin");
-                    usuario.status_usuario = 2;
-                    usuario.grupos = Promise.resolve(grupo);
-
-                    await _repUsuario.save(usuario);
-
-          
+                        _repUsuario.save(usuario);
+                    }
+                    resolve("Usuário Cadastrado")
+                } else {
+                    reject("Usuário já foi cadastrado")
                 }
 
-            }
-            return;
+            })
         }
 
 
@@ -593,19 +589,22 @@ var progressBar = require("progress");
         export async function cadastroVendedores() {
             let _repEmpresas: Repository<Empresas> = getRepository(Empresas);
             let empresas = await _repEmpresas.find();
-            return cadastraVendedores(empresas);
+            let vendedores = await cadastraVendedores(empresas);
+            await Promise.all([empresas, vendedores]);
         }
         
         export async function cadastroUsuarios() {
             let _repGrupos: Repository<Grupos> = getRepository(Grupos);
             let grupos = await _repGrupos.find();
-            await cadastroUsuario(grupos);
+            let usuario = await cadastroUsuario(grupos);
+            await Promise.all([grupos, usuario])
         }
 
         export async function cadastroProduto() {
             let _repEmpresas: Repository<Empresas> = getRepository(Empresas);
             let empresas = await _repEmpresas.find();
-            return cadastraProdutos(empresas);
+            let produtos = await cadastraProdutos(empresas);
+            await Promise.all([empresas, produtos]);
         }
 
  

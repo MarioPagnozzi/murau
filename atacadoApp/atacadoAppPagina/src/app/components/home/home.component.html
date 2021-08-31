@@ -1,7 +1,4 @@
-<ngx-spinner bdColor="rgba(75,46,40,0.7)" color="#ffff" size="medium" type="ball-spin-fade-rotating"
-  [fullScreen]="true">
-  <p style="font-size: 20px; color: white">Aguarde ...</p>
-</ngx-spinner>
+
 <div id="prodListas" class="card">
   <p-dataView #dv [value]="produtos" [paginator]="true" [rows]="12" filterBy="nome,referencia,codigo"
     [sortField]="sortField" [sortOrder]="sortOrdem" layout="grid" (onPage)="onPageChange();">
@@ -12,6 +9,11 @@
           <input type="search" pInputText placeholder="Buscar por Nome, Referência ou Código"
             (input)="applyFilter($event)">
         </span>
+        <button pButton pRipple class="p-button-rounded p-button-outlined" (click)="atualizaProdutos()">
+        
+            <fa-icon [icon]="['fas','sync-alt']"></fa-icon>
+            Atualizar Catálogo
+        </button>
         <p-dataViewLayoutOptions></p-dataViewLayoutOptions>
       </div>
     </ng-template>
