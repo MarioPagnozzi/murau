@@ -1,8 +1,8 @@
 {
     "apps": [{
         "name": "api.murau.com.br",
-        "script": "src/index.ts",
-        "watch": ["atacadoApp_API", "src"],
+        "script": "./node_modules/atacadoapp_api/build/src/index.js",
+        "watch": ["atacadoApp_API", "./node_modules/atacadoapp_api/build/src"],
         "env": {
             "NODE_ENV": "development",
             "TARGET": "https://apimurau.mapxsolucoes.com.br:9443",
@@ -20,5 +20,5 @@
             "DHPARAM": "/usr/local/directadmin/data/users/murau/domains/api.murau.com.br.cert.combined"
         }
     }],
-    "postinstall": "$(yum bin)/pm2 install typecsript"
+    "postinstall": "$(yum bin)/pm2 install typescript"
 }

@@ -1,6 +1,6 @@
 import "reflect-metadata";
-import * as express from "express";
-import * as bodyParser from "body-parser";
+//import * as express from "express";
+//import * as bodyParser from "body-parser";
 //import * as cors from "cors";
 import {Request, Response} from "express";
 import {Routes} from "./routes";
@@ -26,6 +26,8 @@ if (config.production) {
 }
 
 // create express app
+const express = require("express");
+const bodyParser = require("body-parser")
 const app = express();
 app.use(require('cors')());
 app.use(bodyParser.json({limit: "100mb"}));

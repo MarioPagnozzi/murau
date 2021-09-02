@@ -1,7 +1,9 @@
 {
-    "name": "atacadoApp_API",
-    "version": "1.1.0",
+    "name": "atacadoapp_api",
+    "version": "1.1.5",
     "description": "API do App atacado",
+    "autor": "Mario Antonio Pagnozzi",
+    "licence": "ISC",
     "devDependencies": {
         "@types/node": "^16.4.7",
         "progress": "^2.0.3",
@@ -18,7 +20,7 @@
     "dependencies": {
         "body-parser": "^1.18.1",
         "cors": "^2.8.5",
-        "express": "^4.15.4",
+        "express": "^5.0.0-alpha.8",
         "follow-redirects": "^1.13.3",
         "formidable": "^1.2.2",
         "full-icu": "^1.3.4",
@@ -35,14 +37,20 @@
         "nodemailer": "^6.5.0",
         "reflect-metadata": "^0.1.13",
         "request": "^2.88.2",
+        "rxjs": "^7.3.0",
         "sharp": "^0.26.3",
         "typeorm": "^0.3.0-alpha.24",
+        "uuid": "^7.0.0",
         "vhost": "^3.0.2"
     },
     "scripts": {
         "size": "--max_old_space_size=8192",
         "start": "ts-node src/index.ts",
         "server": "nodemon --watch src/**/*.ts --exec ts-node --delay 3 src/index.ts",
-        "build": "tsc --build tsconfig.json"
-    }
+        "build": "tsc -p tsconfig.json",
+        "build-dev": "tsc"
+    },
+    "files": [
+        "build/**/*"
+    ]
 }

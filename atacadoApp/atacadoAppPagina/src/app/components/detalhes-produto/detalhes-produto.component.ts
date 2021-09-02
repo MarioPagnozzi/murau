@@ -95,7 +95,7 @@ export class DetalhesProdutoComponent implements OnInit {
 
   async getUid(uid: string) {
 
-    this.homeService.getObservableById(uid).subscribe(
+    /*this.homeService.getObservableById(uid).subscribe(
       {
         next: async (produto) => {
 
@@ -118,7 +118,7 @@ export class DetalhesProdutoComponent implements OnInit {
           if (result_extra.success) {
             this.produtosExtras = result_extra.data as ProdutosModel[];
             this.produtosExtras = this.produtosExtras.filter(val => val.uid !== uid);
-            this.produtosExtras.forEach(async (produto) => {             
+            this.produtosExtras.forEach(async (produto) => {
               let imagens = await this.homeService.filtro("imagens", produto.uid)
               if (imagens.data && imagens.data != null && imagens.data.length > 0) {
                 produto.imagens = imagens.data as ImagesProdutoModel[];
@@ -165,8 +165,73 @@ export class DetalhesProdutoComponent implements OnInit {
           console.log(error)
         }
       }
-    );
-    
+    );*/
+    this.unbindDocumentListeners();
+        this.activeIndex = -1;
+        this.tamanhos = [];
+        this.images = [];
+        this.images.push(this.no_images)
+        let produtosList = this.homeService.produtosList();
+        this.produto = produtosList.filter(val => val.uid === uid)[0] as ProdutosModel;
+        if (this.produto.imagens.length > 0) {
+          this.images = this.produto.imagens as ImagesProdutoModel[];
+        }
+
+       
+        this.produtosExtras = produtosList.filter(val => val.nome ? val.nome.indexOf(this.produto.nome ? this.produto.nome.substring(0, this.produto.nome.indexOf(' ')) : "") > -1 : "");
+        
+        
+        this.produtosModelo = produtosList.filter(val => val.nome === this.produto.nome);
+        this.produtos = this.produtosExtras.slice(0, 6);
+        this.prodModelo = this.produtosModelo.slice(0, 3);
+        
+        
+        const produtos = produtosList.filter(val => val.referencia === this.produto.referencia)        
+        const tamanhos = produtos.filter((prod, i, produtos) => produtos.findIndex(p => p.tamanho === prod.tamanho) === i);
+        tamanhos.forEach((p) => {
+          console.log(p)
+          this.tamanhos.push({tamanho: p.tamanho});
+        });
+        this.bindDocumentListeners();
+        this.activeIndex = 0;
+    this.router.events.subscribe({
+      next: (event) => {
+     
+        this.unbindDocumentListeners();
+        this.activeIndex = -1;
+        this.tamanhos = [];
+        this.images = [];
+        this.images.push(this.no_images)
+
+        let produtosList = this.homeService.produtosList();
+        this.produto = produtosList.filter(val => val.uid === uid)[0] as ProdutosModel;
+        if (this.produto.imagens.length > 0) {
+          this.images = this.produto.imagens as ImagesProdutoModel[];
+        }
+        
+       
+        this.produtosExtras = produtosList.filter(val => val.nome ? val.nome.indexOf(this.produto.nome ? this.produto.nome.substring(0, this.produto.nome.indexOf(' ')) : "") > -1 : "");
+        
+        this.produtosModelo = produtosList.filter(val => val.nome === this.produto.nome);
+        this.produtos = this.produtosExtras.slice(0, 6);
+        this.prodModelo = this.produtosModelo.slice(0, 3);
+        
+        
+        const produtos = produtosList.filter(val => val.referencia === this.produto.referencia)       
+        const tamanhos = produtos.filter((prod, i, produtos) => produtos.findIndex(p => p.tamanho === prod.tamanho) === i);
+        tamanhos.forEach((p) => {
+          console.log(p)
+          this.tamanhos.push({tamanho: p.tamanho});
+        });
+        this.bindDocumentListeners();
+        this.activeIndex = 0;
+        document.getElementById("detalhesProduto")?.scrollIntoView();
+        if (!(event instanceof NavigationEnd)) {
+          return;
+        }
+      }
+      
+    })
   }
 
   random_bgcolor() {

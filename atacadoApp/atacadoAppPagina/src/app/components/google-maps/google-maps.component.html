@@ -1,0 +1,18 @@
+<agm-map [latitude]="lat" [longitude]="lng" [zoom]="12" [scrollwheel]="false" >
+              
+    <agm-marker *ngFor="let marker of markers" [latitude]="marker.lat" [longitude]="marker.lng"
+    iconUrl="./assets/images/logo_1.png"
+    [markerDraggable]="true">
+        <agm-info-window [disableAutoPan]="true">
+            <h6><strong>Filial:</strong> {{marker.nome_fantasia}}</h6>
+            <h6><strong>Cidade:</strong> {{marker.cidade}}/{{marker.uf}}</h6>
+            <h6><strong>CEP:</strong> {{marker.cep | mask: '00000-000'}}</h6>
+            <h6><strong>Endereço</strong>: {{marker.endereco}}, {{marker.numero}}</h6>
+            <h6 *ngIf="marker.complemento"><strong>Complemento:</strong> {{marker.complemento}}</h6>
+            <h6><strong>Telefone:</strong> {{marker.telefone | mask: '(00) 0000-0000 || (00) 0 0000-0000'}}</h6>
+            <h6>Distância: A nossa filial está a {{marker.dist | number: '0.2-3':'pt'}} km de você</h6>
+        </agm-info-window>
+    </agm-marker>
+
+
+</agm-map>

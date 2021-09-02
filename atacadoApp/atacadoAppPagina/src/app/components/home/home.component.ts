@@ -41,8 +41,14 @@ export class HomeComponent implements OnInit {
                private mapsAPILoader: MapsAPILoader,
                private primengConfig: PrimeNGConfig,
                private usuariosService: UsuariosService,             
-               private router: Router){}
+               private router: Router)
+{
+ 
+}
 
+  async ngOnDestroy() {
+    this.subscrip.unsubscribe();
+  }
   async ngOnInit() {
       this.isLogged = this.usuariosService.isStaticLogged;
       if (this.isLogged) {
@@ -50,7 +56,7 @@ export class HomeComponent implements OnInit {
       } else {
         //const prods = await this.homeService.getAll();
         
-        this.homeService.getObservable().subscribe({
+        /*this.homeService.getObservable().subscribe({
           next: (produtos) => {
             this.produtos = produtos as ProdutosModel[];
             this.produtos.forEach(async (produto) => {
@@ -63,6 +69,21 @@ export class HomeComponent implements OnInit {
                 
             })
             
+          }
+        })*/
+        if (!this.isLogged) {
+          if (this.homeService.produtosList().length <= 0) {
+            this.homeService.retornaProdutos();
+          }
+        }
+        this.produtos = this.homeService.produtosList().filter((prod, i, produtos) => produtos.findIndex(p => p.nome === prod.nome) === i );
+        
+        this.subscrip = this.homeService.produtosChange$.subscribe({
+          next: (produtos) => {
+              this.produtos = (produtos as ProdutosModel[]).filter((prod, i, produtos) => produtos.findIndex(p => p.nome === prod.nome) === i );
+          },
+          error: (err) => {
+            throw new Error(err);
           }
         })
         this.sortOpicao = [
@@ -91,5 +112,7 @@ export class HomeComponent implements OnInit {
   onPageChange() {
     document.getElementById("prodListas")?.scrollIntoView();
   }
-  
+  atualizaProdutos() {
+    this.homeService.retornaProdutos();
+  }
 }

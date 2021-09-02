@@ -1,3 +1,6 @@
 {
-    "nxConsole.useNVM": true
+    "nxConsole.useNVM": true,
+    "projectManager.git.baseFolders": [
+        "C:\\Users\\mario\\Documents\\Projetos\\sources"
+    ]
 }

@@ -1,32 +1,59 @@
-<div class="container">
-    
-        <p-card subheader="Utilize seu e-mail e senha para ter acesso ao seu painel" styleClass="p-card-subheader">
-            <ng-template pTemplate="header">
-                Login
-            </ng-template>
-    
-            <div class="p-grid p-fluid full-width padding-left padding-top">
-                <div class="p-field full-width">
-                    <div class="p-inputgroup">
-                        <span class="p-inputgroup-addon"><i class="pi pi-user"></i></span>
-                        <input type="text" [(ngModel)]="form.email" pInputText placeholder="Utilize seu E-mail" class="ng-invalid ng-dirty full-width" required>
-                    </div>
+<div #limiter id="limiter" class="limiter">
+    <div class="container-login100" style="background-image: url('./assets/images/bg-01.jpg');">
+        <div class="wrap-login100">
+            <form class="login100-form validate-form">
+                <span class="login100-form-logo">
+                    <i class="zmdi zmdi-landscape"><img src="./assets/images/logo.png" /></i>
+                </span>
+
+                <span class="login100-form-title p-b-34 p-t-27">
+                    Painel Administrativo
+                </span>
+
+                <mat-form-field class="full-width" appearance="fill">
+                    <mat-label><fa-icon [icon]="['fas','user']"></fa-icon> E-mail</mat-label>
+                    <input type="email" matInput [(ngModel)]="form.email"[formControl]="emailFormControl" [errorStateMatcher]="matcher"
+                           placeholder="Ex. pat@example.com">                    
+                    <mat-error *ngIf="emailFormControl.hasError('email') && !emailFormControl.hasError('required')">
+                      Informe um e-mail válido
+                    </mat-error>
+                    <mat-error *ngIf="emailFormControl.hasError('required')">
+                      E-mail é <strong>Obrigatório</strong>
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field class="full-width" appearance="fill">
+                    <mat-label><fa-icon [icon]="['fas','lock']"></fa-icon> Password</mat-label>
+                    <input type="password" matInput [(ngModel)]="form.senha" [formControl]="senhaFormControl" [errorStateMatcher]="matcher">                    
+                    <mat-error *ngIf="emailFormControl.hasError('email') && !senhaFormControl.hasError('required')">
+                      Informe sua senha
+                    </mat-error>
+                    <mat-error *ngIf="emailFormControl.hasError('required')">
+                     Senha é <strong>Obrigatória</strong>
+                    </mat-error>
+                </mat-form-field>
+
+                <section class="example-section" [formGroup]="toppings">
+                    
+                    <p><mat-checkbox formControlName="lembrar">Lembrar-me</mat-checkbox></p>
+                   
+                  </section>
+
+                <div class="container-login100-form-btn">
+                    <button class="login100-form-btn" (click)="login()">
+                        Login
+                    </button>
                 </div>
-            </div>
-            <div class="p-grid p-fluid full-width padding-left padding-top">
-                <div class="p-field full-width">
-                    <div class="p-inputgroup">
-                        <span class="p-inputgroup-addon"><i class="pi pi-key"></i></span>
-                        <input type="password" [(ngModel)]="form.senha" pInputText class="ng-invalid ng-dirty full-width" required>
-                    </div>
+
+                <div class="text-center p-t-90">
+                    <a class="txt1" href="#">
+                        Esqueceu sua senha?
+                    </a>
                 </div>
-            </div>
-            <ng-template pTemplate="footer">
-                    <div class="p-grid p-fluid">
-                        <button pButton class="p-button-outlined" label="Acessar" icon="pi pi-check" type="button" (click)="login()"></button>
-                    </div>
-            </ng-template>
-        </p-card>
-    
-    
+            </form>
+        </div>
+    </div>
 </div>
+
+
+<div id="dropDownSelect1"></div>

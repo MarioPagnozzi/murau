@@ -8,6 +8,7 @@ import { ImagensProduto } from '../../entity/imagesProduto';
 import { isArray } from 'util';
 import config from "../config";
 import { setInterval } from 'timers';
+import { Grupos } from '../../entity/Grupos';
 
 
 //var https = require("https");
@@ -1005,38 +1006,50 @@ export function Email(mensagem) {
     })
 
 }
-export function Permissao(req: Request, tabela, acao) {
-    let permitido: boolean = false;
+export async function Permissao(req: Request, tabela, acao) {
+   
     if (!req.grupos || req.grupos.length <= 0) {
         return false;
     }
-    req.grupos.forEach((grupo) => {
-        let { permissoes } = grupo;
-        if (grupo.excluido == false && grupo.ativo == true) {
-            for (let p in permissoes) {
-                if (permissoes[p].tabela == tabela) {
-                    if (acao == "V") {
-                        if (permissoes[p].visualizar)
-                            permitido = true;
-                    }
-                    if (acao == "I") {
-                        if (permissoes[p].inserir)
-                            permitido = true;
-                    }
-                    if (acao == "A") {
-                        if (permissoes[p].alterar)
-                            permitido = true;
-                    }
-                    if (acao == "E") {
-                        if (permissoes[p].excluir)
-                            permitido = true;
+
+    const hasPermissao = async () => {
+        let hasPermissao: boolean = false;
+
+        req.grupos.forEach(async (grupo) => {
+            const _repGrupos: Repository<Grupos> = getRepository(Grupos);
+            const grp = await _repGrupos.findOne({relations: ["permissoes"], where: {uid: grupo.uid}})
+            let permissoes = await grp.permissoes;
+           
+            if (!grupo.excluido && grupo.ativo) {
+                for (let p = 0; p < permissoes.length -1; p++) {
+                   
+                    if (permissoes[p].tabela.toLowerCase() === tabela.toLowerCase()) {
+                        
+                        if (acao === "V") {
+                            if (permissoes[p].visualizar)
+                                hasPermissao = true;
+                        }
+                        if (acao === "I") {
+                            if (permissoes[p].inserir)
+                                hasPermissao = true;
+                        }
+                        if (acao === "A") {
+                            if (permissoes[p].alterar)
+                                hasPermissao = true;
+                        }
+                        if (acao === "E") {
+                            if (permissoes[p].excluir)
+                                hasPermissao = true;
+                        }
                     }
                 }
             }
-        }
-
-    })
-    return permitido;
+    
+        });
+        return hasPermissao;
+    }
+    const permissao = await hasPermissao();
+    return permissao;
 }
 export function Tabela(request: Request) {
     let url = request.url.split("/");

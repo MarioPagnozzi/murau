@@ -28,6 +28,7 @@ import {MatSlideToggleModule} from '@angular/material/slide-toggle';
 import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 
 import { MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
@@ -63,6 +64,7 @@ import {TooltipModule} from 'primeng/tooltip';
 import {AutoCompleteModule} from 'primeng/autocomplete';
 import {GalleriaModule} from 'primeng/galleria';
 import {PaginatorModule} from 'primeng/paginator';
+import {MatBadgeModule} from '@angular/material/badge';
 
 import { registerLocaleData } from '@angular/common';
 import localePt from '@angular/common/locales/pt';
@@ -112,15 +114,17 @@ import {GMapModule} from 'primeng/gmap';
 import {AgmCoreModule} from '@agm/core';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
-import { faUser, faEdit, faBars, faCog, faCartPlus, faCamera, faChartArea, faSignOutAlt, faSearchPlus } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faEdit, faBars, faCog, faCartPlus, faCamera, faChartArea, faSignOutAlt, faSearchPlus, faCogs, faSyncAlt, faLock } from '@fortawesome/free-solid-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
-import { faFacebook, faTwitter, faGoogle, faLinkedin, faInstagram} from '@fortawesome/free-brands-svg-icons';
+import { faFacebook, faTwitter, faGoogle, faLinkedin, faInstagram, faPinterest} from '@fortawesome/free-brands-svg-icons';
 import { CreateClienteComponent } from './components/create-cliente/create-cliente.component';
 import { AppCepValidateDirective, AppCnpjValidateDirective, AppEmailValidateDirective, AppNomeValidateDirective, AppUfValidateDirective } from './diretivas/diretivaValidacoes';
 import { InputFileComponent } from './components/input-file/input-file.component';
 import { ToolBarComponent } from './components/tool-bar/tool-bar.component';
 import { FormUsuarioComponent } from './components/form-usuario/form-usuario.component';
 import { DetalhesProdutoComponent } from './components/detalhes-produto/detalhes-produto.component';
+import { PanelAdministradorComponent } from './components/panel-administrador/panel-administrador.component';
+import { GoogleMapsComponent } from './components/google-maps/google-maps.component';
 
 declare global {
   interface Document {
@@ -212,7 +216,9 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     InputFileComponent,
     ToolBarComponent,
     FormUsuarioComponent,
-    DetalhesProdutoComponent
+    DetalhesProdutoComponent,
+    PanelAdministradorComponent,
+    GoogleMapsComponent
   ],
   imports: [
     FormsModule,
@@ -279,7 +285,10 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     TooltipModule,
     AutoCompleteModule,
     GalleriaModule,
-    PaginatorModule
+    PaginatorModule,
+    GMapModule,
+    MatCheckboxModule,
+    MatBadgeModule
     
 
   ],
@@ -354,7 +363,11 @@ export class AppModule {
       faSignOutAlt,
       faEdit,
       faSearchPlus,
-      faCamera
+      faCamera,
+      faCogs,
+      faSyncAlt,
+      faPinterest,
+      faLock
     )
   }
 }
