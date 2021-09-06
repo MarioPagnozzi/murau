@@ -27,50 +27,50 @@ export class HttpService {
   public get(url: string): Promise<IResult> {
     return new Promise<IResult>(async (resolve) => {
       const header = this.createHeader();
-  
+
       /*this.http.get(url, { headers: header })
-               .subscribe( 
-                 
+               .subscribe(
+
                  res => {
                       this.spinner.hide();
                       resolve({success: true, data: res, error: undefined});
-                      
-                     
-                     
+
+
+
                  },
                  err => {
                       this.spinner.hide();
                       resolve({success: false, data: undefined, error: err})
-                 
+
                  }); */
        try {
         this.spinner.show();
         const res = await this.http.get(url, { headers: header }).toPromise();
         this.spinner.hide();
         resolve({success: true, data: res, error: undefined});
-       
+
        } catch (error) {
         this.spinner.hide();
         resolve({success: false, data: undefined, error: error})
        }
     });
-    
+
   }
   public post(url: string, model: any): Promise<IResult> {
     return new Promise<IResult>(async (resolve) => {
       const header = this.createHeader();
       const body = JSON.stringify(model);
-     
+
       try {
        this.spinner.show();
         const res = await this.http.post(url, body, {headers: header}).toPromise();
         this.spinner.hide();
         resolve({success: true, data: res, error: undefined});
-       
+
 
       }
-      catch (error) {
-       
+      catch (error: any) {
+
         this.spinner.hide();
         if (error.status === 400) {
           let txtErro = '<ul>';
@@ -85,11 +85,11 @@ export class HttpService {
               }
             });
             txtErro = txtErro + '</ul>';
-            
+
             Swal.fire('Atenção', txtErro, 'warning');
           }
         }
-        resolve({success: false, data: undefined, error});
+        resolve({success: false, data: undefined, error: error});
       }
     })
   }
@@ -101,15 +101,15 @@ export class HttpService {
         const res = await this.http.delete(url, {headers: header}).toPromise();
         this.spinner.hide();
         resolve({success: true, data: res, error: undefined});
-      
+
 
       }
       catch (error) {
         this.spinner.hide();
-        resolve({success: false, data: undefined, error});
+        resolve({success: false, data: undefined, error: error});
       }
     })
   }
-  
+
 }
 

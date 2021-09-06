@@ -90,7 +90,7 @@ https.createServer(obj_param,app).listen(config.port,'0.0.0.0', async () => {
             let tabelas = await cadastraTabelas();
             let vendedores = await cadastroVendedores()
             let produtos = await cadastroProduto()
-            let grupos = await cadastroGrupo(["Supoer Usuário", "Vendedores", "Clientes"])
+            let grupos = await cadastroGrupo(["Super Usuário", "Vendedores", "Clientes"])
             let permissao = await cadastraPermissao();
             let usuario = await cadastroUsuarios();
 

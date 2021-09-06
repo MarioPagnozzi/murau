@@ -27,7 +27,7 @@ export function RetornaGruposUsuario() {
         return {
             nome_grupo: g.nome_grupo
         }
-        
+
     });
     return grupos;
 }
@@ -37,27 +37,25 @@ export function Permissao(tabela: string, acao: string): boolean {
         return false;
     }
 
-    const json = JSON.parse(localStorage.getItem("murau:grupo") as string);  
+    const json = JSON.parse(localStorage.getItem("murau:grupo") as string);
     const grupos: GrupoModel[] = json as GrupoModel[];
 
 
         let hasPermissao: boolean = false;
         console.log(grupos)
-        if (acao === "V") { 
-            
-            for (let i = 0; i < grupos.length - 1; i++) {
+        if (acao === "V") {
+
+            // tslint:disable-next-line: prefer-for-of
+            for (let i = 0; i < grupos.length; i++) {
                 const permissoes = grupos[i].permissoes ? grupos[i].permissoes as PermissaoModel[] : [] as PermissaoModel[];
                 for (let i = 0; i < permissoes.length - 1; i++) {
                     // tslint:disable-next-line: curly
                     if (permissoes[i].tabela?.toLowerCase() === tabela.toLowerCase()) {
-                        console.log("visualizar")
-                        console.log(permissoes[i].visualizar)
                         if (permissoes[i].visualizar) {
-                            console.log(permissoes[i].visualizar)
                             hasPermissao = true;
                         }
                     }
-                    
+
                 }
             }
             return hasPermissao;
@@ -88,7 +86,7 @@ export function Permissao(tabela: string, acao: string): boolean {
             })
             return hasPermissao;
         }
-            
+
         if (acao === "E") {
 
             grupos.forEach((grupo) => {
@@ -103,7 +101,7 @@ export function Permissao(tabela: string, acao: string): boolean {
             return hasPermissao;
         }
         return hasPermissao;
- 
+
 }
 interface IChildrenPai {
     label?: string,
@@ -123,13 +121,13 @@ interface IMenuCadastros {
     children?: IChildrenPai[],
     data?: string,
     expandedIcon?: string,
-    collapsedIcon?: string 
+    collapsedIcon?: string
 
 }
 export function montaMenu() {
-   
-  
-   const menu: IMenuCadastros[] = [];   
+
+
+   const menu: IMenuCadastros[] = [];
    const childrenPai: IChildrenPai[] = [];
    if (localStorage.getItem("murau:grupo") == null) {
         return menu;
