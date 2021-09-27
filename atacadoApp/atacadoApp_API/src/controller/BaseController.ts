@@ -48,7 +48,6 @@ async save(model: any) {
         if (this.valid()) {
             return this._repositorio.save(model);
         } else
-            console.log(JSON.stringify(this.allNotifications));
             return {
                 status: 400,
                 errors: [this.allNotifications]

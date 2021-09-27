@@ -48,7 +48,7 @@ export class Produtos extends BaseEntity {
     @OneToMany (type => ImagensProduto, imagem => imagem.produto, {nullable: true})   
     imagens: Promise<ImagensProduto[]>
 
-    @OneToMany (type => ItemPedido,  itemPedido => itemPedido.produto, {nullable: true})
-    pedidos: Promise<ItemPedido[]>
+    @OneToMany (type => ItemPedido,  itemPedido => itemPedido.produto, {nullable: true, eager: false})
+    pedidos: ItemPedido[]
    
 }

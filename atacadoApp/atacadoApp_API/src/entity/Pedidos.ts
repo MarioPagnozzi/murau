@@ -31,8 +31,8 @@ export class Pedidos extends BaseEntity {
     @ManyToOne(type => Empresas, empresa => empresa.pedidos)
     empresa: Promise<Empresas>
 
-    @OneToMany(type => ItemPedido, item => item.pedido)
-    itens: Promise<ItemPedido[]>
+    @OneToMany(type => ItemPedido, item => item.pedido, {eager: true})
+    itens: ItemPedido[]
 
     @OneToMany(type => HistoricoPedido, historico => historico.pedido)
     historico: Promise<HistoricoPedido[]>

@@ -31,10 +31,12 @@ export class User extends BaseEntity {
     @JoinTable()
     grupos: Promise<Grupos[]>
 
-    @OneToOne(type => Clientes, cliente => cliente.usuario, {nullable: true})
-    cliente: Promise<Clientes>
+    @OneToOne(type => Clientes, clientes => clientes.usuario, {eager: true, nullable: true})
+    @JoinColumn()
+    cliente: Clientes
 
-    @OneToOne(type => Vendedores, vendedor => vendedor.usuario, {nullable: true})   
-    vendedor: Promise<Vendedores>
+    @OneToOne(type => Vendedores, vendedores => vendedores.usuario, {eager: true, nullable: true})
+    @JoinColumn()
+    vendedor: Vendedores
    
 }

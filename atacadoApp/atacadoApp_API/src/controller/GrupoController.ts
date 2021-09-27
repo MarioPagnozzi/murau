@@ -51,4 +51,16 @@ export class GrupoController extends BaseController<Grupos> {
         console.log(perm)
         return grupo.permissoes;
     }
+    async one (request: Request, restrito = true) {
+       
+        if (restrito) {
+            let tabela = this.func.Tabela(request);
+            if (!this.func.Permissao(request, tabela, "V")) 
+                return {status: 400, errors: [{message: "Você não tem permissão para acessar os registros"}]}
+        }
+        let sql_grupo = await this._repGrupos.findOne(request.params.id);
+        let grupo: any = {...sql_grupo};
+        grupo.permissoes = await sql_grupo.permissoes;
+        return grupo;
+    }
 }

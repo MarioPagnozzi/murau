@@ -52,11 +52,12 @@ export class VendedoresController extends BaseController<Vendedores> {
         let valor = request.params.valor;
         let filtro = request.params.filtro;
 
-        if (filtro === "empresa") {
-            return this._repVendedor.createQueryBuilder("vendedores")
-                                    .innerJoinAndSelect("vendedores.empresas","empresas")
-                                    .where("empresas.uid = :uid", {uid: valor})
-                                    .getMany();
+        if (filtro === "empresas") {
+            let empVend = await this._repVendedor.findOne({where: {uid: valor}});
+            let vend: any = {...empVend};
+            vend.empresas = await empVend.empresas;
+            console.log(vend)
+            return vend;
         }
     }
     async nome_like(request: Request) {

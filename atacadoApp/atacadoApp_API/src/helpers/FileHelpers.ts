@@ -16,15 +16,15 @@ export class FileHelper {
             let _base64Data = base64Data.substr(positionEndStringIdentifyBase64)
 
             let _directory = variables.folderStorage
-            let dirExistis = await fs.existsSync(_directory)
+            let dirExistis = fs.existsSync(_directory)
 
             if (!dirExistis)
-                await fs.mkdirSync(_directory)
+                fs.mkdirSync(_directory)
 
             let filename = `${UtilsHelper.GenerateUniqueHash}.png`
             let fileNamePath = `${_directory}/${filename}`
 
-            await fs.writeFileSync(fileNamePath, _base64Data, 'base64')
+            fs.writeFileSync(fileNamePath, _base64Data, 'base64')
             console.log('Arquivo salvo em: ', fileNamePath)
 
             let jimpResult = await jimp.read(fileNamePath)

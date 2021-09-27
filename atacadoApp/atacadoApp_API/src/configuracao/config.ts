@@ -21,7 +21,9 @@ export default {
         "produtos",
         "vendedores",
         "produtos_empresas",
-        "vendedores_produtos"
+        "vendedores_produtos",
+        "promocao",
+        "agenda"
     ],
     apiVtexSearch: "https://lojamurau.vtexcommercestable.com.br/api/catalog_system/pub/products/search?",
     apiVetx: "/api/catalog_system/pvt/sku/stockkeepingunitbyid/",

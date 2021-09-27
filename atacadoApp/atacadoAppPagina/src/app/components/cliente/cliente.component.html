@@ -14,7 +14,7 @@
                   [aprovado]="aprovado"
                   [clienteAtivo]="clienteAtivo"
                   [clienteUid]="cliente.uid ? cliente.uid : ''"
-                  routerBack="/clientes"
+                  [routerBack]="url"
                   (salvar)="salvarAlteracoes()"></app-tool-bar>
     <mat-tab-group mat-align-tabs="start">
         <mat-tab label="Dados">
@@ -279,7 +279,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let pedido of pedidos">
+                        <tr *ngFor="let pedido of cliente.pedidos">
                             <td [ngClass]="{'pendente': pedido.status_pedido === 1, 
                                             'aprovado': pedido.status_pedido === 2, 
                                             'despachado': pedido.status_pedido === 3, 
@@ -327,11 +327,6 @@
                 <div class="col-sm">
                     <app-form-usuario [usuario]="usuario"></app-form-usuario>
                 </div>
-            </div>
-            <div class="row murau__container">
-               <div class="col-sm">
-                <app-tool-bar [alterar]="alterar" (salvar)="salvarUsuario()" [visivelBtnBack]="false"></app-tool-bar>
-               </div>
             </div>
         </mat-tab>
     </mat-tab-group>

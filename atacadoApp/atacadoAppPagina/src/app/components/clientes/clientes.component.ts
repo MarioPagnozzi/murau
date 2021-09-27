@@ -52,7 +52,7 @@ export class ClientesComponent implements OnInit {
             this.clienteList[i].excluido = true;
             this.spinnerAcao = "Excluindo registro " + x.toString() + " de " + this.selClientes.length.toString();
             
-            await this.atualizaUsuario(this.clienteList[i] as ClienteModel);
+            //await this.atualizaUsuario(this.clienteList[i] as ClienteModel);
             const result = await this.clienteService.delete(cliente.uid ? cliente.uid : '0');
             if (!result.success) {
               this.clienteList[i].ativo = true;
@@ -110,7 +110,7 @@ export class ClientesComponent implements OnInit {
               const _cli = await this.clienteService.getById(cliente.uid ? cliente.uid : '0');
               if (_cli.success) {
                 if (_cli.data) {
-                  await this.atualizaUsuario(_cli.data as ClienteModel);
+                  //await this.atualizaUsuario(_cli.data as ClienteModel);
                 }
               }
               
@@ -140,7 +140,7 @@ export class ClientesComponent implements OnInit {
             this.clientes = await this.retornaClientes();
             this.clienteList = this.clientes.filter(val => val.statusCliente !== 1 && !val.excluido);        
             this.mostraExcluidos = true;
-            await this.atualizaUsuario(_cliente);
+            //await this.atualizaUsuario(_cliente);
             this.mostraClientesExcluidos();
         
       }

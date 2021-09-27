@@ -43,6 +43,8 @@ export class AppComponent implements OnInit, OnDestroy {
   cidadesEmpresas: any;
   Obprodutos: Subscription = new Subscription();
 
+  subscript: Subscription = new Subscription();
+
   @ViewChild('search')
   public searchElementRef: ElementRef | undefined;
 
@@ -58,6 +60,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.subscrip.unsubscribe();
     this.Obprodutos.unsubscribe();
+    this.subscript.unsubscribe();
   }
  
   async ngOnInit() {
@@ -69,12 +72,12 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscrip = this.usuariosService.isLogged.subscribe(log => {
       this.isLogged = log;
       this.files = montaMenu();
-      this.isRoot = (localStorage.getItem("murau:isroot") === "true");
+      //this.isRoot = (localStorage.getItem("murau:isroot") === "true");
       this.usuario = RetornaDadosUsuario() ? RetornaDadosUsuario() : "";
       this.grupos = RetornaGruposUsuario();     
      
     })
-    this.isRoot = (localStorage.getItem("murau:isroot") === "true");
+    //this.isRoot = (localStorage.getItem("murau:isroot") === "true");
     this.usuario = RetornaDadosUsuario() ? RetornaDadosUsuario() : "";
     this.files = this.usuariosService.isStaticLogged ? montaMenu() : [];
     this.grupos = RetornaGruposUsuario();
@@ -96,6 +99,15 @@ export class AppComponent implements OnInit, OnDestroy {
     const _empresas = await this.homeService.filtro("empresas", "all");
     this.empresas = _empresas.data as IEmpresas[];
     this.cidadesEmpresas  = this.empresas.filter((emp, i, empresas) => empresas.findIndex(p => p.cidade === emp.cidade) === i );
+
+
+    this.subscript = this.usuariosService.isUserRoot.subscribe({
+      next: (val) => {
+       
+        this.isRoot = val;
+       
+      }
+    })
   }
 
   viewFile(file: TreeNode) {
@@ -107,7 +119,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
   logout() {
     this.usuariosService.logout();
-    this.router.navigateByUrl("/home")
+    this.router.navigateByUrl("/login")
   }
   unselectFile() {
     this.selectedFile = {};

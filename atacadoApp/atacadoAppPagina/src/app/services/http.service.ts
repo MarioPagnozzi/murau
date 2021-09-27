@@ -49,7 +49,7 @@ export class HttpService {
         this.spinner.hide();
         resolve({success: true, data: res, error: undefined});
 
-       } catch (error) {
+       } catch (error: any) {
         this.spinner.hide();
         resolve({success: false, data: undefined, error: error})
        }

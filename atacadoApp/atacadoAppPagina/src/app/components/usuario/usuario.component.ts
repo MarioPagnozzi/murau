@@ -56,7 +56,7 @@ export class UsuarioComponent implements OnInit {
     const result = await this.grupoService.getAll();
     if (result.success) {
       let _grupos = result.data as GrupoModel[];
-      this.grupos = _grupos.filter(val => !this.usuario.grupos.includes(val));
+      this.grupos = _grupos.filter(val => !this.usuario.grupos?.includes(val));
     }
   }
   async getUid(uid: string): Promise<void> {
@@ -79,6 +79,12 @@ export class UsuarioComponent implements OnInit {
     }
     console.log(this.usuario.grupos)
     this.grupoList = this.usuario.grupos as GrupoModel[];
+    for (let i = 0; i < this.grupoList.length; i++) {
+      let permissoes = await this.grupoService.getById(this.grupoList[i].uid as string);
+      if (permissoes.success) {
+         this.grupoList[i].permissoes = permissoes.data.permissoes as PermissaoModel[];
+      }
+    }
     
   } 
   upperCase($event: Event) {

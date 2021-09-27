@@ -22,7 +22,11 @@
     background-color:green;
     color:white;
   }
-  
+
+::ng-deep .style_atencao {
+    background-color:yellow;
+    color:white;
+  }
  mat-slide-toggle {
     margin: 8px 0px;
     display: block;

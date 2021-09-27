@@ -21,6 +21,7 @@ import { CreateClienteComponent } from './components/create-cliente/create-clien
 import { ClienteComponent } from './components/cliente/cliente.component';
 import { PedidoComponent } from './components/pedido/pedido.component';
 import { DetalhesProdutoComponent } from './components/detalhes-produto/detalhes-produto.component';
+import { ClientesPendentesComponent } from './components/clientes-pendentes/clientes-pendentes.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '/home' },
@@ -44,6 +45,7 @@ const routes: Routes = [
   { path: 'cliente/:cod', component: ClienteComponent, canActivate: [AdminGuard] },
   { path: 'pedido/:cod/:cli/:url', component: PedidoComponent, canActivate: [AdminGuard] },
   { path: 'produto/detalhes/:uid', component: DetalhesProdutoComponent},
+  { path: 'aprovar', component: ClientesPendentesComponent, canActivate: [AdminGuard] },
 
   { path: 'cadastro', component: CreateClienteComponent}
 ];

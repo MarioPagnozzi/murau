@@ -450,7 +450,7 @@ var md5 = require("md5");
                 if (grupo && tabela) {
 
                     
-                    if (grupo.nome_grupo == "Super Usuário") {
+                    if (grupo.nome_grupo === "Super Usuário") {
 
                         let EntityPermissao: Permissao = new Permissao();
                         EntityPermissao.visualizar = true;
@@ -463,34 +463,40 @@ var md5 = require("md5");
                         _repPermissao.save(EntityPermissao);
                     
 
-                    } else if (grupo.nome_grupo == "Vendedores") {
+                    } else if (grupo.nome_grupo === "Vendedores") {
 
                         let EntityPermissao: Permissao = new Permissao();
-                        EntityPermissao.visualizar = tabela.tabela == "Vendedores" ? false : 
-                                            tabela.tabela == "Clientes" ? true : 
-                                            tabela.tabela == "Produtos" ? true :
-                                            tabela.tabela == "Perdidos" ? true : 
-                                            tabela.tabela == "Usuarios" ? false :
-                                            tabela.tabela == "Empresas" ? true :
-                                            tabela.tabela == "Grupos" ? false : 
-                                            tabela.tabela == "Configuracao" ? false : false;
-                        EntityPermissao.inserir = tabela.tabela == "Vendedores" ? false : 
-                                        tabela.tabela == "Clientes" ? true : 
-                                        tabela.tabela == "Produtos" ? false :
-                                        tabela.tabela == "Perdidos" ? true : 
-                                        tabela.tabela == "Usuarios" ? false :
-                                        tabela.tabela == "Empresas" ? false :
-                                        tabela.tabela == "Grupos" ? false : 
-                                        tabela.tabela == "Configuracao" ? false : false;
+                        EntityPermissao.visualizar = tabela.tabela === "vendedores" ? false : 
+                                            tabela.tabela === "clientes" ? true : 
+                                            tabela.tabela === "produtos" ? true :
+                                            tabela.tabela === "perdidos" ? true : 
+                                            tabela.tabela === "usuarios" ? false :
+                                            tabela.tabela ==="empresas" ? true :
+                                            tabela.tabela === "grupos" ? false : 
+                                            tabela.tabela === "configuracao" ? false : 
+                                            tabela.tabela === "promocao" ? true : 
+                                            tabela.tabela === "agenda" ? true : false;
+                        EntityPermissao.inserir = tabela.tabela === "vendedores" ? false : 
+                                        tabela.tabela === "clientes" ? true : 
+                                        tabela.tabela === "produtos" ? false :
+                                        tabela.tabela === "perdidos" ? true : 
+                                        tabela.tabela === "usuarios" ? false :
+                                        tabela.tabela === "empresas" ? false :
+                                        tabela.tabela === "grupos" ? false : 
+                                        tabela.tabela === "configuracao" ? false : 
+                                        tabela.tabela === "promocao" ? false : 
+                                        tabela.tabela === "agenda" ? true : false;
                         EntityPermissao.excluir = false;
-                        EntityPermissao.alterar = tabela.tabela == "Vendedores" ? false : 
-                                        tabela.tabela == "Clientes" ? true : 
-                                        tabela.tabela == "Produtos" ? false :
-                                        tabela.tabela == "Perdidos" ? true : 
-                                        tabela.tabela == "Usuarios" ? false :
-                                        tabela.tabela == "Empresas" ? false :
-                                        tabela.tabela == "Grupos" ? false : 
-                                        tabela.tabela == "Configuracao" ? false : false;
+                        EntityPermissao.alterar = tabela.tabela === "vendedores" ? false : 
+                                        tabela.tabela === "clientes" ? true : 
+                                        tabela.tabela === "produtos" ? false :
+                                        tabela.tabela === "perdidos" ? true : 
+                                        tabela.tabela === "usuarios" ? false :
+                                        tabela.tabela === "empresas" ? false :
+                                        tabela.tabela === "grupos" ? false : 
+                                        tabela.tabela === "configuracao" ? false : 
+                                        tabela.tabela === "promocao" ? false : 
+                                        tabela.tabela === "agenda" ? true : false;
                         EntityPermissao.grupo = Promise.resolve(grupo);
                         EntityPermissao.tabela = tabela.tabela;
 
@@ -501,31 +507,37 @@ var md5 = require("md5");
                     } else {
 
                         let EntityPermissao: Permissao = new Permissao();
-                        EntityPermissao.visualizar = tabela.tabela == "Vendedores" ? false : 
-                                            tabela.tabela == "Clientes" ? false : 
-                                            tabela.tabela == "Produtos" ? true :
-                                            tabela.tabela == "Perdidos" ? true : 
-                                            tabela.tabela == "Usuarios" ? false :
-                                            tabela.tabela == "Empresas" ? false :
-                                            tabela.tabela == "Grupos" ? false : 
-                                            tabela.tabela == "Configuracao" ? false : false;
-                        EntityPermissao.inserir = tabela.tabela == "Vendedores" ? false : 
-                                        tabela.tabela == "Clientes" ? false : 
-                                        tabela.tabela == "Produtos" ? false :
-                                        tabela.tabela == "Perdidos" ? true : 
-                                        tabela.tabela == "Usuarios" ? false :
-                                        tabela.tabela == "Empresas" ? false :
-                                        tabela.tabela == "Grupos" ? false : 
-                                        tabela.tabela == "Configuracao" ? false : false;
+                        EntityPermissao.visualizar = tabela.tabela === "vendedores" ? false : 
+                                            tabela.tabela === "clientes" ? false : 
+                                            tabela.tabela === "produtos" ? true :
+                                            tabela.tabela === "perdidos" ? true : 
+                                            tabela.tabela === "usuarios" ? false :
+                                            tabela.tabela === "empresas" ? false :
+                                            tabela.tabela === "grupos" ? false : 
+                                            tabela.tabela === "configuracao" ? false : 
+                                            tabela.tabela === "promocao" ? false : 
+                                            tabela.tabela === "agenda" ? true : false;
+                        EntityPermissao.inserir = tabela.tabela === "vendedores" ? false : 
+                                        tabela.tabela === "clientes" ? false : 
+                                        tabela.tabela === "produtos" ? false :
+                                        tabela.tabela === "perdidos" ? true : 
+                                        tabela.tabela === "usuarios" ? false :
+                                        tabela.tabela === "empresas" ? false :
+                                        tabela.tabela === "grupos" ? false : 
+                                        tabela.tabela === "configuracao" ? false : 
+                                        tabela.tabela === "promocao" ? false : 
+                                        tabela.tabela === "agenda" ? true : false;
                         EntityPermissao.excluir = false;
-                        EntityPermissao.alterar = tabela.tabela == "Vendedores" ? false : 
-                                        tabela.tabela == "Clientes" ? false : 
-                                        tabela.tabela == "Produtos" ? false :
-                                        tabela.tabela == "Perdidos" ? true : 
-                                        tabela.tabela == "Usuarios" ? false :
-                                        tabela.tabela == "Empresas" ? false :
-                                        tabela.tabela == "Grupos" ? false : 
-                                        tabela.tabela == "Configuracao" ? false : false;
+                        EntityPermissao.alterar = tabela.tabela === "vendedores" ? false : 
+                                        tabela.tabela === "clientes" ? false : 
+                                        tabela.tabela === "produtos" ? false :
+                                        tabela.tabela === "perdidos" ? true : 
+                                        tabela.tabela === "usuarios" ? false :
+                                        tabela.tabela === "empresas" ? false :
+                                        tabela.tabela === "grupos" ? false : 
+                                        tabela.tabela === "configuracao" ? false : 
+                                        tabela.tabela === "promocao" ? false : 
+                                        tabela.tabela === "agenda" ? true : false;
                         EntityPermissao.grupo = Promise.resolve(grupo);
                         EntityPermissao.tabela = tabela.tabela;
 
@@ -578,9 +590,11 @@ var md5 = require("md5");
                 tabelas.forEach(async (tabela) => {
                     let permissao = await _repPermissao.findOne({relations: ["grupo"],
                                                                      where: {tabela: tabela.tabela, grupo: [{uid: grupo.uid}]}});
-                        
+                    console.log(permissao)    
                         if (!permissao) {
-                            await cadastroPermissao(grupo, tabela);
+                            let perm = await cadastroPermissao(grupo, tabela);
+                            let retorno = await Promise.all([perm]);
+                            console.log(retorno)
                         }
                 })
             })

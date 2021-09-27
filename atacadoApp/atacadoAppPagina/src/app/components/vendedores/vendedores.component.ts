@@ -101,10 +101,10 @@ export class VendedoresComponent implements OnInit {
           this.vendedores = [];
           await this.atualizaUsuario(_vendedor)
           this.vendedores = await this.retornaVendedores();
-          this.vendedoresList = this.vendedores.filter(val => val.ativo && !val.excluido);        
+          this.vendedoresList = this.vendedores.filter(val => val.ativo && !val.excluido);
           this.mostraExcluidos = true;
           this.mostraVendedoresExcluidos();
-      
+
     }
   }
   excluirVendedor(vendedor: VendedoresModel) {
@@ -113,10 +113,10 @@ export class VendedoresComponent implements OnInit {
       header: "Confirmação",
       icon: "pi pi-exclamation-triangle",
       accept: async () => {
-       
+
           this.spinnerAcao = "Excluindo Registro ...";
           const result = await this.vendedoresService.delete(vendedor.uid ? vendedor.uid : '0');
-        
+
          if (result.success) {
               await this.atualizaUsuario(vendedor);
               this.vendedores =  await this.retornaVendedores();
@@ -157,7 +157,7 @@ export class VendedoresComponent implements OnInit {
     }
     return [];
   }
-  async atualizaUsuario(vendedor: VendedoresModel) {    
+  async atualizaUsuario(vendedor: VendedoresModel) {
     const _usuario = await this.usuarioService.filtro("vendedor", vendedor.uid);
     console.log(_usuario)
       if (_usuario.success) {

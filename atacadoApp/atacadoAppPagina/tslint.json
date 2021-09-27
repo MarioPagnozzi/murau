@@ -154,7 +154,8 @@
     "no-shadowed-variable": false,
     "prefer-const":false,
     "forin": false,
-    "no-string-literal": false
+    "no-string-literal": false,
+    "prefer-for-of": false
     
   }
 }

@@ -2,7 +2,7 @@ import { Pedidos } from './Pedidos';
 import { Empresas } from './Empresas';
 import { Vendedores } from './Vendedores';
 import { ContatosClientes } from './ContatosClientes';
-import { OneToMany, ManyToOne, Column, Entity, OneToOne } from 'typeorm';
+import { OneToMany, ManyToOne, Column, Entity, OneToOne, JoinColumn } from 'typeorm';
 import { BaseEntity } from './BaseEntity';
 import { BaseStatus } from './enum/status';
 import { User } from './User';
@@ -48,18 +48,18 @@ export class Clientes extends BaseEntity {
     @Column({type: "int", default: 1})
     statusCliente: BaseStatus;
 
-    @OneToMany(type => ContatosClientes, contatos => contatos.cliente)
-    contatos: Promise<ContatosClientes[]>
+    @OneToMany(type => ContatosClientes, contatos => contatos.cliente, {eager: true})
+    contatos: ContatosClientes[]
     
-    @ManyToOne(type => Vendedores, vendedor => vendedor.clientes)
-    vendedor: Promise<Vendedores>
+    @ManyToOne(type => Vendedores, vendedores => vendedores.clientes, {eager: true, nullable: true})
+    vendedor: Vendedores
 
-    @ManyToOne(type => Empresas, empresa => empresa.clientes)
-    empresa: Promise<Empresas>
+    @ManyToOne(type => Empresas, empresa => empresa.clientes, {eager: true, nullable: true})
+    empresa: Empresas
 
     @OneToMany(type => Pedidos, pedidos => pedidos.cliente)
     pedidos: Promise<Pedidos[]>
 
-    @OneToOne(type => User, usuario => usuario.cliente)
-    usuario: Promise<User>
+    @OneToOne(type => User, usuarios => usuarios.cliente, {nullable: true})
+    usuario: User
 }

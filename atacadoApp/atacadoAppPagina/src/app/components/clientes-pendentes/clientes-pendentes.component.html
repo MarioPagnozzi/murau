@@ -99,7 +99,7 @@
                     <i class="pi" [ngClass]="{'true-icon pi-check-circle': cli.ativo, 'false-icon pi-times-circle': !cli.ativo}"></i>
                 </td>
                 <td class="p-text-center">
-                    <a routerLink="/cliente/{{cli.uid}}" style="color: #4b2e28">
+                    <a routerLink="/cliente/{{cli.uid}}" [queryParams]="{url: 'aprovar'}" style="color: #4b2e28">
                         <fa-icon [icon]="['fas','edit']" ></fa-icon>
                     </a>
                 </td>

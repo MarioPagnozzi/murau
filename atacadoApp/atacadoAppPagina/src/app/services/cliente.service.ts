@@ -51,7 +51,7 @@ export class ClienteService extends BaseService<ICliente | ClienteModel> {
         resolve({success: true, data: res, error: undefined});
         this.spinner.hide();
       }
-      catch (error) {       
+      catch (error: any) {
         this.spinner.hide();
         if (error.status === 400) {
           console.log(error.error)

@@ -1,4 +1,3 @@
-import { Permissao } from './../../../../atacadoApp_API/src/entity/Permissao';
 import { PermissaoService } from './permissao.service';
 import { IResult } from './../interfaces/IResult';
 import { Injectable } from '@angular/core';
@@ -14,11 +13,11 @@ import { GrupoModel } from '../models/grupoModel';
 import { PermissaoModel } from '../models/permissaoModel';
 
 export  interface IPermissoes {
-  tabela: string,
-  visualizar: boolean,
-  alterar: boolean,
-  inserir: boolean,
-  excluir: boolean
+  tabela: any,
+  visualizar: any,
+  alterar: any,
+  inserir: any,
+  excluir: any
 }
 @Injectable({
   providedIn: 'root'
@@ -29,16 +28,15 @@ export class UsuariosService extends BaseService<IUsuarios | UsuarioModel> {
   }
 
   private loginSubject = new Subject<boolean>();
-  private permissao: PermissaoModel[] = [];
-  permissaoChange$: Observable<PermissaoModel[]> = new Observable<PermissaoModel[]>();
-  private _observer: Observer<PermissaoModel[]> | any;
-  permissaoService: any;
+  permissao: PermissaoModel[] = [];
+
+
+  private isRootSubject = new Subject<boolean>();
+  private permissoes = new Subject<PermissaoModel[]>();
   isRoot = false;
   constructor(public http: HttpService, httpCli: HttpClient) {
     super("users", http, httpCli);
-    this.permissaoService = new PermissaoService(this.http, this.httpCli);
-    this.permissaoChange$ = new Observable(observer => this._observer = observer);
-   }
+  }
 
    login(email: string, senha: string): Promise<IResult> {
      // tslint:disable-next-line: object-literal-shorthand
@@ -50,32 +48,33 @@ export class UsuariosService extends BaseService<IUsuarios | UsuarioModel> {
      localStorage.setItem('murau:token', token);
      localStorage.setItem('murau:user', JSON.stringify(user));
      const grupos = await this.http.get(`${environment.url_api}/grupos/usuarios/${user.uid}`);
+     console.log(grupos.data)
      if (grupos.data) {
         let _grupos = grupos.data as GrupoModel[];
         let grps: GrupoModel[] = [];
-        let grupo: any;
+       
         // tslint:disable-next-line: prefer-for-of
         for (let i = 0; i < _grupos.length; i++) {
-          this.permissaoService.getObservableByGrupo(_grupos[i].uid).subcribe({
-            next: (permissoes: PermissaoModel[]) => {
-              _grupos[i].permissoes = permissoes as PermissaoModel[];
-              // tslint:disable-next-line: prefer-for-of
-              for (let p = 0; p < permissoes.length; p++) {
-                this.permissao.push(permissoes[p]);
-              }
-              grps.push(_grupos[i]);
-            }
-          })
-
-
+          const permissoes = await this.http.get(`${environment.url_api}/grupos/permissoes/${_grupos[i].uid}`);
+          _grupos[i].permissoes = permissoes.data;
+          grps.push(_grupos[i]);
+          
+          // tslint:disable-next-line: prefer-for-of
+          for (let p = 0; p < permissoes.data.length; p++) {
+            console.log(permissoes.data[p])
+            this.permissao.push(permissoes.data[p]);
+          }
         }
-
         localStorage.setItem('murau:grupo', JSON.stringify(grps));
+
+      
      }
      const usuarios = await this.http.get(`${environment.url_api}/users/${user.uid}`);
      this.isRoot = usuarios.data.isRoot;
      localStorage.setItem('murau:isroot', usuarios.data.isRoot);
      this.loginSubject.next(this.isStaticLogged);
+     this.isRootSubject.next(this.isRoot);
+     this.permissoes.next(this.permissao);
    }
    get isLogged(): Observable<boolean> {
      return this.loginSubject.asObservable();
@@ -84,21 +83,35 @@ export class UsuariosService extends BaseService<IUsuarios | UsuarioModel> {
      return !!localStorage.getItem('murau:token')
    }
 
-   hasPermissoes(tabela: string): IPermissoes {
-      const permissao: IPermissoes = {
-        tabela: tabela,
-        visualizar: this.permissao.filter((perm) => perm.tabela === tabela && perm.visualizar === true)[0].visualizar as boolean,
-        excluir: this.permissao.filter((perm) => perm.tabela === tabela && perm.excluir === true)[0].excluir as boolean,
-        alterar: this.permissao.filter((perm) => perm.tabela === tabela && perm.alterar === true)[0].alterar as boolean,
-        inserir: this.permissao.filter((perm) => perm.tabela === tabela && perm.inserir === true)[0].inserir as boolean
-      }
-      return permissao;
+   get permissoesSubject(): Observable<PermissaoModel[]> {
+     return this.permissoes.asObservable();
    }
+   
+    get isUserRoot(): Observable<boolean> {
+      return this.isRootSubject.asObservable();
+    }
    logout(): void {
     localStorage.removeItem("murau:token");
     localStorage.removeItem("murau:grupo");
     localStorage.removeItem("murau:user");
     localStorage.removeItem("murau:isroot");
     this.loginSubject.next(this.isStaticLogged);
+    this.permissao = [];
+   }
+
+   async recarregaPermissoes(grupos: any[]) {
+     // tslint:disable-next-line: prefer-for-of
+     for (let i = 0; i < grupos.length; i++) {
+      const permissoes = await this.http.get(`${environment.url_api}/grupos/permissoes/${grupos[i].uid}`);
+      // tslint:disable-next-line: prefer-for-of
+      for (let p = 0; p < permissoes.data.length; p++) {
+        this.permissao.push(permissoes.data[p]);
+      }
+    }
+    let usuario = JSON.parse(localStorage.getItem('murau:user') as string) as UsuarioModel;
+    let user = await this.http.get(`${environment.url_api}/users/${usuario.uid}`);
+    this.isRoot = user.data.isRoot;
+    this.isRootSubject.next(this.isRoot);
+    this.permissoes.next(this.permissao);
    }
 }

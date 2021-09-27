@@ -17,5 +17,5 @@ export class ContatosClientes extends BaseEntity {
     operadoras: Operadoras
 
     @ManyToOne(type => Clientes, cliente => cliente.contatos)
-    cliente: Promise<Clientes>
+    cliente: Clientes
 }

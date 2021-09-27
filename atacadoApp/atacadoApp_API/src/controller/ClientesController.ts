@@ -5,6 +5,14 @@ import { Clientes } from './../entity/Clientes';
 import { BaseController } from "./BaseController";
 import { Produtos } from '../entity/Produtos';
 import { ImagensProduto } from '../entity/imagesProduto';
+import { REPLCommandAction } from 'repl';
+import { User } from '../entity/User';
+import { Vendedores } from '../entity/Vendedores';
+import { Empresas } from '../entity/Empresas';
+import { FileHelper } from '../helpers/FileHelpers';
+import { Grupos } from '../entity/Grupos';
+
+var md5 = require("md5");
 export class ClientesController extends BaseController<Clientes> {
     private _repClientes: Repository<Clientes> = getRepository(Clientes);  
     constructor(){
@@ -12,7 +20,7 @@ export class ClientesController extends BaseController<Clientes> {
     }
     async createCliente(request: Request) {
         let {razao_social, nome_fantasia, cnpj, cep, endereco, 
-            numero, bairro, cidade, uf, email, contatos, complemento  } = request.body;
+            numero, bairro, cidade, uf, email, contatos, complemento} = request.body;
         
         super.isRequired(razao_social, "A 'Razão Social' deve ser informada");
         super.isRequired(nome_fantasia, "O 'Nome Fantasia' dever ser informado");        
@@ -42,6 +50,8 @@ export class ClientesController extends BaseController<Clientes> {
         _cliente.complemento = complemento;
         _cliente.ativo = false;
         _cliente.statusCliente = 1;
+        _cliente.contatos = contatos;
+       
 
         let codigo = await this._repClientes.createQueryBuilder("clientes")
                          .select("IFNULL(max(cast(cli.codigo as unsigned INTEGER)),0)","maxCodigo")
@@ -49,59 +59,58 @@ export class ClientesController extends BaseController<Clientes> {
                          .getRawOne();
 
         _cliente.codigo =  +codigo["maxCodigo"] + 1;
-       if (super.valid()) {
-           this._repClientes.save(_cliente).then(async (cliente) => {
-                contatos.forEach(async (contato) => {
-                    let _contato: ContatosClientes = new ContatosClientes();
-                    _contato.ddd = contato.ddd;
-                    _contato.numero = contato.numero;
-                    _contato.operadoras = contato.operadoras;
-                    _contato.cliente = Promise.resolve(cliente);
 
-                    let _repContatoClientes: Repository<ContatosClientes> = getRepository(ContatosClientes);
-                    _repContatoClientes.save(_contato);
-                });
-           })
+       return super.save(_cliente).then(async (cliente) => {
+        if (cliente.errors) return cliente;
+
+        for (let i = 0; i < contatos.length; i++) {
+            let _repContatoClientes: Repository<ContatosClientes> = getRepository(ContatosClientes);
             
-            let fs = require("fs");
-            let path = require("path");
-            const arqHtml = path.join(path.dirname(__dirname),"templates") + "/email_cadastro.html";
-            const imgFb = path.join(path.dirname(__dirname), "templates" ) + "/images/005-facebook.png";
-            let html = fs.readFileSync(arqHtml);
-            html = html.toString().replace("NomeCliente", _cliente.razao_social);
+            let cont = new ContatosClientes();
+            cont = {...contatos[i]};
+            cont.cliente = cliente;
 
-            let _repProdutos: Repository<Produtos> = getRepository(Produtos);
+            _repContatoClientes.save(cont);
+        }
+        let fs = require("fs");
+        let path = require("path");
+        const arqHtml = path.join(path.dirname(__dirname),"templates") + "/email_cadastro.html";
+        const imgFb = path.join(path.dirname(__dirname), "templates" ) + "/images/005-facebook.png";
+        let html = fs.readFileSync(arqHtml);
+        html = html.toString().replace("NomeCliente", _cliente.razao_social);
+
+        let _repProdutos: Repository<Produtos> = getRepository(Produtos);
+        
+        let produtos = await _repProdutos.find({order: {data_inclusao: "DESC"}, take: 6});
+        let _repImagensProduto: Repository<ImagensProduto> = getRepository(ImagensProduto);
+        let i = 1;
+        for (let prod in produtos) {
             
-            let produtos = await _repProdutos.find({order: {data_inclusao: "DESC"}, take: 6});
-            let _repImagensProduto: Repository<ImagensProduto> = getRepository(ImagensProduto);
-            let i = 1;
-            for (let prod in produtos) {
-                
-                html = html.toString().replace("nomeProduto" + i.toString(), produtos[prod].nome);
-                html = html.toString().replace("DescricaoProduto" + i.toString(), produtos[prod].descricao);
+            html = html.toString().replace("nomeProduto" + i.toString(), produtos[prod].nome);
+            html = html.toString().replace("DescricaoProduto" + i.toString(), produtos[prod].descricao);
 
-                let imagem = await _repImagensProduto.find({
-                                                    relations: ["produto"],
-                                                    where: {produto: [{uid: produtos[prod].uid}]}, take: 1});
-                if (imagem.length > 0) {
-                    html = html.toString().replace("Linkimage" + i.toString(), imagem[0].caminho);
-                }
-                else {
-                    html = html.toString().replace("LinkImage" + i.toString(), "https://i.ibb.co/qs4w265/sem-foto.jpg")
-                }
-                i = +i + 1;
+            let imagem = await _repImagensProduto.find({
+                                                relations: ["produto"],
+                                                where: {produto: [{uid: produtos[prod].uid}]}, take: 1});
+            if (imagem.length > 0) {
+                html = html.toString().replace("Linkimage" + i.toString(), imagem[0].caminho);
             }
-            const mensagem = {
-                from: "atendimento@murau.com",
-                to: _cliente.email,
-                subject: "Confirmação de Cadastro",
-                html: html
-            }       
-            let sendMail = this.func.Email(mensagem);
-            let retornoEmail = await sendMail;
-            console.log(retornoEmail);       
-       }
-       return super.save(_cliente);
+            else {
+                html = html.toString().replace("LinkImage" + i.toString(), "https://i.ibb.co/qs4w265/sem-foto.jpg")
+            }
+            i = +i + 1;
+        }
+        const mensagem = {
+            from: "atendimento@murau.com",
+            to: _cliente.email,
+            subject: "Confirmação de Cadastro",
+            html: html
+        }       
+        let sendMail = this.func.Email(mensagem);
+        let retornoEmail = await sendMail;
+        console.log(retornoEmail);
+        return cliente;
+       });
 
     }
     async clientesDia(request: Request) {
@@ -165,8 +174,7 @@ export class ClientesController extends BaseController<Clientes> {
         }
 
         if (filtro == "pendentes") {
-            const dataAtual = new Date();
-            return this._repClientes.find({where: {ativo: valor}});
+            return this._repClientes.find({where: {ativo: valor, statusCliente: 1}});
         }
     }
     async removeContato(request: Request) {
@@ -180,7 +188,10 @@ export class ClientesController extends BaseController<Clientes> {
         return _repContatoClientes.find({where: {cliente: [{uid: _cliente.uid}]}});
     }
     async save(request: Request) {
+
+        let {contatos, usuario} = request.body;
         let _cliente = <Clientes>request.body;
+
 
         if (!this.func.Permissao(request, "Clientes", _cliente.uid ? "A" : "I")) {
             return {status: 400, errors: ["Você não tem permissão para alterar ou inserir registros"]}
@@ -199,15 +210,6 @@ export class ClientesController extends BaseController<Clientes> {
         super.isRequired(_cliente.contatos, "Deve ser informado um ou mais 'Contatos'");
         super.isCPFCNPJ(_cliente.cnpj, "'CNPJ' informado não é válido");
 
-        let codigo = await this._repClientes.findOne({where:{codigo: _cliente.codigo}});
-        if (codigo && !_cliente.uid) {
-            let maxCodigo = await this._repClientes.createQueryBuilder("clientes")
-                         .select("IFNULL(max(cast(cli.codigo as unsigned INTEGER)),0)","maxCodigo")
-                         .from(Clientes, "cli")
-                         .getRawOne();
-            let sugestao = +maxCodigo["maxCodigo"] + 1;
-            return {status: 400, errors: [{message: "Este código já está sendo usado por outro cliente. Sugestão: " + sugestao}]};
-        }
 
         if (!_cliente.codigo) {
             let maxCodigo = await this._repClientes.createQueryBuilder("clientes")
@@ -216,28 +218,104 @@ export class ClientesController extends BaseController<Clientes> {
             .getRawOne();
             _cliente.codigo = +maxCodigo["maxCodigo"] + 1;
         }
-        let cli: Clientes = new Clientes();
-        const contatos: Promise<ContatosClientes[]> = Promise.resolve(_cliente.contatos);
-        if (super.valid()) {
-            this._repClientes.save(_cliente).then(async (cliente) => {
-                delete cliente['contatos'];
-                Object.assign(cli, cliente);
-                let contatosCli = await contatos;
-                contatosCli.forEach((contato) => {
-                    let _contato: ContatosClientes = new ContatosClientes();
-                    _contato.ddd = contato.ddd;
-                    _contato.numero = contato.numero;
-                    _contato.operadoras = contato.operadoras;
-                    _contato.cliente = Promise.resolve(cli);
-                    _contato.uid = contato.uid;
-                   
-                    let _repContatoClientes: Repository<ContatosClientes> = getRepository(ContatosClientes);
-                    _repContatoClientes.save(_contato);
-                });
-                return super.save(cli);
-           })
-        } else {
-            return super.save(_cliente);
+        let cod = await this._repClientes.findOne({where:{codigo: _cliente.codigo}});
+        if (cod && !_cliente.uid) {
+            let maxCodigo = await this._repClientes.createQueryBuilder("clientes")
+                         .select("IFNULL(max(cast(cli.codigo as unsigned INTEGER)),0)","maxCodigo")
+                         .from(Clientes, "cli")
+                         .getRawOne();
+            let sugestao = +maxCodigo["maxCodigo"] + 1;
+            _cliente.codigo = sugestao;
+            return {status: 400, errors: [{message: "Este código já está sendo usado por outro cliente. Sugestão: " + sugestao}]};
         }
+
+        
+   
+        return super.save(_cliente).then(async (cliente) => {
+
+            if (cliente.errors) return cliente;
+            let _repUsuario: Repository<User> = getRepository(User);
+            let _repGrupos: Repository<Grupos> = getRepository(Grupos);
+            let grupos: Grupos[] = [];
+            if (usuario) {
+                
+                if (usuario.uid) {
+                    let _usuario = await _repUsuario.findOne(usuario.uid);
+                    let grupos_usuario = await _usuario.grupos;
+                    if (grupos_usuario.length > 0) {
+                        grupos = grupos_usuario;
+                    } else {
+                        let grupo = await _repGrupos.findOne({where: {nome_grupo: 'Clientes'}});
+                        grupos.push(grupo);
+                    }
+                }
+                else {
+                    let grupo = await _repGrupos.findOne({where: {nome_grupo: 'Clientes'}});
+                    grupos.push(grupo);
+                }
+                let user = new User();
+                user.foto = usuario.foto;
+                if (user.foto) {
+                    let criarFotoResult = await FileHelper.writePicture(user.foto);
+                    if (criarFotoResult) {
+                        user.foto = criarFotoResult;
+                    }
+                }
+                user.nome = usuario.nome;
+                user.uid = usuario.uid;
+                user.email = usuario.email;
+                user.isRoot = usuario.isRoot;
+                user.cliente = cliente;
+                console.log(grupos)
+                user.grupos = Promise.resolve(grupos);
+                user.ativo = cliente.ativo;
+                user.excluido = cliente.excluido;
+                if (md5(usuario.senha) != usuario.senha) user.senha = md5(usuario.senha);
+                user.status_usuario = cliente.statusCliente;
+                _repUsuario.save(user);
+            } else {
+                usuario = await _repUsuario.findOne({where: [{cliente: {uid: cliente.uid}}]});
+                grupos = await usuario.grupos;
+                if (usuario) {
+                    if (grupos.length <= 0) {
+                        let grupo = await _repGrupos.findOne({where: {nome_grupo: 'Clientes'}});
+                        grupos.push(grupo);
+                    }
+                    let user = new User();
+                    user = {...usuario};
+                    user.cliente = cliente;
+                    user.grupos = Promise.resolve(grupos);
+                    user.ativo = cliente.ativo;
+                    user.excluido = cliente.excluido;
+                    user.status_usuario = !cliente.excluido || !cliente.ativo ? cliente.statusCliente : usuario.status_usuario;
+                    if (user.foto) {
+                        let criarFotoResult = await FileHelper.writePicture(user.foto);
+                        if (criarFotoResult) {
+                            user.foto = criarFotoResult;
+                        }
+                    }
+                    _repUsuario.save(user);
+                }
+            }
+            
+
+            for (let i = 0; i < contatos.length; i++) {
+                let _repContatoClientes: Repository<ContatosClientes> = getRepository(ContatosClientes);
+                
+                let cont = new ContatosClientes();
+                cont = {...contatos[i]};
+                cont.cliente = cliente;
+    
+                _repContatoClientes.save(cont);
+            }
+            return cliente;
+        });
+    }
+
+    async one(request: Request) {
+        let cliente = await this._repClientes.findOne(request.params.id);
+        let _cliente: any = {...cliente};
+        _cliente.pedidos = await cliente.pedidos;
+        return _cliente;
     }
 }

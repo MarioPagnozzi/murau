@@ -2,7 +2,7 @@ import { VendedoresEmpresas } from './VendedoresEmpresas';
 import { Pedidos } from './Pedidos';
 import { Clientes } from './Clientes';
 import { ContatosVendedores } from './ContatosVendedores';
-import { Column, Entity, JoinTable, ManyToMany, OneToMany, OneToOne } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, OneToOne } from "typeorm";
 import { BaseEntity } from "./BaseEntity";
 import { Empresas } from './Empresas';
 import { User } from './User';
@@ -40,12 +40,12 @@ export class Vendedores extends BaseEntity {
     cep: string
 
     @OneToMany(type => ContatosVendedores, contatos => contatos.vendedor, {nullable: true, eager: true})
-    contatos: Promise<ContatosVendedores[]>
+    contatos: ContatosVendedores[]
 
-    @OneToMany(type => Clientes, clientes => clientes.vendedor, {nullable: true})
+    @OneToMany(type => Clientes, clientes => clientes.vendedor)
     clientes: Promise<Clientes[]>
 
-    @OneToMany(type => Pedidos, pedidos => pedidos.vendedor, {nullable: true})
+    @OneToMany(type => Pedidos, pedidos => pedidos.vendedor)
     pedidos: Promise<Pedidos[]>
 
 
@@ -54,5 +54,5 @@ export class Vendedores extends BaseEntity {
     empresas: Promise<Empresas[]>
 
     @OneToOne(type => User, usuario => usuario.vendedor)
-    usuario: Promise<User>
+    usuario: User
 }

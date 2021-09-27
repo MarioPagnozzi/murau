@@ -1,4 +1,4 @@
-import { environment } from './../../environments/environment.prod';
+import {environment} from "./../../environments/environment";
 import { HttpService } from './http.service';
 import { Injectable } from '@angular/core';
 import { BaseService } from '../base/baseService';

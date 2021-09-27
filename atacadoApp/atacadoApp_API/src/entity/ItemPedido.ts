@@ -15,8 +15,8 @@ export class ItemPedido extends BaseEntity {
     @Column({type: "float"})
     valor_total: number
 
-    @ManyToOne(type => Pedidos, pedido => pedido.itens)
-    pedido: Promise<Pedidos>
-    @ManyToOne(type => Produtos, produto => produto.pedidos)
-    produto: Promise<Produtos>
+    @ManyToOne(type => Pedidos, pedido => pedido.itens, {eager: false})
+    pedido: Pedidos
+    @ManyToOne(type => Produtos, produto => produto.pedidos, {eager: true})
+    produto: Produtos
 }

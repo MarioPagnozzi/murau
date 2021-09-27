@@ -12,7 +12,7 @@ export class UsuarioModel extends BaseModel {
     foto: string = ""
     isRoot: boolean = false
     status_usuario: BaseStatus = BaseStatus.Pendente
-    grupos: GrupoModel[] = []
+    grupos?: GrupoModel[]
     vendedor?: VendedoresModel = new VendedoresModel()
     cliente?: ClienteModel = new ClienteModel()
     confirmaSenha?: string

@@ -118,7 +118,7 @@ export class VendedorComponent implements OnInit {
           const grupos = await this.gruposService.getAll();
           let _grupos = grupos.data as GrupoModel[];
           let grupo = _grupos.filter(val => val.nome_grupo === "Vendedores")[0] as GrupoModel;
-          this.usuario.grupos.push(grupo);
+          this.usuario.grupos?.push(grupo);
         }
         this.usuario.cliente = undefined;
     
