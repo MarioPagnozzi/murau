@@ -40,3 +40,4 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 21/05/2021 | Atividade #28 - Config. Frontend   | Desenv. Mário/Daniel
 15/07/2021 | Atividade #68 - Ajuste Relac.      | Desenv. Mário
 31/07/2021 | Atividade #61 - Painel Controle    | Desenv. Mário
+29/09/2021 | Atividade #73 - Ajuste Cad. Vend   | Desenv. Mário
