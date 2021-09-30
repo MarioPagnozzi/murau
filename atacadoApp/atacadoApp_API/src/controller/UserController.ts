@@ -165,12 +165,18 @@ export class UserController extends BaseController<User> {
        const filtro = request.params.filtro;
        const valor = request.params.valor;
        if (filtro === "vendedor") {
-           return this._repositories.findOne({where: [{vendedor: {uid: valor}}]})
+           let vendedor = await this._repositories.findOne({where: [{vendedor: {uid: valor}}]});
+           let vend: any = {...vendedor};
+           if (vendedor) 
+               vend.grupos = await vendedor.grupos as Grupos[];
+           
+           return vend;
        }
        else if (filtro === "cliente") {
            let usuario = await this._repositories.findOne({where: [{cliente: {uid: valor}}]});
            let user: any = {...usuario};
-           user.grupos = await usuario.grupos;
+           if (usuario)
+               user.grupos = await usuario.grupos as Grupos[];
            return user;
        } else {
            return;
@@ -186,7 +192,8 @@ export class UserController extends BaseController<User> {
         
         let usuario = await this._repositories.findOne(request.params.id);
         let user: any = {...usuario};
-        user.grupos = await usuario.grupos;
+        if (usuario)
+            user.grupos = await usuario.grupos as Grupos[];
         return user;
    }
 }

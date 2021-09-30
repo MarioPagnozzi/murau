@@ -69,7 +69,7 @@ export class VendedorComponent implements OnInit {
 
   ngOnInit(): void {
     // tslint:disable-next-line: deprecation
-    this.active.params.subscribe(p => this.getUid(p.cod, p.emp));
+    this.active.params.subscribe(p => this.getUid(p.cod));
 
     this.operadoras = [
       { valor: 0, label: "Operadora" },
@@ -94,62 +94,44 @@ export class VendedorComponent implements OnInit {
       this.empresasList = empresasQuery.filter(val => !empresasVend.includes(val));
     }
   }
-  async getUid(uid: string, emp: string | undefined): Promise<void> {
-    if (emp) {
-      this.url = `/empresa/${emp}`;
-    } else {
-      this.url = "/vendedores";
-    }
+  async getUid(uid: string): Promise<void> {
 
+    this.active.queryParams.subscribe({
+      next: (param) => {
+        if (param.url === "empresa") {
+          this.url = `${param.url}/${param.codEmp}`;
+        } else {
+          this.url = "/vendedores"
+        }
+      }
+    })
     if (uid === "novo") {
       return;
     }
-    const result = await this.vendedorService.getById(uid);
-    if (result.success) {
-      this.vendedor = result.data as VendedoresModel;
 
-      const _usuario = await this.usuarioService.filtro("vendedor", uid);
-      console.log(_usuario)
-      if (_usuario.success) {
-        if (_usuario.data) {
-          this.usuario = _usuario.data;
+    this.vendedorService.getObservableById(uid).subscribe({
+      next: (vend) => {
+        this.vendedor = vend as VendedoresModel;
+      },
+      complete: async () => {
+        const _usuario = await this.usuarioService.filtro("vendedor", this.vendedor.uid as string);
+        if (_usuario.success) {
+          if (_usuario.data) {
+            this.usuario = _usuario.data as UsuarioModel;
+            this.usuario.grupos = _usuario.data.grupos as GrupoModel[];
+          } else {
+            this.usuario = new UsuarioModel();
+          }
         } else {
           this.usuario = new UsuarioModel();
-          const grupos = await this.gruposService.getAll();
-          let _grupos = grupos.data as GrupoModel[];
-          let grupo = _grupos.filter(val => val.nome_grupo === "Vendedores")[0] as GrupoModel;
-          this.usuario.grupos?.push(grupo);
         }
         this.usuario.cliente = undefined;
-    
+        this.empresas = this.vendedor.empresas as EmpresasModel[];
+        this.clientes = this.vendedor.cliente as ClienteModel[];
+        this.contatos = this.vendedor.contatos as ContatosVendedoresModel[];
+        this.pedidos = this.vendedor.pedidos as PedidosModel[];
       }
-      this.empresas = this.vendedor.empresas as EmpresasModel[];
-      let _cliente: any;
-      let _oldPedidos: PedidosModel[] = [];
-      const pedidos = await this.pedidosService.filtro("vendedor", uid);
-      if (pedidos.success) {
-        // tslint:disable-next-line: forin
-        for (let i in pedidos.data) {
-          _cliente = await this.clientesService.filtro("pedidos", pedidos.data[i].num_pedido?.replace('/', '-'));
-          if (_cliente.success) {
-            if (_cliente.data === null) {
-              _oldPedidos.push(pedidos.data[i]);
-            } else {
-              let pedido = new PedidosModel();
-              pedido = pedidos.data[i] as PedidosModel;
-              pedido.cliente = _cliente.data as ClienteModel;
-              this.pedidos.push(pedido);
-            }
-          }
-        }
-      }
-
-
-      this.pedidos = this.pedidos.filter(val => !_oldPedidos.includes(val)) as PedidosModel[];
-      const clientes = await this.clientesService.filtro("vendedor", uid);
-      this.clientes = clientes.data as ClienteModel[];
-      this.contatos = this.vendedor.contatos as ContatosVendedoresModel[];
-    }
+    });
   }
   async salvarAlteracoes() {
     this.spinnerAcao = "Gravando...";
@@ -162,15 +144,16 @@ export class VendedorComponent implements OnInit {
     this.vendedor.cidade = this.vendedor.cidade?.toUpperCase();
     this.vendedor.uf = this.vendedor.uf?.toUpperCase();
     this.vendedor.email = this.vendedor.email?.toLowerCase();
+    if (this.usuario) {
+      this.salvarUsuario(false);
+      this.vendedor.usuario = {...this.usuario};
+    }
     const result = await this.vendedorService.post(this.vendedor as VendedoresModel);
     if (result.success) {
       const snack = this.matSnack.open("Registro Salvo com Sucesso", undefined, { duration: 3000, verticalPosition: 'top', horizontalPosition: 'center', panelClass: ['style_ok'] });
       // tslint:disable-next-line: deprecation
       snack.afterDismissed().subscribe(() => {
-        if (this.usuario.uid) {
-          this.salvarUsuario(false);
-        }
-        this.route.navigateByUrl(`/vendedores`);
+        this.route.navigateByUrl(`${this.url}`);
       })
     }
   }
@@ -196,15 +179,12 @@ export class VendedorComponent implements OnInit {
     const newContato = new ContatosVendedoresModel();
     newContato.operadoras = 0;
     this.contatos.push(newContato);
+    this.vendedor.contatos = this.contatos;
   }
   async removeContato(contato: ContatosVendedoresModel) {
     const index = this.contatos.indexOf(contato);
     this.contatos.splice(index, 1);
-    if (contato.uid) {
-      const _contatos = await this.vendedorService.delete(`${this.vendedor.uid}/contato/${contato.uid}`);
-      // tslint:disable-next-line: deprecation
-      this.active.params.subscribe(p => this.getUid(p.cod, p.emp));
-    }
+    this.vendedor.contatos = this.contatos;
   }
   selectedFile(file: FileManage): void {
     if (file.base64Data) {
@@ -213,19 +193,9 @@ export class VendedorComponent implements OnInit {
   }
 
   async salvarUsuario(snack: boolean = true) {
-    
-    this.usuario.vendedor = this.vendedor;
     this.usuario.nome = this.usuario.nome.toUpperCase();
     this.usuario.email = this.usuario.email.toLowerCase();
     this.usuario.ativo = this.vendedor.ativo;
-    const result = await this.usuarioService.post(this.usuario as UsuarioModel);
-    if (result.success && snack) {
-      const snack = this.matSnack.open("Registro Salvo com Sucesso", undefined, { duration: 3000, verticalPosition: 'top', horizontalPosition: 'center', panelClass: ['style_ok'] });
-      // tslint:disable-next-line: deprecation
-      snack.afterDismissed().subscribe(() => {
-
-      })
-    }
   }
 
   hideDialog() {
@@ -284,7 +254,7 @@ export class VendedorComponent implements OnInit {
         this.messageService.add({
           severity: "success",
           summary: "Sucesso",
-          detail: "Clientes Excluídos!",
+          detail: "Empresas Excluídas!",
           life: 3000
         })
       }
@@ -307,7 +277,7 @@ export class VendedorComponent implements OnInit {
         this.messageService.add({
           severity: "success",
           summary: "Sucesso",
-          detail: "Vendedor Excluído!",
+          detail: "Empresa Excluída!",
           life: 3000
       })
        

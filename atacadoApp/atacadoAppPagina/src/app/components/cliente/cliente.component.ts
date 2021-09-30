@@ -94,9 +94,7 @@ export class ClienteComponent implements OnInit {
   }
   async getUid(uid: string): Promise<void> {
     
-    if (uid === "novo") {
-      return;
-    }
+    
     this.active.queryParams.subscribe({
       next: (params) => {
         if (params.url === 'aprovar') {
@@ -106,7 +104,10 @@ export class ClienteComponent implements OnInit {
           this.url = "/clientes"
         }
       }
-    })
+    });
+    if (uid === "novo") {
+      return;
+    }
     this.spinnerAcao = "Carregando...";
  
     this.clienteService.getObservableById(uid).subscribe({
