@@ -37,24 +37,8 @@
                     </mat-card-footer>
                 </mat-card>
             </div>
-            <p-tree [value]="files" selectionMode="single" [(selection)]="selectedFile">
-                <ng-template let-node pTemplate="url">
-                    <a [routerLink]="[node.data]" routerLinkActive="router-link-active" (click)="sidenav.toggle()">{{node.label}}</a>
-                </ng-template>
-                <ng-template let-node pTemplate="default">
-                    <b>{{node.label}}</b>
-                </ng-template>
-            </p-tree>
             <hr />
             <mat-nav-list>
-                <a mat-list-item *ngIf="isRoot" routerLink="/configuracao" routerLinkActive="router-link-active" (click)="sidenav.toggle()">
-                    <fa-icon [icon]="['fas','cog']"></fa-icon>
-                    &nbsp;<strong>Configurações</strong>
-                </a>
-                <a mat-list-item routerLink="/pedidos" *ngIf="permissao('Pedidos','V')" routerLinkActive="router-link-active" (click)="sidenav.toggle()">
-                    <fa-icon [icon]="['fas','cart-plus']"></fa-icon>
-                    &nbsp;<strong>Pedidos</strong>
-                </a>
                 <a mat-list-item routerLink="/panel" routerLinkActive="router-link-active" (click)="sidenav.toggle()">
                     <fa-icon [icon]="['fas','chart-area']"></fa-icon>
                     &nbsp;<strong>Meu Painel</strong>

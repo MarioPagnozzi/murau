@@ -315,7 +315,8 @@ export class ClientesController extends BaseController<Clientes> {
     async one(request: Request) {
         let cliente = await this._repClientes.findOne(request.params.id);
         let _cliente: any = {...cliente};
-        _cliente.pedidos = await cliente.pedidos;
+        if (cliente)
+            _cliente.pedidos = await cliente.pedidos;
         return _cliente;
     }
 }
