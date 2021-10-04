@@ -5,6 +5,8 @@ import { Operadoras } from 'src/app/enum/operadoras';
 import { ClienteModel } from 'src/app/models/clienteModel';
 import { EmpresasModel } from 'src/app/models/empresasModel';
 import { PedidosModel } from 'src/app/models/pedidosModel';
+import { ProdutosEmpresasModel } from 'src/app/models/produtosEmpresasModel';
+import { ProdutosModel } from 'src/app/models/produtosModel';
 import { VendedoresModel } from 'src/app/models/vendedoresModel';
 import { ClienteService } from 'src/app/services/cliente.service';
 import { EmpresasService } from 'src/app/services/empresas.service';
@@ -31,8 +33,13 @@ export class EmpresaComponent implements OnInit {
   vendedoresFiltrados: VendedoresModel[] = [];
   pedidos: PedidosModel[] = [];
   valorTotalPedido: number = 0;
+
+  clientes: ClienteModel[] = [];
+  produtos: ProdutosModel[] = [];
+  produtosEmpresas: ProdutosEmpresasModel[] = [];
   @ViewChild("dt") public dt: any;
   @ViewChild("dtVend") public dtVend: any;
+  @ViewChild("dtCli") public dtCli: any;
 
   constructor(private empresaService: EmpresasService,
               private viaCepService: ViaCepService,
@@ -115,31 +122,19 @@ export class EmpresaComponent implements OnInit {
     }
     this.spinnerAcao = "Carregando...";
  
-    const result = await this.empresaService.getById(uid);
-    this.empresa = result.data as EmpresasModel;
-    const _pedidos = await this.pedidosService.filtro("empresa", uid);
-   
-    if (_pedidos.success) {
-       this.pedidos = _pedidos.data as PedidosModel[];
-       // tslint:disable-next-line: forin
-       for (let i in this.pedidos) {
-          const _cliente = await this.clienteService.filtro("pedidos", this.pedidos[i].num_pedido?.replace("/", "-"));
-          this.valorTotalPedido = this.valorTotalPedido + this.pedidos[i].valor_pedido;
-          if (_cliente.success) {
-            let cliente = _cliente.data != null ? _cliente.data as ClienteModel : new ClienteModel();
-            
-            delete cliente.pedidos;
-            this.pedidos[i].cliente = cliente;
-            console.log(this.pedidos[i].cliente)
-            
-          }
-       }
-    }
-    const _vendedores = await this.vendedoresService.filtro("empresa", uid);
-    if (_vendedores.success) {
-      this.vendedores = _vendedores.data as VendedoresModel[];
-    }
+    this.empresaService.getObservableById(uid).subscribe({
+      next: (emp) => {
+        this.empresa = emp as EmpresasModel;
+      },
+      complete: () => {
+        this.pedidos = this.empresa.pedidos as PedidosModel[];
+        this.vendedores = this.empresa.vendedores as VendedoresModel[];
+        this.clientes = this.empresa.clientes as ClienteModel[];
+        this.produtosEmpresas = this.empresa.produtosempresas as ProdutosEmpresasModel[];
+        console.log(this.empresa)
 
+      }
+    });
   }
   
   applyFilterGlobal($event: Event, stringVal: any) {
@@ -148,5 +143,8 @@ export class EmpresaComponent implements OnInit {
 
   applyFilterGlobalVend($event: Event, stringVal: any) {
     this.dtVend.filterGlobal(($event.target as HTMLInputElement).value, 'contains');
+}
+applyFilterGlobalCli($event: Event, stringVal: any) {
+  this.dtCli.filterGlobal(($event.target as HTMLInputElement).value, 'contains');
 }
 }

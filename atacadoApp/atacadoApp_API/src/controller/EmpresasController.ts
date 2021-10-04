@@ -1,5 +1,10 @@
 import { Request } from 'express';
 import { getRepository, Repository } from 'typeorm';
+import { Clientes } from '../entity/Clientes';
+import { Pedidos } from '../entity/Pedidos';
+import { Produtos } from '../entity/Produtos';
+import { ProdutosEmpresas } from '../entity/ProdutosEmpresas';
+import { Vendedores } from '../entity/Vendedores';
 import { Empresas } from './../entity/Empresas';
 import { BaseController } from './BaseController';
 export class EmpresasController extends BaseController<Empresas> {
@@ -93,5 +98,32 @@ export class EmpresasController extends BaseController<Empresas> {
         if (filtro === "codigo") {
             return this._repEmpresa.find({where: {codigo: valor}});
         }
+    }
+    async one(request: Request, restrito = true) {
+        if (restrito) {
+            let tabela = this.func.Tabela(request);
+            if (!this.func.Permissao(request, tabela, "V")) 
+                return {status: 400, errors: [{message: "Você não tem permissão para acessar os registros"}]}
+        }
+        let empresa = await this._repEmpresa.findOne(request.params.id);
+        let emp: any = {...empresa};
+        if (empresa) {
+            emp.pedidos = await empresa.pedidos as Pedidos[];
+            emp.vendedores = await empresa.vendedores as Vendedores[];
+            emp.clientes = await empresa.clientes as Clientes[];
+            let produtosempresas = await empresa.produtosempresas as ProdutosEmpresas[];
+            console.log(produtosempresas)
+            emp.produtosempresas = [];
+            for (let i = 0; i < produtosempresas.length; i++) {
+                let prodemp: any = {...produtosempresas[i]};
+                prodemp.produto = await produtosempresas[i].produto as Produtos;
+                prodemp.valor = produtosempresas[i].valor;
+                prodemp.estoque = produtosempresas[i].estoque;
+
+                emp.produtosempresas.push(prodemp);
+            }
+            emp.produtos = await empresa.produtos as Produtos[];
+        }
+        return emp;
     }
 }
