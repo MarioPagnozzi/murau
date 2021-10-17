@@ -99,7 +99,7 @@ export class VendedorComponent implements OnInit {
     this.active.queryParams.subscribe({
       next: (param) => {
         if (param.url === "empresa") {
-          this.url = `${param.url}/${param.codEmp}`;
+          this.url = `/${param.url}/${param.codEmp}`;
         } else {
           this.url = "/vendedores"
         }
