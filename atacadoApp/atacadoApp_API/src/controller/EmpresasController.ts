@@ -17,6 +17,7 @@ export class EmpresasController extends BaseController<Empresas> {
         if (!this.func.Permissao(request, "Empresas", _empresa.uid ? "A" : "I")) {
             return {status: 400, errors: [{message:"Você não tem permissão para altarar ou inserir registros"}]}
         }
+        
         const restaurando = await this._repEmpresa.findOne({where: {uid: _empresa.uid, excluido: true, ativo: false}});
         if (!restaurando) {
             super.isRequired(_empresa.razao_social, "Informe uma 'Razão Social' para esta empresa");

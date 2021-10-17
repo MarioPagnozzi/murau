@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { Operadoras } from 'src/app/enum/operadoras';
 import { ClienteModel } from 'src/app/models/clienteModel';
 import { EmpresasModel } from 'src/app/models/empresasModel';
@@ -48,7 +49,9 @@ export class EmpresaComponent implements OnInit {
               private vendedoresService: VendedoresService,
               private clienteService: ClienteService,
               private pedidosService: PedidosService,
-              private active: ActivatedRoute) { }
+              private active: ActivatedRoute,
+              private confirmationService: ConfirmationService,
+              private messageService: MessageService) { }
 
   ngOnInit(): void {
     // tslint:disable-next-line: deprecation
@@ -147,4 +150,6 @@ export class EmpresaComponent implements OnInit {
 applyFilterGlobalCli($event: Event, stringVal: any) {
   this.dtCli.filterGlobal(($event.target as HTMLInputElement).value, 'contains');
 }
+
+
 }
