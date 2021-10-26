@@ -82,7 +82,7 @@ export class VendedorComponent implements OnInit {
       { valor: Operadoras.Vivo, label: Operadoras[Operadoras.Vivo].toUpperCase() }
     ];
     this.alterar = Permissao("vendedores", "A");
-    this.excluir = this.alterar;
+    this.excluir = Permissao("vendedores", "E");
     this.carregaEmpresas();
 
   }

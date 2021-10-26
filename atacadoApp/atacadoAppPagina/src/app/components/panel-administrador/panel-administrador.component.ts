@@ -128,7 +128,6 @@ carregaPermissoes() {
   })
   if (this.permissao.length <= 0) {
     let grupos = JSON.parse(localStorage.getItem("murau:grupo") as string) as GrupoModel[];
-    console.log(grupos);
     this.usuariosService.recarregaPermissoes(grupos);
   }
   let perm_usuario = this.hasPermissoes("usuarios");

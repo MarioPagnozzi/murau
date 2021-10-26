@@ -1,4 +1,4 @@
-import { Repository, getRepository, Not, OneToMany, In } from 'typeorm';
+import { Repository, getRepository, Not, OneToMany, In, SimpleConsoleLogger } from 'typeorm';
 import { Request, Response, NextFunction } from 'express';
 import { Configuracoes } from '../../entity/Configuracoes';
 import { Produtos } from '../../entity/Produtos';
@@ -1014,15 +1014,17 @@ export async function Permissao(req: Request, tabela, acao) {
 
     const hasPermissao = async () => {
         let hasPermissao: boolean = false;
-
+ 
         req.grupos.forEach(async (grupo) => {
+           
             const _repGrupos: Repository<Grupos> = getRepository(Grupos);
-            const grp = await _repGrupos.findOne({relations: ["permissoes"], where: {uid: grupo.uid}})
+            const grp = await _repGrupos.findOne(grupo.uid)
             let permissoes = await grp.permissoes;
            
             if (!grupo.excluido && grupo.ativo) {
-                for (let p = 0; p < permissoes.length -1; p++) {
-                   
+                for (let p = 0; p < (permissoes.length); p++) {
+
+                  
                     if (permissoes[p].tabela.toLowerCase() === tabela.toLowerCase()) {
                         
                         if (acao === "V") {
@@ -1057,7 +1059,8 @@ export function Tabela(request: Request) {
     if (rota.indexOf("?")) {
         rota = rota.split("?")[0]
     }
-
+    console.log(url)
+    console.log(request.url)
     switch (rota) {
         case "users": return "Usuarios";
         case "produtos": return "Produtos";
@@ -1067,6 +1070,7 @@ export function Tabela(request: Request) {
         case "pedidos": return "Pedidos";
         case "grupos": return "Grupo";
         case "permissoes": return "Permissoes";
+        case "tabelas": return "Tabelas";
     }
 }
 export function ValidaDat(valor) {

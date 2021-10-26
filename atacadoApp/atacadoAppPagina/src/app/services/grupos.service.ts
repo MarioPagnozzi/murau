@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { BaseService } from '../base/baseService';
 import { IGrupos } from '../interfaces/IGrupos';
 import { HttpService } from './http.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'

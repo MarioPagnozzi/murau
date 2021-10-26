@@ -48,7 +48,7 @@ export function Permissao(tabela: string, acao: string): boolean {
             // tslint:disable-next-line: prefer-for-of
             for (let i = 0; i < grupos.length; i++) {
                 const permissoes = grupos[i].permissoes ? grupos[i].permissoes as PermissaoModel[] : [] as PermissaoModel[];
-                for (let i = 0; i < permissoes.length - 1; i++) {
+                for (let i = 0; i < permissoes.length; i++) {
                     // tslint:disable-next-line: curly
                     if (permissoes[i].tabela?.toLowerCase() === tabela.toLowerCase()) {
                         if (permissoes[i].visualizar) {
