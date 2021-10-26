@@ -1,9 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
+import { IPermissao } from 'src/app/interfaces/IPermissao';
 import { GrupoModel } from 'src/app/models/grupoModel';
+import { PermissaoModel } from 'src/app/models/permissaoModel';
 import { GruposService } from 'src/app/services/grupos.service';
+import { IPermissoes, UsuariosService } from 'src/app/services/usuarios.service';
 import { Permissao } from 'src/app/shared/funcoesGlobal';
+import { PanelAdministradorComponent } from '../panel-administrador/panel-administrador.component';
 
 
 @Component({
@@ -27,19 +31,69 @@ export class GruposComponent implements OnInit {
   excluir: boolean = false;
   inserir: boolean = false
 
+  permissoes: PermissaoModel[] = []; 
+
   @ViewChild("dt") public dt: any;
   constructor(private grupoService: GruposService,
               private confirmationService: ConfirmationService,
               private messageService: MessageService,
-              private route: Router) { }
+              private route: Router,
+              private usuarioService: UsuariosService) { }
 
   async ngOnInit() {
     this.grupos =  await this.retornaGrupos();
     this.grupoList = this.grupos.filter(val => val.ativo && !val.excluido);
 
-    this.alterar = Permissao("Grupo", "A");
-    this.excluir = Permissao("Grupo", "E");
-    this.inserir = Permissao("Grupo", "I");
+    
+    let grupos = JSON.parse(localStorage.getItem("murau:grupo") as string) as GrupoModel[];
+    this.usuarioService.recarregaPermissoes(grupos);
+
+    this.usuarioService.permissoesSubject.subscribe({
+      next: (perm) => {     
+        this.permissoes = perm;
+        console.log("completou")
+        let permissao = this.hasPermissoes();
+        this.alterar = permissao.alterar;
+        this.excluir = permissao.excluir;
+        this.inserir = permissao.inserir;
+        console.log(permissao)
+        console.log(this.permissoes)
+      }
+    })
+  }
+  hasPermissoes(): IPermissoes {
+
+  
+    let excluir = false;
+    let alterar = false;
+    let inserir = false;  
+    let return_perm = this.permissoes.filter((perm) => perm.tabela?.toString() === "grupos" && (perm.excluir as boolean) === true);
+   
+    if (return_perm.length > 0) {
+     excluir = return_perm[0].excluir as boolean;
+     return_perm = []
+    }
+  
+    return_perm = this.permissoes.filter((perm) => perm.tabela?.toString() === "grupos" && (perm.alterar as boolean) === true);
+    if (return_perm.length > 0) {
+     alterar = return_perm[0].alterar as boolean;
+     return_perm = []
+    }
+  
+    return_perm = this.permissoes.filter((perm) => perm.tabela?.toString() === "grupos" && (perm.inserir as boolean) === true);
+    if (return_perm.length > 0) {
+     inserir = return_perm[0].inserir as boolean;
+     return_perm = []
+    }
+  
+     const permissao: IPermissoes = {
+       tabela: "grupos",
+       visualizar: true,
+       excluir: excluir,
+       alterar: alterar,
+       inserir: inserir
+     }
+     return permissao;
   }
   async retornaGrupos(): Promise<GrupoModel[]> {
     this.spinnerAcao = "Carregando Grupos...";

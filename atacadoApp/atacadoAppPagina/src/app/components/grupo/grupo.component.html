@@ -1,1 +1,126 @@
-<p>grupo works!</p>
+<div class="murau__container">
+    <ngx-spinner bdColor="rgba(75,46,40,0.7)"
+                color="#ffff"
+                size="medium"
+                type="ball-spin-fade-rotating"
+                [fullScreen]="true">
+        <p style="font-size: 20px; color: white">{{spinnerAcao}}</p>
+    </ngx-spinner>
+    <h1>Cadastro de Grupos</h1>
+    <h5 style="height: 3px !important;">Tela de cadastro e manutenção de grupo</h5>
+    
+    <app-tool-bar [alterar]="alterar"
+                  [routerBack]="url"
+                  (salvar)="salvarAlteracoes()"></app-tool-bar>
+    <mat-tab-group mat-align-tabs="start">
+        <mat-tab label="Dados">
+           
+                <div class="row murau__container">
+                    <div class="col-sm-4">
+                        <div class="p-field m-razaosocial">
+                            <label for="nome_grupo">Grupo</label>
+                            <input id="nome_grupo"
+                                   type="text"
+                                   onkeyup="this.value = this.value.toUpperCase();"
+                                   (focusout)="upperCase($event);"
+                                   class="form-control"
+                                   [(ngModel)]="grupo.nome_grupo"
+                                   placeholder="Informe o Nome do Grupo"
+                                   name="nome_grupo"
+                                   #grupoNomeGrupo="ngModel"
+                                   [class.is-invalid]="grupoNomeGrupo.errors?.nomeInvalid && (grupoNomeGrupo.touched || grupoNomeGrupo.dirty)"
+                                   p-InputText nomeValidateDirective required />
+                            <small id="nome_grupo-help" class="invalid-feedback" *ngIf="(grupoNomeGrupo.touched || grupoNomeGrupo.dirty) && grupoNomeGrupo.errors?.nomeInvalid">
+                                O Nome do Grupo é de preenchimento obrigatório e deve conter mais de 10 caracteres
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <mat-form-field class="m-cnpj" appearance="fill">
+                            <mat-label>Data Inclusão</mat-label>
+                            <input matInput
+                                   [matDatepicker]="dataInclusao" 
+                                   [(ngModel)]="grupo.data_inclusao"
+                                   disabled />
+                            <mat-datepicker-toggle matSuffix [for]="dataInclusao"></mat-datepicker-toggle>
+                            <mat-datepicker #dataInclusao></mat-datepicker>
+                                   
+                        </mat-form-field>
+                    </div>
+                    <div class="col-sm-4">
+                        <mat-form-field class="m-cnpj" appearance="fill">
+                            <mat-label>Última Alteração</mat-label>
+                            <input matInput
+                                   [matDatepicker]="dataAlteracao" 
+                                   [(ngModel)]="grupo.data_alteracao"
+                                   disabled />
+                            <mat-datepicker-toggle matSuffix [for]="dataAlteracao"></mat-datepicker-toggle>
+                            <mat-datepicker #dataAlteracao></mat-datepicker>
+                                   
+                        </mat-form-field>
+                    </div>
+                </div>
+                <div class="row murau__container">
+                    <div class="col-sm-2">
+                        <div class="p-field">
+                            <mat-slide-toggle id="ativo" color="primary" [(ngModel)]="grupo.ativo">{{grupo.ativo ? "Ativo" : "Inativo"}}</mat-slide-toggle>
+                        </div>
+                    </div>
+                </div>
+        </mat-tab>
+        <mat-tab label="Permissões">
+            <div class="murau__container">
+                <p-table #dt [value]="permissoes"
+                        [rows]="10"
+                        [paginator]="true"
+                        [globalFilterFields]="['tabela']"
+                        [rowHover]="true"
+                        dataKey="uid"
+                        currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} Tabelas"
+                        [showCurrentPageReport]="true" styleClass="p-datatable-responsive" [responsive]="true">
+                <ng-template pTemplate="caption">
+                    <div class="p-d-flex p-ai-center p-jc-between">
+                        <h2 class="p-m-0">Permissões</h2>
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <input pInputText type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Buscar..." />
+                        </span>
+                    </div>
+                </ng-template>
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th pSortableColumn="tabela" colspan="20%">Tabela<p-sortIcon field="tabela"></p-sortIcon></th>
+                        <th pSortableColumn="inserir" colspan="15%">Incluir <p-sortIcon field= "inserir"></p-sortIcon></th>
+                        <th pSortableColumn="alterar" colspan="15%">Alterar<p-sortIcon field="alterar"></p-sortIcon></th>
+                        
+                        <th pSortableColumn="excluir" colspan="15%">Excluir<p-sortIcon field="excluir"></p-sortIcon></th>
+                        
+                        <th pSortableColumn="visualizar" colspan="15%">visualizar<p-sortIcon field="visualizar"></p-sortIcon></th>
+                        <th pSortableColumn="data_alteracao" style="text-align: right" colspan="15%">Data Alteração<p-sortIcon field="data_alteracao"></p-sortIcon></th>
+                        
+                        
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-permissao>
+                    <tr>
+                        <td  colspan="20%">{{permissao.tabela}}</td>
+                        <td  colspan="15%"><p-checkbox [(ngModel)]="permissao.inserir" [binary]="true"></p-checkbox></td>
+                        
+                        
+                        <td  colspan="15%"><p-checkbox [(ngModel)]="permissao.alterar" [binary]="true"></p-checkbox></td>
+                        <td  colspan="15%"><p-checkbox [(ngModel)]="permissao.excluir" [binary]="true"></p-checkbox></td>
+                        <td  colspan="15%"><p-checkbox [(ngModel)]="permissao.visualizar" [binary]="true"></p-checkbox></td>
+                        <td  style="text-align: right" colspan="15%">{{permissao.data_inclusao | date: 'dd/MM/yyyy'}}</td>
+                      
+                
+                      
+                    </tr>
+                </ng-template>
+            </p-table>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</div>
+
+
+

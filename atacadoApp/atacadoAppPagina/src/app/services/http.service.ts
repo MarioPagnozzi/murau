@@ -27,22 +27,6 @@ export class HttpService {
   public get(url: string): Promise<IResult> {
     return new Promise<IResult>(async (resolve) => {
       const header = this.createHeader();
-
-      /*this.http.get(url, { headers: header })
-               .subscribe(
-
-                 res => {
-                      this.spinner.hide();
-                      resolve({success: true, data: res, error: undefined});
-
-
-
-                 },
-                 err => {
-                      this.spinner.hide();
-                      resolve({success: false, data: undefined, error: err})
-
-                 }); */
        try {
         this.spinner.show();
         const res = await this.http.get(url, { headers: header }).toPromise();
