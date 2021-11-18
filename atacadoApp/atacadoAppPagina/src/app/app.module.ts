@@ -29,6 +29,8 @@ import {MatInputModule} from '@angular/material/input';
 import {MatSelectModule} from '@angular/material/select';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import {MatCheckboxModule} from '@angular/material/checkbox';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 
 import { MatNativeDateModule, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
@@ -125,6 +127,7 @@ import { FormUsuarioComponent } from './components/form-usuario/form-usuario.com
 import { DetalhesProdutoComponent } from './components/detalhes-produto/detalhes-produto.component';
 import { PanelAdministradorComponent } from './components/panel-administrador/panel-administrador.component';
 import { GoogleMapsComponent } from './components/google-maps/google-maps.component';
+import { PromocaoComponent } from './components/promocao/promocao.component';
 
 declare global {
   interface Document {
@@ -218,7 +221,8 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     FormUsuarioComponent,
     DetalhesProdutoComponent,
     PanelAdministradorComponent,
-    GoogleMapsComponent
+    GoogleMapsComponent,
+    PromocaoComponent
   ],
   imports: [
     FormsModule,
@@ -288,7 +292,9 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     PaginatorModule,
     GMapModule,
     MatCheckboxModule,
-    MatBadgeModule
+    MatBadgeModule,
+    MatFormFieldModule,
+    MatProgressBarModule
     
 
   ],
