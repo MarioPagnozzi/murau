@@ -19,8 +19,8 @@ if (config.production) {
     process.env.dhparam = "/usr/local/directadmin/data/users/murau/domains/api.murau.com.br.cert.combined";
 } else {
     process.env.target = "https://apimurau.mapxsolucoes.com.br:9443";
-    process.env.key = "C:/Program Files/OpenSSL-Win64/bin/certificate.key";
-    process.env.cert = "C:/Program Files/OpenSSL-Win64/bin/certificate.crt";
+    process.env.key = "C:/Users/mario/key.pem";
+    process.env.cert = "C:/Users/mario/certificate.pem";
     process.env.ca = "undefined";
     process.env.dhparam = "undefined";
 }

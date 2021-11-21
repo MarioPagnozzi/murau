@@ -1,5 +1,4 @@
 import { AfterViewInit, Component, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { ɵangular_packages_platform_browser_platform_browser_a } from '@angular/platform-browser';
 import { Subscription } from 'rxjs';
 import { GrupoModel } from 'src/app/models/grupoModel';
 import { PermissaoModel } from 'src/app/models/permissaoModel';
