@@ -9,6 +9,7 @@ import { GrupoController } from './controller/GrupoController';
 import { StorageController } from './controller/StorageController';
 import { PromocaoController } from './controller/PromocaoController';
 import { TabelasController } from './controller/TabelasController';
+import { FilesController } from './controller/FilesController';
 
 export const Routes = [
 
@@ -93,6 +94,9 @@ export const Routes = [
     {method: "get", route: "/tabelas", controller: TabelasController, action: "all"},
 
     {method: "get", route: "/storage/:filename", controller: StorageController, action: "getFile" },
-    {method: "post", route: "/promocao/lista", controller: PromocaoController, action: "save"}
+    {method: "post", route: "/promocao/lista", controller: PromocaoController, action: "save"},
+
+    {method: "post", route: "/upload", controller: FilesController, action: "uploadFiles"},
+    {method: "get", route: "/files", controller: FilesController, action: "getListFiles"}
 
 ];
