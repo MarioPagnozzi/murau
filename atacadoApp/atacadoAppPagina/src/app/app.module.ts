@@ -125,6 +125,7 @@ import { FormUsuarioComponent } from './components/form-usuario/form-usuario.com
 import { DetalhesProdutoComponent } from './components/detalhes-produto/detalhes-produto.component';
 import { PanelAdministradorComponent } from './components/panel-administrador/panel-administrador.component';
 import { GoogleMapsComponent } from './components/google-maps/google-maps.component';
+import { PromocoesComponent } from './components/promocoes/promocoes.component';
 
 declare global {
   interface Document {
@@ -218,7 +219,8 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     FormUsuarioComponent,
     DetalhesProdutoComponent,
     PanelAdministradorComponent,
-    GoogleMapsComponent
+    GoogleMapsComponent,
+    PromocoesComponent
   ],
   imports: [
     FormsModule,

@@ -64,6 +64,7 @@ export abstract class BaseService<T> {
           msg = `Error Code: ${error.status}\nMessage: ${error.message}`;
         }
         console.log(msg);
-        return throwError(msg);
+        let err = throwError(() => new Error(msg));
+        return err;
       }
 }

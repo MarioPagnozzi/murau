@@ -68,6 +68,12 @@ body { margin: 0; font-family: "Lato", "Helvetica Neue", sans-serif; }
       display: none;
   }
 }
+.p-mr-2 {
+    margin-right: 2px !important;
+}
+.p-mr-4 {
+    margin-right: 4px !important;
+}
 
 @media screen and (max-width: 40rem) {
   :host ::ng-deep {

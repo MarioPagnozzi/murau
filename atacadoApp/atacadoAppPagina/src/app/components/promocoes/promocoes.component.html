@@ -1,0 +1,187 @@
+<div class="murau__container">
+    <div class="row">
+        <div class="col-8">
+          <label class="btn btn-default p-0">
+            <input type="file" (change)="selectFile($event)" />
+          </label>
+        </div>
+      
+        <div class="col-4">
+          <button class="btn btn-outline-primary btn-sm" [disabled]="!selectedFiles" (click)="upload()">
+            Upload
+          </button>
+        </div>
+      </div>
+      
+      <div *ngIf="currentFile" class="progress my-3">
+        <div
+          class="progress-bar progress-bar-info progress-bar-striped"
+          role="progressbar"
+          attr.aria-valuenow="{{ progress }}"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          [ngStyle]="{ width: progress + '%' }">
+        
+          {{ progress }}%
+        </div>
+      </div>
+    
+      <div *ngIf="message" class="alert alert-secondary" role="alert">{{ message }}</div>
+      <!--
+      <div class="card mt-3">
+        <div class="card-header">Lista de Arquivos</div>
+        <ul
+          class="list-group list-group-flush"
+          *ngFor="let file of fileInfos | async"
+        >
+          <li class="list-group-item">
+            <a href="{{ file.url }}">{{ file.name }}</a>
+          </li>
+        </ul>
+      </div>
+    -->
+</div>
+<div class="murau__container">
+  <h1>Listagem de Promoções</h1>
+  <h5>Inclusão - Exclusão e Manutenção de Promoções</h5>
+  <p-toolbar styleClass="p-d-flex p-mb-4">
+      <ng-template pTemplate="left">
+          <button pButton 
+                  pRipple 
+                  label="Salvar Promoções" 
+                  icon="pi pi-plus"
+                  class="p-button-primary p-mr-4"
+                  (click)="salvarPromocoes()"></button>
+
+          <button pButton
+                  pRipple
+                  icon="pi pi-trash"
+                  class="p-button-danger p-mr-4"
+                  (click)="excluirPromocoes()"
+                  [disabled]="!selPromocoes || !selPromocoes.length"></button>
+      </ng-template>
+      
+  </p-toolbar>
+  <p-table #dt [value]="promocaoList"
+               [rows]="10"
+               [paginator]="true"
+               [globalFilterFields]="['codigo_promocao','desc_promocao', 'desc_referencia', 'cod_produto']"
+               [(selection)]="selPromocoes"
+               [rowHover]="true"
+               dataKey="cod_produto"
+               currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} promoções"
+               [showCurrentPageReport]="true" styleClass="p-datatable-responsive" [responsive]="true">
+      <ng-template pTemplate="caption">
+          <div class="p-d-flex p-ai-center p-jc-between">
+              <h2 class="p-m-0">Promoções</h2>
+              <span class="p-input-icon-left">
+                  <i class="pi pi-search"></i>
+                  <input pInputText type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Buscar..." />
+              </span>
+          </div>
+      </ng-template>
+      <ng-template pTemplate="header">
+          <tr>
+              <th style="width: 3rem">
+                  <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+              </th>
+              <th pSortableColumn="codigo_promocao" colspan="8%">Cód. <p-sortIcon field="codigo_promocao"></p-sortIcon></th>
+              <th pSortableColumn="desc_promocao" colspan="15%">Descrição <p-sortIcon field= "desc_promocao"></p-sortIcon></th>
+              <th pSortableColumn="desc_referencia" colspan="10%">Referêncai <p-sortIcon field="desc_referencia"></p-sortIcon></th>
+              <th pSortableColumn="cod_produto" colspan="8%">Cód. Produto<p-sortIcon field="cod_produto"></p-sortIcon></th>                
+              <th pSortableColumn="vlr_anterior" colspan="10%">Vlr. Original.<p-sortIcon field="vlr_anterior"></p-sortIcon></th>
+              <th pSortableColumn="vlr_promocao" colspan="10%">Vlr. Promoção<p-sortIcon field="vlr_promocao"></p-sortIcon></th>
+              <th pSortableColumn="data_inicio" colspan="10%">Data Inicial<p-sortIcon field="data_inicio"></p-sortIcon></th>
+              <th pSortableColumn="data_final" colspan="10%">Data Final<p-sortIcon field="data_final"></p-sortIcon></th>
+              
+              <th colspan="12%"></th>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-promo>
+          <tr>
+              <td>
+                  <p-tableCheckbox [value]="promo"></p-tableCheckbox>
+              </td>
+              <td style="text-align: right"colspan="8%">{{promo.codigo_promocao}}</td>
+              <td colspan="15%">{{promo.desc_promocao}}</td>
+              <td colspan="10%">{{promo.desc_referencia}}</td>
+              <td colspan="8%">{{promo.cod_produto}}</td>
+              <td colspan="10%">{{promo.vlr_anterior | number:'0.2':'pt-br'}}</td>
+              <td colspan="10%">{{promo.vlr_promocao | number:'0.2':'pt-br'}}</td>
+              <td colspan="10%">{{promo.data_inicio | date: 'dd/MM/yyyy'}}</td>
+              <td  colspan="10%">{{promo.data_final | date: 'dd/MM/yyyy'}}</td>
+              <td colspan="12%" class="p-d-flex">
+                  <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-primary p-mr-2" (click)="openDialog(promo)"></button>
+                  <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="excluirPromocao(promo)"></button>
+              </td>
+          </tr>
+      </ng-template>
+      <ng-template pTemplate="summary">
+          
+      </ng-template>
+  </p-table>
+  <p-confirmDialog [style]="{width: '500px'}"></p-confirmDialog>
+  <p-dialog [(visible)]="showDialog"
+              [style]="{width: '600px', height: '600px'}"
+              [header]="headerDialog"
+              [modal]="true"
+              (onHide)="hideDialog()"
+              styleClass="p-fluit">
+        <div class="murau__container">
+            <div id="promocao">
+                
+                   <div class="row">
+                     <div class="col">
+                       Codigo: {{promocao.codigo_promocao}}
+                     </div>
+                     <div class="col">
+                       Referência: {{promocao.desc_referencia}}
+                     </div>
+                   </div>
+                   <div class="row">
+                     <div class="col">
+                       Código Produto: {{promocao.cod_produto}}
+                     </div>
+                     <div class="col">
+                       Descrição: {{produto.nome}}
+                     </div>
+                   </div>
+                   <div class="row">
+                     <div class="p-field col">
+                      <label for="vlrOrignal">Valor Original</label>
+                      <p-inputNumber id="vlrOriginal" [(ngModel)]="promocao.vlr_anterior" mode="decimal" locale="pt-BR" [minFractionDigits]="2" aria-readonly="true"></p-inputNumber>
+                     </div>
+                     <div class="p-field col">
+                      <label for="vlrPromocao">Valor Promoção</label>
+                      <p-inputNumber id="vlrPromocao" [(ngModel)]="vlrPromocaoAux" mode="decimal" locale="pt-BR" [minFractionDigits]="2" (ngModelChange)="porcentCalc()"></p-inputNumber>
+                     </div>
+                   </div>
+                   <div class="row">
+                    <div class="p-field col">
+                      <label for="porcento">Desconto %</label>
+                      <p-inputNumber id="porcento" [(ngModel)]="desconto" mode="decimal" locale="pt-BR" [minFractionDigits]="2" (ngModelChange)="vlrCalc()"></p-inputNumber>
+                     </div>
+                   </div>
+                
+            </div>
+            <p-toolbar styleClass="p-mb-4">
+                <ng-template pTemplate="left">
+
+                </ng-template>
+                <ng-template pTemplate="right">
+                    <button pButton
+                            pRipple 
+                            icon="pi pi-save"
+                            class="p-button-success p-mr-2"
+                            (click)="salvarDialog(); hideDialog()"></button> 
+
+                    <button pButton
+                            pRipple
+                            icon="pi pi-sign-out"
+                            class="p-button-outlined p-button-primary"
+                            (click)="hideDialog()"></button>
+                </ng-template>
+            </p-toolbar>
+        </div>
+    </p-dialog>
+</div>
