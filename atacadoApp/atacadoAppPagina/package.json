@@ -39,7 +39,7 @@
     "bootstrap-icons": "^1.7.1",
     "fullcalendar": "^5.10.1",
     "fullcalendar-scheduler": "^5.10.1",
-    "jquery": "^3.3.1",
+    "jquery": "^3.5.0",
     "material-design-icons": "^3.0.1",
     "material-icons": "^1.10.2",
     "moment": "^2.29.1",
