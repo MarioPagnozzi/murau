@@ -126,6 +126,7 @@ import { DetalhesProdutoComponent } from './components/detalhes-produto/detalhes
 import { PanelAdministradorComponent } from './components/panel-administrador/panel-administrador.component';
 import { GoogleMapsComponent } from './components/google-maps/google-maps.component';
 import { PromocoesComponent } from './components/promocoes/promocoes.component';
+import { GridComponenteComponent } from './components/grid-componente/grid-componente.component';
 
 declare global {
   interface Document {
@@ -220,7 +221,8 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     DetalhesProdutoComponent,
     PanelAdministradorComponent,
     GoogleMapsComponent,
-    PromocoesComponent
+    PromocoesComponent,
+    GridComponenteComponent
   ],
   imports: [
     FormsModule,

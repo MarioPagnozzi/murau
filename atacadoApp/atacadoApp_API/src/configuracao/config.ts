@@ -8,7 +8,8 @@ export default {
         '/users/auth',
         "/home",      
         "/clientes/createCliente",
-        "/storage"
+        "/storage",
+        "/imagesProduto"
     ],
     tabelas: [
         "usuarios",

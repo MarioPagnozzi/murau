@@ -51,9 +51,11 @@
         </mat-sidenav>
         <mat-sidenav-content>
             <router-outlet></router-outlet>
-            <div class="container_map" *ngIf="!isLogged">
-                <app-google-maps></app-google-maps>
-            </div>
+            <!--
+                <div class="container_map" *ngIf="!isLogged">
+                    <app-google-maps></app-google-maps>
+                </div>
+            -->
              <!-- footer -->
             <footer [ngClass]="{'page-footer': !isLogged, 'page-footer-logged': isLogged}">
                 <div class="container">

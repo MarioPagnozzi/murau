@@ -48,6 +48,7 @@ export class PanelAdministradorComponent implements OnInit, OnDestroy, AfterView
   subscript_premissao: Subscription = new Subscription();
   qtdClientePendentes = 0;
   hiddenPendentes = true;
+  
   constructor(private permissaoService: PermissaoService,
               private usuariosService: UsuariosService,
               private clienteService: ClienteService) { }

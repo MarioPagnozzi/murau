@@ -76,11 +76,11 @@ export class HomeComponent implements OnInit {
             this.homeService.retornaProdutos();
           }
         }
-        this.produtos = this.homeService.produtosList().filter((prod, i, produtos) => produtos.findIndex(p => p.nome === prod.nome) === i );
+        this.produtos = this.homeService.produtosList().filter((prod, i, produtos) => produtos.findIndex(p => p.referencia === prod.referencia) === i );
         
         this.subscrip = this.homeService.produtosChange$.subscribe({
           next: (produtos) => {
-              this.produtos = (produtos as ProdutosModel[]).filter((prod, i, produtos) => produtos.findIndex(p => p.nome === prod.nome) === i );
+              this.produtos = (produtos as ProdutosModel[]).filter((prod, i, produtos) => produtos.findIndex(p => p.referencia === prod.referencia) === i );
           },
           error: (err) => {
             throw new Error(err);

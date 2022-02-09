@@ -702,7 +702,7 @@ export class atualizaProduto {
             let options: any;
             let strBusca: string = "";
             let cdProdSemEstoque: Array<any> = this.cd_Barra;
-            if (isArray(this.cd_Barra)) {
+            if (this.cd_Barra.isArray) {
 
                 for (let i = 0; i < this.cd_Barra.length; i++) {
 
@@ -779,6 +779,7 @@ export class atualizaProduto {
                                                                             imagemProduto = new ImagensProduto();
                                                                             imagemProduto.caminho = img.imageUrl;
                                                                             imagemProduto.produto = Promise.resolve(_produto);
+                                                                            imagemProduto.referencia = _produto.referencia;
                                                                             setImagemProduto(imagemProduto)
 
 
@@ -790,6 +791,7 @@ export class atualizaProduto {
                                                                         imagemProduto = new ImagensProduto();
                                                                         imagemProduto.caminho = img.imageUrl;
                                                                         imagemProduto.produto = Promise.resolve(_produto);
+                                                                        imagemProduto.referencia = _produto.referencia;
                                                                         setImagemProduto(imagemProduto)
 
 
@@ -880,6 +882,7 @@ export class atualizaProduto {
                                                 imagemProduto = new ImagensProduto();
                                                 imagemProduto.caminho = ImageUrl;
                                                 imagemProduto.produto = Promise.resolve(_produto);
+                                                imagemProduto.referencia = _produto.referencia;
                                                 setImagemProduto(imagemProduto);
 
 
@@ -895,6 +898,7 @@ export class atualizaProduto {
                                                     imagemProduto = new ImagensProduto();
                                                     imagemProduto.caminho = Images[img].ImageUrl;
                                                     imagemProduto.produto = Promise.resolve(_produto);
+                                                    imagemProduto.referencia = _produto.referencia;
                                                     setImagemProduto(imagemProduto);
 
 
@@ -908,6 +912,7 @@ export class atualizaProduto {
                                             imagemProduto = new ImagensProduto();
                                             imagemProduto.caminho = ImageUrl;
                                             imagemProduto.produto = Promise.resolve(_produto);
+                                            imagemProduto.referencia = _produto.referencia;
                                             setImagemProduto(imagemProduto)
 
 
@@ -917,6 +922,7 @@ export class atualizaProduto {
                                                 imagemProduto = new ImagensProduto();
                                                 imagemProduto.caminho = Images[img].ImageUrl;
                                                 imagemProduto.produto = Promise.resolve(_produto);
+                                                imagemProduto.referencia = _produto.referencia;
                                                 setImagemProduto(imagemProduto)
 
 

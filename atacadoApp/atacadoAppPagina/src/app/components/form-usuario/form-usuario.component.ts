@@ -15,7 +15,7 @@ export interface IStatus {
 })
 export class FormUsuarioComponent implements OnInit, OnChanges {
 
-  @Input() 
+  @Input()
   set usuario(usuario: UsuarioModel) {
     this._usuario = usuario;
   }

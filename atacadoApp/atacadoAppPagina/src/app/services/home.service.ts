@@ -7,6 +7,7 @@ import { IProdutos } from '../interfaces/IProdutos';
 import { EmpresasModel } from '../models/empresasModel';
 import { ProdutosModel } from '../models/produtosModel';
 import { HttpService } from './http.service';
+import { ImagemProdutosService } from './imagem-produtos.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,7 +17,7 @@ export class HomeService extends BaseService<IProdutos | ProdutosModel | IEmpres
   private _produtos: ProdutosModel[] = [];
   produtosChange$: Observable<ProdutosModel[]> = new Observable<ProdutosModel[]>();
   private _observer: Observer<ProdutosModel[]> | any
-  constructor(public http: HttpService, public httpCli: HttpClient) {
+  constructor(public http: HttpService, public httpCli: HttpClient,private imagemProdService: ImagemProdutosService) {
     super("home", http, httpCli);
     this.produtosChange$ = new Observable(observer => this._observer = observer);    
    }
@@ -28,18 +29,20 @@ export class HomeService extends BaseService<IProdutos | ProdutosModel | IEmpres
   retornaProdutos() {
       
       this.getObservable().subscribe({
-        next: (produtos) => {
+        next: async (produtos) => {
           console.log("getProdutos")
+          this._produtos = [];
           const _produtos = produtos as ProdutosModel[];
+          let imagens = await this.imagemProdService.getAll();
           _produtos.forEach(async (produto) => {
               produto.imagens = [];
-              let imagem = await this.filtro("imagens", produto.uid);
-              if (imagem.data && imagem.data != null && imagem.data.length > 0) {
-                  produto.imagens = imagem.data;
-              }
               
+              if (imagens.data &&  imagens.data.length > 0) {
+                  produto.imagens = imagens.data.filter((imagem: any, i: number, imagens: any[]) => imagem.referencia === produto.referencia && imagens.findIndex(p => p.caminho === imagem.caminho) === i);
+              }
+              this._produtos.push(produto);
           })
-          this._produtos =  _produtos
+          //this._produtos =  _produtos
           this._observer.next(_produtos);
         }
       });

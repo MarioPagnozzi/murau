@@ -18,6 +18,9 @@ export class HomeController extends BaseController<Produtos> {
         let _produtos = produtos;
         return  _produtos; //.filter((prod, i, produtos) => produtos.findIndex(p => p.nome === prod.nome) === i );
     }
+    async imagens(request: Request) {
+        return this._repImagensProduto.find();
+    }
     async allDistinct(request: Request) {
         return this._repProdutos.createQueryBuilder("produtos")
                                             .leftJoinAndSelect("produtos.imagens","imagens").addSelect("imagens.caminho")
@@ -99,7 +102,10 @@ export class HomeController extends BaseController<Produtos> {
         }
 
         if (filtro === "imagens") {
-            return this._repImagensProduto.find({where: {produto: [{uid: valor}]}})
+            return this._repImagensProduto.findOne({where: {referencia: valor}});
+            /*let produto = await this._repProdutos.findOne(valor);
+            let imagens: any[] = await produto.imagens;
+            return imagens;*/
         }
 
         if (filtro === "tamanhos") {

@@ -95,6 +95,7 @@ export const Routes = [
     {method: "get", route: "/storage/:filename", controller: StorageController, action: "getFile" },
     {method: "post", route: "/promocao", controller: PromocaoController, action: "save"},
     {method: "post", route: "/promocao/upload", controller: PromocaoController, action: "uploadFiles"},
-    {method: "get", route: "/promocao/files", controller: PromocaoController, action: "files"}
+    {method: "get", route: "/promocao/files", controller: PromocaoController, action: "files"},
+    {method: "get", route: "/imagesProduto", controller: HomeController, action: "imagens"}
 
 ];
