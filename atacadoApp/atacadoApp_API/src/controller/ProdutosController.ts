@@ -6,10 +6,22 @@ import { BaseController } from "./BaseController";
 import { ImagensProduto } from '../entity/imagesProduto';
 import { ProdutosEmpresas } from '../entity/ProdutosEmpresas';
 import { Empresas } from '../entity/Empresas';
+import * as path from 'path';
 export class ProdutosController extends BaseController<Produtos> {
     private _repProdutos: Repository<Produtos> = getRepository(Produtos);
     constructor () {
         super(Produtos);
+    }
+    async one(request: Request, restrito = true) {
+        if (restrito) {
+            let tabela = this.func.Tabela(request);
+            if (!this.func.Permissao(request, tabela, "V")) 
+                return {status: 400, errors: [{message: "Você não tem permissão para acessar os registros"}]}
+        }
+        const produto = await this._repProdutos.findOne(request.params.id);
+        let prod: any = {...produto};
+        prod.imagens = await produto.imagens;
+        return prod;
     }
     async save(request: Request) {
         
@@ -106,9 +118,9 @@ export class ProdutosController extends BaseController<Produtos> {
     }
     async uploadFotos(request: Request, response: Response, next: NextFunction) {
         
-        if (!this.func.Permissao(request, "Produtos", "A") || !this.func.Permissao(request, "Produtos", "I")) {
+        /*if (!this.func.Permissao(request, "Produtos", "A") || !this.func.Permissao(request, "Produtos", "I")) {
             return {status: 400, errors: ["Você não tem permissão para carregar novas fotos"]}
-        }
+        }*/
         const fs = require('fs');
         const multer = require('multer');
         var sharp = require('sharp');
@@ -162,7 +174,9 @@ export class ProdutosController extends BaseController<Produtos> {
                     
                     for (let el in files) {
                         console.log(directory);
-                        let caminho = directory + "/" + Date.now().toString() + ".png" ;
+                        console.log(request.host)
+                        const nome_arquivo = Date.now().toString() + ".png";
+                        let caminho = directory + "/" + nome_arquivo;
                         sharp(files[el].path).resize(350,600).toFormat('png')
                                                         .png({quality: 80}).toFile(caminho)
                         .then(async () => {
@@ -174,7 +188,8 @@ export class ProdutosController extends BaseController<Produtos> {
                             let produto = await _repProdutos.findOne({where: {codigo: request.body.cdproduto}});
                             
                             imagesProd.produto = Promise.resolve(produto);
-                            imagesProd.caminho = caminho;
+                            imagesProd.caminho = "https://" + request.host + caminho.replace(".","");
+                            imagesProd.referencia = produto.referencia;
 
                             _repImagemProduto.save(imagesProd);
 
@@ -189,6 +204,15 @@ export class ProdutosController extends BaseController<Produtos> {
                 }
             }
         })
+    }
+    async getFotos(req: Request) {
+        const produto = await this._repProdutos.findOne(req.params.uid);
+        const fotos = await produto.imagens;
+        return fotos;
+    }
+    async getFile(req: Request) {
+        const filePath = `./public/uploads/fotos/${req.params.codprod}/${req.params.nome_foto}`;
+        return { file: path.resolve(filePath) };
     }
     async vinculaEmpresas(request: Request) {
 

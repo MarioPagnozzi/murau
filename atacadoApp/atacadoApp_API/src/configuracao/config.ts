@@ -9,7 +9,9 @@ export default {
         "/home",      
         "/clientes/createCliente",
         "/storage",
-        "/imagesProduto"
+        "/imagesProduto",
+        "/produtos/uploadfotos",
+        "/public/uploads/fotos"
     ],
     tabelas: [
         "usuarios",
