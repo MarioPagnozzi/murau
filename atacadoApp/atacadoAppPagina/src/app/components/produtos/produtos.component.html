@@ -36,9 +36,9 @@
         
     </p-toolbar>
     <p-table #dt [value]="produtoList"
-                 [rows]="10"
+                 [rows]="10"s
                  [paginator]="true"
-                 [globalFilterFields]="['nome, referencia, codigo']"
+                 [globalFilterFields]="['nome', 'referencia', 'codigo']"
                  [(selection)]="selProdutos"
                  [rowHover]="true"
                  dataKey="uid"

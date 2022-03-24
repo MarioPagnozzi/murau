@@ -1,4 +1,3 @@
-
 import { NgModule, CUSTOM_ELEMENTS_SCHEMA, DEFAULT_CURRENCY_CODE, LOCALE_ID } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -127,6 +126,8 @@ import { PanelAdministradorComponent } from './components/panel-administrador/pa
 import { GoogleMapsComponent } from './components/google-maps/google-maps.component';
 import { PromocoesComponent } from './components/promocoes/promocoes.component';
 import { GridComponenteComponent } from './components/grid-componente/grid-componente.component';
+import { InputFilePhotosComponent } from './components/input-file-photos/input-file-photos.component';
+import { InputFilePhotosDirective } from './diretivas/input-file-photos.directive';
 
 declare global {
   interface Document {
@@ -222,7 +223,9 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     PanelAdministradorComponent,
     GoogleMapsComponent,
     PromocoesComponent,
-    GridComponenteComponent
+    GridComponenteComponent,
+    InputFilePhotosComponent,
+    InputFilePhotosDirective
   ],
   imports: [
     FormsModule,

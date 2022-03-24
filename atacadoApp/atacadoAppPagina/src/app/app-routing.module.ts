@@ -24,6 +24,7 @@ import { DetalhesProdutoComponent } from './components/detalhes-produto/detalhes
 import { ClientesPendentesComponent } from './components/clientes-pendentes/clientes-pendentes.component';
 import { PromocoesComponent } from './components/promocoes/promocoes.component';
 import { AgendaComponent } from './components/agenda/agenda.component';
+import { PedidosComponent } from './components/pedidos/pedidos.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '/home' },
@@ -45,7 +46,8 @@ const routes: Routes = [
   { path: 'vendedores', component: VendedoresComponent, canActivate: [AdminGuard] },
   { path: 'clientes', component: ClientesComponent, canActivate: [AdminGuard] },
   { path: 'cliente/:cod', component: ClienteComponent, canActivate: [AdminGuard] },
-  { path: 'pedido/:cod/:cli/:url', component: PedidoComponent, canActivate: [AdminGuard] },
+  { path: 'pedido/:cod', component: PedidoComponent, canActivate: [AdminGuard] },
+  { path: 'pedidos', component: PedidosComponent, canActivate: [AdminGuard]},
   { path: 'produto/detalhes/:uid', component: DetalhesProdutoComponent},
   { path: 'aprovar', component: ClientesPendentesComponent, canActivate: [AdminGuard] },
   { path: 'promocao', component: PromocoesComponent, canActivate: [AdminGuard] },

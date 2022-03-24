@@ -14,6 +14,7 @@
                   [aprovado]="aprovado"
                   [clienteAtivo]="clienteAtivo"
                   [clienteUid]="cliente.uid ? cliente.uid : ''"
+                  [codUid] = "cliente.uid ? cliente.uid : ''"
                   [routerBack]="url"
                   (salvar)="salvarAlteracoes()"></app-tool-bar>
     <mat-tab-group mat-align-tabs="start">
@@ -301,7 +302,7 @@
                                             'transito': pedido.status_pedido === 4, 
                                             'entregue': pedido.status_pedido === 5}">{{ (pedido.valor_pedido ? pedido.valor_pedido : 0) | number:'0.2':'pt-br'}}</td>
                             <td>
-                                <a routerLink="/pedido/{{pedido.uid}}/{{cliente.uid}}/cliente" style="color: #4b2e28">
+                                <a routerLink="/pedido/{{pedido.uid}}" [queryParams]="{url: 'cliente', codigo: cliente.uid, cli: cliente.uid}" style="color: #4b2e28">
                                     <fa-icon [icon]="['fas','search-plus']" ></fa-icon>
                                 </a>
                             </td>

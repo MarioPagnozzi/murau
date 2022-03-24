@@ -154,6 +154,7 @@ export class ClienteComponent implements OnInit {
     })
     
     this.fazerPedido = Permissao('pedidos', 'I');
+    console.log(this.fazerPedido)
   }
   addNewContato() {
     const newContato = new ContatosModel();
