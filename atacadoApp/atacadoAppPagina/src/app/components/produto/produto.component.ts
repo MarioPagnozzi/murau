@@ -1,4 +1,4 @@
-import { Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -28,6 +28,8 @@ export class ProdutoComponent implements OnInit {
   url: string = "";
   length: number = 0;
   codprod: string = "";
+
+  @ViewChild("dt") public dt: any;
   constructor(private confirmationService: ConfirmationService,
               private messageService: MessageService,
               private route: Router,
@@ -38,10 +40,13 @@ export class ProdutoComponent implements OnInit {
 
   ngOnInit(): void {
     this.active.params.subscribe({
-      next: (p) =>{
+      next: (p) => {
         this.getUid(p.cod)
       }
     })
+  }
+  applyFilterGlobal($event: Event, stringVal: any) {
+    this.dt.filterGlobal(($event.target as HTMLInputElement).value, 'contains');
   }
   async getUid(uid: string): Promise<void> {
 
@@ -66,6 +71,7 @@ export class ProdutoComponent implements OnInit {
         console.log(this.produto.imagens)
         this.imagens = this.produto.imagens as ImagesProdutoModel[];
         this.length = this.imagens.length as number;
+        console.log(this.produto.produtosEmpresas)
         this.produto.produtosEmpresas?.forEach(async (emp: ProdutosEmpresasModel) => {
            let prodEmp = await this.produtoService.ProdutoEmpresa(emp.uid as string);
            this.empresas.push(prodEmp);

@@ -52,14 +52,14 @@ export class Clientes extends BaseEntity {
     contatos: ContatosClientes[]
     
     @ManyToOne(type => Vendedores, vendedores => vendedores.clientes, {eager: true, nullable: true})
-    vendedor: Vendedores
+    vendedor: Promise<Vendedores>
 
     @ManyToOne(type => Empresas, empresa => empresa.clientes, {eager: true, nullable: true})
-    empresa: Empresas
+    empresa: Promise<Empresas>
 
     @OneToMany(type => Pedidos, pedidos => pedidos.cliente)
     pedidos: Promise<Pedidos[]>
 
     @OneToOne(type => User, usuarios => usuarios.cliente, {nullable: true})
-    usuario: User
+    usuario: Promise<User>
 }

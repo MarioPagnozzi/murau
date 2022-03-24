@@ -21,6 +21,9 @@ import { IPedidos } from 'src/app/interfaces/IPedidos';
 import { IGrupos } from 'src/app/interfaces/IGrupos';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { CDK_CONNECTED_OVERLAY_SCROLL_STRATEGY_PROVIDER_FACTORY } from '@angular/cdk/overlay/overlay-directives';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { ProdutosEmpresasService } from 'src/app/services/produtos-empresas.service';
+
 
 export interface IStatus {
   valor: number
@@ -67,6 +70,7 @@ export class PedidoComponent implements OnInit, AfterViewInit {
 
   url: string = "";
   uid: string = "";
+  CliUid: string = "";
 
   constructor(
     private pedidoService: PedidosService,
@@ -78,7 +82,8 @@ export class PedidoComponent implements OnInit, AfterViewInit {
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private produtosService: ProdutosService,
-    private matSnack: MatSnackBar
+    private matSnack: MatSnackBar,
+    private produtosEmpresasService: ProdutosEmpresasService
   ) { }
   
   @ViewChild('codProd')
@@ -89,16 +94,18 @@ export class PedidoComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
 
-    // tslint:disable-next-line: deprecation
-    this.active.params.subscribe(p => this.getUid(p.cod, p.cli, p.url));
-
     this.status = [
-        {valor: statusPedido.Pendente, label: statusPedido[statusPedido.Pendente].toUpperCase()},
-        {valor: statusPedido.Aprovado, label: statusPedido[statusPedido.Aprovado].toUpperCase()},
-        {valor: statusPedido.Despachado, label: statusPedido[statusPedido.Despachado].toUpperCase()},
-        {valor: statusPedido.Transito, label: statusPedido[statusPedido.Transito].toUpperCase()},
-        {valor: statusPedido.Entregue, label: statusPedido[statusPedido.Entregue].toUpperCase()}
-    ];
+      {valor: statusPedido.Pendente, label: statusPedido[statusPedido.Pendente].toUpperCase()},
+      {valor: statusPedido.Aprovado, label: statusPedido[statusPedido.Aprovado].toUpperCase()},
+      {valor: statusPedido.Despachado, label: statusPedido[statusPedido.Despachado].toUpperCase()},
+      {valor: statusPedido.Transito, label: statusPedido[statusPedido.Transito].toUpperCase()},
+      {valor: statusPedido.Entregue, label: statusPedido[statusPedido.Entregue].toUpperCase()}
+  ];
+ 
+    // tslint:disable-next-line: deprecation
+    this.active.params.subscribe(p => this.getUid(p.cod));
+
+    
     const vend = RetornaGruposUsuario();
     // tslint:disable-next-line: forin
     for (let v in vend) {
@@ -142,52 +149,59 @@ export class PedidoComponent implements OnInit, AfterViewInit {
     }
 
   }
-  async getUid(uid: string, cli: string, url: string): Promise<void> {
+  async getUid(uid: string): Promise<void> {
   
    
     this.spinnerAcao = "Carregando..."; 
    
-    const cli_result = await this.clienteService.getById(cli);
-    this.cliente = cli_result.data as ClienteModel;
-
     
-    const vendedor_result = await this.vendedoresService.getById(this.cliente.vendedor?.uid ? this.cliente.vendedor?.uid : "");
-    this.vendedor = vendedor_result.data as VendedoresModel;  
-  
-  
-    const empresa_result = await this.empresaService.getById(this.cliente.empresa?.uid ? this.cliente.empresa?.uid : "");
-    this.empresa = empresa_result.data as EmpresasModel;
 
-    if (url === "vendedor") { 
-      this.uid = this.vendedor.uid ? this.vendedor.uid : '';
-    } if (url === "empresa") {
-      this.uid = this.empresa.uid ? this.empresa.uid : '';
-    } else {
-      this.uid = this.cliente.uid ? this.cliente.uid : '';
-    }
-    this.url = url;
-    this.cliente.vendedor = new VendedoresModel();
-    this.cliente.pedidos = [];
+    this.active.queryParams.subscribe({
+      next: async (qp) => {
+        console.log(qp)
+          this.url = qp.url;
+          this.uid = qp.codigo;
+          this.CliUid = qp.cli;
+      }
+    })
+    this.clienteService.getObservableById(this.CliUid).subscribe({
+      next: (cliente) => {
+        this.cliente = cliente as ClienteModel; 
+      },
+      complete: async () => {
+        console.log(this.cliente)        
+        this.vendedor = this.cliente.vendedor as VendedoresModel;
+        this.empresa = this.cliente.empresa as EmpresasModel;
+        this.cliente.vendedor = new VendedoresModel();
+        this.cliente.pedidos = [];
 
-    if (uid === "novo") {
-      this.pedido.cliente = this.cliente;
-      this.pedido.empresa = this.empresa;
-      this.pedido.vendedor = this.vendedor;
-      this.pedido.status_pedido = statusPedido.Pendente;
-      this.pedido.previsao_entrega = 15;
-      return;
-    }
+        this.vendedoresService.getObservableById(this.vendedor.uid as string).subscribe({
+          next: (vendedor) => {
+            this.vendedor = vendedor as VendedoresModel;
+          }
+        })
+
+        if (uid === "novo") {
+          this.pedido.cliente = this.cliente;
+          this.pedido.empresa = this.empresa;
+          this.pedido.vendedor = this.vendedor;
+          this.pedido.ativo = true;
+          this.pedido.status_pedido = statusPedido.Pendente;
+          this.pedido.previsao_entrega = 15;
+          return;
+        }
  
-    const result = await this.pedidoService.getById(uid);
-    this.pedido = result.data as PedidosModel;
-    this.pedido.cliente = this.cliente;
-    this.pedido.previsao_entrega = this.pedido.previsao_entrega ? this.pedido.previsao_entrega : 15;
-    this.statusPedido = this.pedido.status_pedido ? this.pedido.status_pedido : statusPedido.Pendente;
-    this.itensPedido = this.pedido.itens as ItensPedidoModel[];
-    this.itensPedido = this.itensPedido.filter(val => !val.excluido);
-    this.totalItem = this.totalizaItens();
-    this.rastreios = this.pedido.historico as HistoricoPedidoModel[];   
-   
+        const result = await this.pedidoService.getById(uid);
+        this.pedido = result.data as PedidosModel;
+        this.pedido.cliente = this.cliente;
+        this.pedido.previsao_entrega = this.pedido.previsao_entrega ? this.pedido.previsao_entrega : 15;
+        this.statusPedido = this.pedido.status_pedido ? this.pedido.status_pedido : statusPedido.Pendente;
+        this.itensPedido = this.pedido.itens as ItensPedidoModel[];
+        this.itensPedido = this.itensPedido.filter(val => !val.excluido);
+        this.totalItem = this.totalizaItens();
+        this.rastreios = this.pedido.historico as HistoricoPedidoModel[];
+      }
+    });
   }
   addItem() {
     this.subimetted = false;
@@ -217,7 +231,7 @@ export class PedidoComponent implements OnInit, AfterViewInit {
       this.pedido.valor_pedido = this.totalPedido();
       this.produto = new ProdutosModel();
       this.message = "";
-      this.empresaPadrao = new EmpresasModel();
+      this.empresaPadrao = new ProdutosEmpresasModel();
       this.itemPedido = new ItensPedidoModel();
       if (!this.mostraExcluidos) {
         this.itensPedido = this.itensPedido.filter(val => !val.excluido);
@@ -304,7 +318,7 @@ export class PedidoComponent implements OnInit, AfterViewInit {
     }
     this.produto = new ProdutosModel();
     this.message = "";
-    this.empresaPadrao = new EmpresasModel();
+    this.empresaPadrao = new ProdutosEmpresasModel();
   }
   findIndexById(id: string): number {
     let index = -1;
@@ -353,13 +367,14 @@ export class PedidoComponent implements OnInit, AfterViewInit {
      this.dt.filterGlobal(($event.target as HTMLInputElement).value, 'contains');
   }
   async buscaProduto() {
-    this.empresasVendedor = [];
-    this.empresaPadrao = new EmpresasModel();
+    this.empresasVendedor = [] as ProdutosEmpresasModel[];
+    this.empresaPadrao = new ProdutosEmpresasModel();
     this.itemPedido = new ItensPedidoModel();
     const codProd = this.produto.codigo;
     const prod = await this.produtosService.filtro("codigo", this.produto.codigo);
     if (prod.data) {
       this.produto = prod.data as ProdutosModel;
+      console.log(this.produto)
       this.itemPedido.produto = this.produto;
       this.filtraEmpresaProduto();
       this.qtdProd.nativeElement.focus();
@@ -367,21 +382,38 @@ export class PedidoComponent implements OnInit, AfterViewInit {
       this.produto = new ProdutosModel(); 
       //this.produto.codigo = codProd;
       this.message = "Produto não Encontrato para este Código";
-      this.empresaPadrao = new EmpresasModel();
+      this.empresaPadrao = new ProdutosEmpresasModel();
       this.itemPedido = new ItensPedidoModel();
       this.codProd.nativeElement.focus();
     }
     
   }
   async filtraEmpresaProduto() {
-    this.empresaPadrao = new EmpresasModel();
-    this.empresasVendedor = [];
-    this.empresaPadrao = (await this.produto.produtosEmpresas as ProdutosEmpresasModel[]).filter(val => val.empresa?.uid === this.cliente.empresa?.uid)[0] as ProdutosEmpresasModel;
-    for (let i of this.vendedor.empresas ? this.vendedor.empresas : []) {
-      this.empresasVendedor.push((await this.produto.produtosEmpresas as ProdutosEmpresasModel[]).filter(val => val.empresa?.uid === i.uid)[0] as ProdutosEmpresasModel);
+    this.empresaPadrao = new ProdutosEmpresasModel();
+    this.empresasVendedor = [] as ProdutosEmpresasModel[];
+    let produtosEmpresas: ProdutosEmpresasModel[] = [] as ProdutosEmpresasModel[];
+    let prodEmp: any[] = this.produto.produtosEmpresas as ProdutosEmpresasModel[];
+    for (let i = 0; i < prodEmp.length; i++) {
+      let result = await this.produtosEmpresasService.getById(prodEmp[i].uid as string);
+      if (result.success) {
+        produtosEmpresas.push(result.data);
+      }
     }
-    const selEmpPadrao: ProdutosEmpresasModel[] = [this.empresasVendedor.filter(val => val.empresa?.uid === this.empresaPadrao.empresa?.uid)[0]];
-    this.empresasVendedor = this.empresasVendedor.filter(val => !selEmpPadrao.includes(val));
+    console.log(produtosEmpresas)
+    if (produtosEmpresas.length <= 0) {
+      this.message = "Produto não está relacionado a nenhuma Empresa";
+      return;
+    }
+    console.log(this.cliente)
+    this.empresaPadrao = produtosEmpresas.filter(val => val.empresa?.uid === this.cliente.empresa?.uid)[0] as ProdutosEmpresasModel;
+    const result_vend = await this.vendedoresService.getById(this.vendedor.uid as string);
+    this.vendedor = result_vend.data;
+    console.log(this.vendedor)
+   
+    const selEmpPadrao: ProdutosEmpresasModel[] = [this.empresaPadrao];
+    console.log(selEmpPadrao);
+    console.log(this.empresaPadrao)
+    this.empresasVendedor = produtosEmpresas.filter(val => !selEmpPadrao.includes(val));
    
   }
   mostraItensExcluidos() {

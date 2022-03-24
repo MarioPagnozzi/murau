@@ -312,11 +312,19 @@ export class ClientesController extends BaseController<Clientes> {
         });
     }
 
-    async one(request: Request) {
-        let cliente = await this._repClientes.findOne(request.params.id);
+    async one(request: Request, restrito = false) {
+        if (restrito) {
+            let tabela = this.func.Tabela(request);
+            if (!this.func.Permissao(request, tabela, "V")) 
+                return {status: 400, errors: [{message: "Você não tem permissão para acessar os registros"}]}
+        }
+        let cliente = await this._repClientes.findOne({relations: ['vendedor','empresa','pedidos','usuario','contatos'], where: {uid: request.params.id}});
         let _cliente: any = {...cliente};
-        if (cliente)
-            _cliente.pedidos = await cliente.pedidos;
+        _cliente.pedidos = await cliente.pedidos;
+        _cliente.vendedor = await cliente.vendedor;
+        _cliente.empresa = await cliente.empresa;
+        console.log(_cliente)
+        console.log(cliente)
         return _cliente;
     }
 }

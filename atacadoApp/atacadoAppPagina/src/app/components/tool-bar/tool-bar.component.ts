@@ -11,9 +11,11 @@ export class ToolBarComponent implements OnInit {
   @Input() aprovado: boolean = false;
   @Input() clienteAtivo: boolean = false;
   @Input() clienteUid: String = "";
+  @Input() codUid: String = "";
   @Input() routerBack: string = "";
   @Input() alterar: boolean = false;
   @Input() visivelBtnBack: boolean = true;
+  @Input() link: String = "cliente";
   @Output() salvar = new EventEmitter();
   constructor() { }
 

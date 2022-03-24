@@ -1,1 +1,103 @@
-<p>pedidos works!</p>
+
+<div class="murau__container">
+    <ngx-spinner bdColor="rgba(75,46,40,0.7)"
+                color="#ffff"
+                size="medium"
+                type="ball-spin-fade-rotating"
+                [fullScreen]="true">
+        <p style="font-size: 20px; color: white">{{spinnerAcao}}</p>
+    </ngx-spinner>
+    <h1>Listagem de Pedidos</h1>
+    <h5>Consulta - Exclusão e Manutenção de Pedidos</h5>
+    <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+            <button pButton 
+                    pRipple 
+                    label="Novo Pedido" 
+                    icon="pi pi-plus"
+                    class="p-button-primary p-mr-2"
+                    routerLink="/clientes"
+                    *ngIf="inserir"></button>
+
+            <button pButton
+                    pRipple
+                    icon="pi pi-trash"
+                    class="p-button-danger p-mr-2"
+                    (click)="excluirPedidos()"
+                    [disabled]="!selPedidos || !selPedidos.length"></button>
+
+            <p-button 
+                    pRipple
+                    [pTooltip]="toolTipBtnExcluidos"
+                    [icon]="iconBtnEye"
+                    styleClass="p-button-help"
+                    (click)="mostraPedidosExcluidos()"></p-button>
+
+        </ng-template>
+        
+    </p-toolbar>
+    <p-table #dt [value]="pedidoList"
+                 [rows]="10"s
+                 [paginator]="true"
+                 [globalFilterFields]="['num_pedido', 'cliente.nome_fantasia', 'vendedor.nome']"
+                 [(selection)]="selPedidos"
+                 [rowHover]="true"
+                 dataKey="uid"
+                 currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} Pedidos"
+                 [showCurrentPageReport]="true" styleClass="p-datatable-responsive" [responsive]="true">
+        <ng-template pTemplate="caption">
+            <div class="p-d-flex p-ai-center p-jc-between">
+                <h2 class="p-m-0">Pedidos</h2>
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Buscar..." />
+                </span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 3rem">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th pSortableColumn="num_pedido" colspan="5%">Num. Pedido<p-sortIcon field= "num_pedido"></p-sortIcon></th>
+                <th pSortableColumn="status_pedido" colspan="5%">Situação<p-sortIcon field= "status_pedido"></p-sortIcon></th>
+                <th pSortableColumn="cliente.nome_fantasia" colspan="25%">Cliente<p-sortIcon field= "cliente.nome_fantasia"></p-sortIcon></th>
+                <th pSortableColumn="vendedor.nome" colspan="25%">Vendedor<p-sortIcon field= "vendedor.nome"></p-sortIcon></th>
+                <th pSortableColumn="data_inclusao" colspan="10%">Data Inc.<p-sortIcon field="data_inclusao"></p-sortIcon></th>
+                <th pSortableColumn="data_alteracao" colspan="10%">Última Alt.<p-sortIcon field="data_alteracao"></p-sortIcon></th>
+                <th pSortableColumn="valor_pedido" colspan="15%">Valor Pedido<p-sortIcon field= "valor_pedido"></p-sortIcon></th>
+                
+                <th colspan="10%"></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-pedido>
+            <tr>
+                <td *ngIf="!pedido.ativo || !pedido.excluido">
+                    <p-tableCheckbox [value]="pedido" [disabled]="pedido.excluido || !pedido.ativo"></p-tableCheckbox>
+                </td>
+                <td [ngClass]="{'registroExcluido': pedido.excluido}" colspan="5%">{{pedido.num_pedido}}</td>
+                <td [ngClass]="{'registroExcluido': pedido.excluido}" colspan="5%">{{status[pedido.status_pedido - 1].label}}</td>
+                <td [ngClass]="{'registroExcluido': pedido.excluido}" colspan="25%">{{pedido.cliente.nome_fantasia}}</td>
+                <td [ngClass]="{'registroExcluido': pedido.excluido}" colspan="25%">{{pedido.vendedor.nome}}</td>
+               
+                <td [ngClass]="{'registroExcluido': pedido.excluido}" colspan="10%">{{pedido.data_inclusao | date: 'dd/MM/yyyy'}}</td>
+                <td [ngClass]="{'registroExcluido': pedido.excluido}" colspan="10%">{{pedido.data_alteracao | date: 'dd/MM/yyyy'}}</td>
+                <td [ngClass]="{'registroExcluido': pedido.excluido}" colspan="15%">{{pedido.valor_pedido | currency: 'BRL'}}</td>
+                <td *ngIf="!pedido.excluido && pedido.ativo" colspan="10%">
+                    <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-primary p-mr-2" routerLink="/pedido/{{pedido.uid}}"></button>
+                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="excluirPedido(pedido)" *ngIf="excluir"></button>
+                </td>
+                <td *ngIf="pedido.excluido || !pedido.ativo" colspan="12%">
+                    <button pButton pRipple pTooltip="Retaurar Registro" icon="pi pi-undo" class="p-button-rounded p-button-help p-mr-2" (click)="restauraPedido(pedido)" *ngIf="alterar"></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="summary">
+            
+        </ng-template>
+    </p-table>
+    <p-confirmDialog [style]="{width: '500px'}"></p-confirmDialog>
+</div>
+
+
+

@@ -9,6 +9,7 @@ import { Empresas } from '../entity/Empresas';
 import * as path from 'path';
 export class ProdutosController extends BaseController<Produtos> {
     private _repProdutos: Repository<Produtos> = getRepository(Produtos);
+    private _repProdutoEmpresas: Repository<ProdutosEmpresas> = getRepository(ProdutosEmpresas);
     constructor () {
         super(Produtos);
     }
@@ -18,10 +19,18 @@ export class ProdutosController extends BaseController<Produtos> {
             if (!this.func.Permissao(request, tabela, "V")) 
                 return {status: 400, errors: [{message: "Você não tem permissão para acessar os registros"}]}
         }
-        const produto = await this._repProdutos.findOne(request.params.id);
+        const produto = await this._repProdutos.findOne({relations: ["produtosEmpresas", "imagens"],where: {uid: request.params.id}});
         let prod: any = {...produto};
         prod.imagens = await produto.imagens;
+        prod.produtosEmpresas = await produto.produtosEmpresas;
         return prod;
+    }
+    async produtoEmpresas(request: Request) {
+        const _produtoEmpresas = await this._repProdutoEmpresas.findOne(request.params.prod);
+        let _prodEmp: any = {..._produtoEmpresas};
+        console.log(_prodEmp)
+        _prodEmp.empresa = await _produtoEmpresas.empresa;
+        return _prodEmp;
     }
     async save(request: Request) {
         
@@ -86,7 +95,13 @@ export class ProdutosController extends BaseController<Produtos> {
         }
 
         if (filtro == "codigo") {
-            return this._repProdutos.findOne({where: {codigo: valor}})
+            const produto = await this._repProdutos.findOne({where: {codigo: valor}});
+            const _produto: any = {...produto};
+            if (produto) {
+                _produto.imagens = await produto.imagens;
+                _produto.produtosEmpresas = await produto.produtosEmpresas;
+            }
+            return _produto;
         }
 
         if (filtro == "tamanho") {

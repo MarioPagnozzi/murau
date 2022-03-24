@@ -9,6 +9,7 @@ import { GrupoController } from './controller/GrupoController';
 import { StorageController } from './controller/StorageController';
 import { PromocaoController } from './controller/PromocaoController';
 import { TabelasController } from './controller/TabelasController';
+import { ProdutosEmpresaController } from './controller/ProdutosEmpresaController';
 
 export const Routes = [
 
@@ -44,7 +45,8 @@ export const Routes = [
     {method: "get", route: "/produtos/produto_list/query_custom/qry/search", controller: ProdutosController, action: "search"},
     {method: "get", route: "/public/uploads/fotos/:codprod/:nome_foto", controller: ProdutosController, action: "getFile"},
     {method: "get", route: "/produtos/fotos/:uid", controller: ProdutosController, action: "getFile"},
-
+    {method: "get", route: "/produtos/produtoempresa/:prod", controller: ProdutosController, action: "produtoEmpresas"},
+    {method: "get", route: "/produtosempresas/:id", controller: ProdutosEmpresaController, action: "one"},
     //roteamentos restritos: Vendedores
     {method: "get", route: "/vendedores", controller: VendedoresController, action: "all", useQueryString: true}, 
     {method: "get", route: "/vendedores/:id", controller: VendedoresController, action: "one"}, 
