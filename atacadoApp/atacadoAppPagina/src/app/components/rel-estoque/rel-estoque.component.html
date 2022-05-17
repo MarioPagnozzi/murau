@@ -1,0 +1,154 @@
+<div class="murau__container">
+    <ngx-spinner bdColor="rgba(75,46,40,0.7)"
+                color="#ffff"
+                size="medium"
+                type="ball-spin-fade-rotating"
+                [fullScreen]="true">
+        <p style="font-size: 20px; color: white">{{spinnerAcao}}</p>
+    </ngx-spinner>
+    <h1>Relatório de Estoque</h1>
+    <h5 style="height: 3px !important;">Tela de Relatório de Estque x Produtos x Empresa</h5>
+    <p-toolbar styleClass="p-mb-4">
+        <ng-template pTemplate="left">
+            
+            <button pButton
+                    pRipple
+                    icon="pi pi-trash"
+                    class="p-button-danger p-mr-2"
+                    (click)="excluirProdutos()"
+                    [disabled]="!SelProdutos || !SelProdutos.length"></button>
+
+            <button pButton
+                    pRipple
+                    icon="pi pi-print"
+                    class="p-button-secondary p-mr-2"
+                    (click)="imprimirRel()"
+                    [disabled]="!SelProdutos || !SelProdutos.length"></button>
+
+            <span class="p-input-icon-left p-mr-2">
+                <i class="pi pi-plus"></i>
+                <input pInputText type="text" [(ngModel)]="codProd" placeholder="Inserir Produto..." />
+            </span> 
+            <p-button 
+                    pRipple
+                    pTooltip="Inserir Produto"
+                    icon="pi pi-plus"
+                    styleClass="p-button-primary"
+                    (click)="buscarProduto()"></p-button>
+
+           
+
+        </ng-template>
+        
+    </p-toolbar>
+   <p-table  #dt [value]="produtoList"
+            [rows]="10"
+            [paginator]="true"
+            [globalFilterFields]="['codigo', 'nome', 'referencia', 'cor']"
+            [(selection)]="SelProdutos"
+            [rowHover]="true"
+            dataKey="uid"
+            currentPageReportTemplate="Mostrando {first} até {last} de {totalRecords} prodtuos"
+            [showCurrentPageReport]="true" styleClass="p-datatable-responsive" [responsive]="true">
+        <ng-template pTemplate="caption">
+            <div class="p-d-flex p-ai-center p-jc-between">
+                <h2 class="p-m-0">Produtos - Estoque</h2>
+                <span class="p-input-icon-left">
+                    <i class="pi pi-search"></i>
+                    <input pInputText type="text" (input)="applyFilterGlobal($event, 'contains')" placeholder="Buscar..." />
+                </span>
+            </div>
+        </ng-template>
+        <ng-template pTemplate="header">
+            <tr>
+                <th style="width: 3rem">
+                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                </th>
+                <th style="width: 3rem"></th>
+                <th  colspan="45%"></th>
+                <th pSortableColumn="codigo" colspan="5%">Código<p-sortIcon field="codigo"></p-sortIcon></th>
+                <th pSortableColumn="referencia" colspan="10%">Referencia<p-sortIcon field="referencia"></p-sortIcon></th>
+                <th pSortableColumn="nome" colspan="30%">Produto<p-sortIcon field="nome"></p-sortIcon></th>
+                
+                <th colspan="10%"></th>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-produto let-expanded="expanded">
+            <tr>
+                <td *ngIf="!produto.ativo || !produto.excluido">
+                    <p-tableCheckbox [value]="produto" [disabled]="produto.excluido || !produto.ativo"></p-tableCheckbox>
+                </td>
+                <td>
+                    <button type="button" pButton pRipple [pRowToggler]="produto" class="p-button-text p-button-rounded p-button-plain" [icon]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></button>
+                </td>
+                <td colspan="45%">
+                    <img *ngIf="produto.imagens.length > 0" [src]="produto.imagens[0].caminho" [alt]="produto.nome" width="100" class="shadow-4" />
+                </td> 
+               
+                <td colspan="5%">{{produto.codigo}}</td>
+                <td colspan="10%">{{produto.referencia}}</td>
+                <td colspan="30%">{{produto.nome}}</td>
+                <td *ngIf="!produto.excluido && produto.ativo" colspan="10%">
+                    <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-danger" (click)="excluirProduto(produto)"></button>
+                </td>
+            </tr>
+        </ng-template>
+        <ng-template pTemplate="rowexpansion" let-produto>
+            <tr>
+                <td colspan="90%">
+                    <div class="p-3">
+                        <p-table [value]="produto.produtosEmpresas" dataKey="uid">
+                            <ng-template pTemplate="header">
+                                <tr>
+                                    <th pSortableColumn="empresa.codigo">Codigo <p-sortIcon field="empresa.codigo"></p-sortIcon></th>
+                                    <th pSortableColumn="empresa.nome_fantasia">Empresa <p-sortIcon field="emrpesa.nome_fantasia"></p-sortIcon></th>
+                                    <th pSortableColumn="estoque ">Físico <p-sortIcon field="estoque"></p-sortIcon></th>
+                                    <th pSortableColumn="estoque05">Outlet <p-sortIcon field="estoque05"></p-sortIcon></th>
+                                    <th pSortableColumn="estoque08">Retorno Lojas <p-sortIcon field="estoque08"></p-sortIcon></th>
+                                    <th pSortableColumn="estoque14">Showroom <p-sortIcon field="estoque14"></p-sortIcon></th>
+                                    <th pSortableColumn="estoque23">Sportaholics <p-sortIcon field="estoque23"></p-sortIcon></th>
+                                    <th>Total em Estoque</th>
+                                    <th style="width: 4rem"></th>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="body" let-empresa>
+                                <tr>
+                                    <td>{{empresa.empresa.codigo}}</td>
+                                    <td>{{empresa.empresa.nome_fantasia}}</td>
+                                    <td>{{empresa.estoque | number: '0.2-2':'pt'}}</td>
+                                    <td>{{empresa.estoque05 | number: '0.2-2':'pt'}}</td>
+                                    <td>{{empresa.estoque08 | number: '0.2-2':'pt'}}</td>
+                                    <td>{{empresa.estoque14 | number: '0.2-2':'pt'}}</td>
+                                    <td>{{empresa.estoque23 | number: '0.2-2':'pt'}}</td>
+                                    <td>{{(empresa.estoque05 + empresa.estoque + empresa.estoque08 + empresa.estoque14 + empresa.estoque23) | number: '0.2-2':'pt'}}</td>
+                                    
+                                    <td><p-button type="button" icon="pi pi-search"></p-button></td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="footer">
+                                <tr>
+                                    <td></td>
+                                    <td colspan="1" class="text-right">Totais</td>
+                                   
+                                    <td>{{produto.total_estoque01 | number: '0.2-2':'pt'}}</td>
+                                    <td>{{produto.total_estoque05 | number: '0.2-2':'pt'}}</td>
+                                    <td>{{produto.total_estoque08 | number: '0.2-2':'pt'}}</td>
+                                    <td>{{produto.total_estoque14 | number: '0.2-2':'pt'}}</td>
+                                    <td>{{produto.total_estoque23 | number: '0.2-2':'pt'}}</td>
+                                    <td>{{(produto.total_estoque05 + produto.total_estoque01 + produto.total_estoque08 + produto.total_estoque14 + produto.total_estoque23) | number: '0.2-2':'pt'}}</td>
+                                    
+                                    <td><p-button type="button" icon="pi pi-search"></p-button></td>
+                                </tr>
+                            </ng-template>
+                            <ng-template pTemplate="emptymessage">
+                                <tr>
+                                    <td colspan="6">Sem dados para mostrar</td>
+                                </tr>
+                            </ng-template>
+                        </p-table>
+                    </div>
+                </td>
+            </tr>
+        </ng-template>
+</p-table>
+</div>

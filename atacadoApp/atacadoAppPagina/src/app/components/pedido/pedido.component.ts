@@ -152,10 +152,7 @@ export class PedidoComponent implements OnInit, AfterViewInit {
   async getUid(uid: string): Promise<void> {
   
    
-    this.spinnerAcao = "Carregando..."; 
-   
-    
-
+    this.spinnerAcao = "Carregando...";
     this.active.queryParams.subscribe({
       next: async (qp) => {
         console.log(qp)
@@ -206,6 +203,9 @@ export class PedidoComponent implements OnInit, AfterViewInit {
   addItem() {
     this.subimetted = false;
     this.itemDialog = true;
+  }
+  async busca_promocao(uid: string) {
+    
   }
   saveItem() {
     this.subimetted = true;

@@ -17,5 +17,17 @@ export class ProdutosEmpresas extends BaseEntity {
 
     @Column({type: "float", default: 0})
     estoque: number
+
+    @Column({type: "float", default: 0})
+    estoque05: number
+
+    @Column({type: "float", default: 0})
+    estoque08: number
+
+    @Column({type: "float", default: 0})
+    estoque14: number
+
+    @Column({type: "float", default: 0})
+    estoque23: number
     
 }

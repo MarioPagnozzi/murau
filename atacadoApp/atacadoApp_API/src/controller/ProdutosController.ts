@@ -7,6 +7,7 @@ import { ImagensProduto } from '../entity/imagesProduto';
 import { ProdutosEmpresas } from '../entity/ProdutosEmpresas';
 import { Empresas } from '../entity/Empresas';
 import * as path from 'path';
+import * as fun from '../configuracao/functions/globalFunctions';
 export class ProdutosController extends BaseController<Produtos> {
     private _repProdutos: Repository<Produtos> = getRepository(Produtos);
     private _repProdutoEmpresas: Repository<ProdutosEmpresas> = getRepository(ProdutosEmpresas);
@@ -32,7 +33,121 @@ export class ProdutosController extends BaseController<Produtos> {
         _prodEmp.empresa = await _produtoEmpresas.empresa;
         return _prodEmp;
     }
-    async save(request: Request) {
+    async estoque(request: Request) {
+        
+        if (!this.func.Permissao(request,"Produtos", "V")) {
+            return {status: 400, errors:["Você não tem permissão para visualizar o estoque"]}
+        }
+        const retornoEstoque = async ()=> {
+            const codProd = request.params.prod;
+            const codSaldo = request.params.cdSaldo;
+            let _produto = await this._repProdutos.findOne({where: {codigo: codProd}});
+            if (!_produto) {
+                return await new fun.geraToken().token().then(async (token) => {
+                    let insere_produto = new fun.insereNovoProduto(codProd, token).insetNew();
+                    return await Promise.all([insere_produto]).then(async () => {
+                        let updateProduto = new fun.atualizaProduto(codProd, token);
+                        let preco = await updateProduto.preco();
+                        if (codSaldo == 0) {
+                            let cdSaldos = [1,5,8,14,23]
+                            for await (let cdSaldo of cdSaldos) {
+                                let estoque = await updateProduto.estoque(cdSaldo);
+                                await Promise.all([estoque]);
+                            }
+                        } else {
+                            let estoque = await updateProduto.estoque(codSaldo);
+                            await Promise.all([estoque])
+                        }
+                        let imagem = await updateProduto.imagens();
+
+                        return await Promise.all([preco, imagem]).then(async () => {
+                            let produto = await this._repProdutos.findOne({where: {codigo: codProd}});
+                            let _produto: any = {...produto};
+                            _produto.produtosEmpresas = await produto.produtosEmpresas;
+                            _produto.produtosEmpresas = [] as ProdutosEmpresas[];
+                    
+                            for await (let produtoEmpresa of (await produto.produtosEmpresas)) {
+                                let prodEmp = await this._repProdutoEmpresas.findOne(produtoEmpresa.uid);
+                                let _prodEmp: any = {...prodEmp}
+                                _prodEmp.empresa = await prodEmp.empresa;
+                                _produto.produtosEmpresas.push(_prodEmp)
+                            }
+                            _produto.imagens = await produto.imagens;
+                            return await Promise.resolve(_produto);
+                        });
+                    });
+                })
+            } else {
+                let produto = await this._repProdutoEmpresas.findOne({where: {produto: {codigo: codProd}}});
+                let dtAtual = new Date();
+                let dtAtualizacao = new Date(produto ? produto.data_alteracao : _produto.data_alteracao);
+                console.log(dtAtual);
+                console.log(dtAtualizacao)
+
+                let _dtAtual = dtAtual.getDate() + "/" + (+dtAtual.getMonth() + 1) + "/" + dtAtual.getFullYear();
+                let _dtAtualizacao = dtAtualizacao.getDate() + "/" + (+dtAtualizacao.getMonth() + 1) + "/" + dtAtualizacao.getFullYear()
+                if (_dtAtual === _dtAtualizacao) {
+                    console.log("datas iguais")
+                        let produto = await this._repProdutos.findOne({where: {codigo: codProd}});
+                        let _produto: any = {...produto};
+                        _produto.produtosEmpresas = await produto.produtosEmpresas;
+                        _produto.produtosEmpresas = [] as ProdutosEmpresas[];
+                            
+                        for await (let produtoEmpresa of (await produto.produtosEmpresas)) {
+                                let prodEmp = await this._repProdutoEmpresas.findOne(produtoEmpresa.uid);
+                                let _prodEmp: any = {...prodEmp}
+                                _prodEmp.empresa = await prodEmp.empresa;
+                                _produto.produtosEmpresas.push(_prodEmp)
+                        }
+                        _produto.imagens = await produto.imagens;
+                        return await Promise.resolve(_produto);
+                }
+                return await new fun.geraToken().token().then(async (token) =>{
+
+                
+                        let updateProduto = new fun.atualizaProduto(codProd, token);
+                        let preco = await updateProduto.preco();
+                        if (codSaldo == 0) {
+                            let cdSaldos = [1,5,8,14,23]
+                            for await (let cdSaldo of cdSaldos) {
+                                let estoque = await updateProduto.estoque(cdSaldo);
+                                await Promise.all([estoque]);
+                            }
+                        } else {
+                            let estoque = await updateProduto.estoque(codSaldo);
+                            await Promise.all([estoque])
+                        }
+                        
+                        let imagem = await updateProduto.imagens();
+            
+                        return await Promise.all([preco, imagem]).then(async (a: any) => {
+                            console.log(a);
+                            let produto = await this._repProdutos.findOne({where: {codigo: codProd}});
+                                let _produto: any = {...produto};
+                                _produto.produtosEmpresas = await produto.produtosEmpresas;
+                                _produto.produtosEmpresas = [] as ProdutosEmpresas[];
+                            
+                                for await (let produtoEmpresa of (await produto.produtosEmpresas)) {
+                                    let prodEmp = await this._repProdutoEmpresas.findOne(produtoEmpresa.uid);
+                                    let _prodEmp: any = {...prodEmp}
+                                    _prodEmp.empresa = await prodEmp.empresa;
+                                    _produto.produtosEmpresas.push(_prodEmp)
+                                }
+                                _produto.imagens = await produto.imagens;
+                                return await Promise.resolve(_produto);
+                        }).catch((e) => {
+                            console.log(e.message)
+                        });
+                
+                })
+            }
+        }
+        let estoque = await retornoEstoque();
+        return await Promise.resolve(estoque)
+        
+
+    }
+    async save(request: Request) {                                                                  
         
         let _produto = <Produtos>request.body;
 

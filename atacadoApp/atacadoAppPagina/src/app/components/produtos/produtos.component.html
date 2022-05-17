@@ -25,12 +25,21 @@
                     (click)="excluirProdutos()"
                     [disabled]="!selProdutos || !selProdutos.length"></button>
 
+            <button pButton
+                    pRipple
+                    icon="pi pi-print"
+                    class="p-button-secondary p-mr-2"
+                    (click)="verificaEstoque()"
+                    [disabled]="!selProdutos || !selProdutos.length"></button>
+
             <p-button 
                     pRipple
                     [pTooltip]="toolTipBtnExcluidos"
                     [icon]="iconBtnEye"
                     styleClass="p-button-help"
                     (click)="mostraProdutosExcluidos()"></p-button>
+
+           
 
         </ng-template>
         

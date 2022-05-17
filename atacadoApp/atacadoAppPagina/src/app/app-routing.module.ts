@@ -25,6 +25,7 @@ import { ClientesPendentesComponent } from './components/clientes-pendentes/clie
 import { PromocoesComponent } from './components/promocoes/promocoes.component';
 import { AgendaComponent } from './components/agenda/agenda.component';
 import { PedidosComponent } from './components/pedidos/pedidos.component';
+import { RelEstoqueComponent } from './components/rel-estoque/rel-estoque.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: '/home' },
@@ -52,6 +53,7 @@ const routes: Routes = [
   { path: 'aprovar', component: ClientesPendentesComponent, canActivate: [AdminGuard] },
   { path: 'promocao', component: PromocoesComponent, canActivate: [AdminGuard] },
   { path: 'agenda', component: AgendaComponent, canActivate: [AdminGuard] },
+  { path:  'relatorios/produtos/estoque', component: RelEstoqueComponent, canActivate: [AdminGuard]},
 
   { path: 'cadastro', component: CreateClienteComponent}
 ];

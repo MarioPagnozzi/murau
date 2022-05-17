@@ -47,6 +47,7 @@ export const Routes = [
     {method: "get", route: "/produtos/fotos/:uid", controller: ProdutosController, action: "getFile"},
     {method: "get", route: "/produtos/produtoempresa/:prod", controller: ProdutosController, action: "produtoEmpresas"},
     {method: "get", route: "/produtosempresas/:id", controller: ProdutosEmpresaController, action: "one"},
+    {method: "get", route: "/produtos/estoque/:cdSaldo/:prod", controller: ProdutosController, action: "estoque"},
     //roteamentos restritos: Vendedores
     {method: "get", route: "/vendedores", controller: VendedoresController, action: "all", useQueryString: true}, 
     {method: "get", route: "/vendedores/:id", controller: VendedoresController, action: "one"}, 

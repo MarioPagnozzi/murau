@@ -16,8 +16,8 @@ export class HomeService extends BaseService<IProdutos | ProdutosModel | IEmpres
 
   private _produtos: ProdutosModel[] = [];
   produtosChange$: Observable<ProdutosModel[]> = new Observable<ProdutosModel[]>();
-  private _observer: Observer<ProdutosModel[]> | any
-  constructor(public http: HttpService, public httpCli: HttpClient,private imagemProdService: ImagemProdutosService) {
+  private _observer: Observer<ProdutosModel[]> | any;
+  constructor(public http: HttpService, public httpCli: HttpClient, private imagemProdService: ImagemProdutosService) {
     super("home", http, httpCli);
     this.produtosChange$ = new Observable(observer => this._observer = observer);    
    }

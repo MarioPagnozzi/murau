@@ -113,6 +113,12 @@
             font-weight: 600;
         }
     }
+    .grid-nogutter {
+        margin-right: 10%;
+        margin-left: 7%;
+        margin-top: 0;
+        width: 100%;
+    }
 }
 
 .card {
@@ -131,7 +137,11 @@
 .alinha_esquerda {
     text-align: start;
 }
-
+.centraliza {
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
+}
 :host::ng-deep {
     @media screen and (max-width: 576px) {
         .product-grid-item {

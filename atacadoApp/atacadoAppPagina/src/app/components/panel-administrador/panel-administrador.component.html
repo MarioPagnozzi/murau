@@ -104,6 +104,15 @@
             </div>
         </div>
         <div class="row content bottom-border">
+            <span class="titulo">Relatórios</span>
+            <div class="col icone" *ngIf="vProdutos">
+                <a routerLink="/relatorios/produtos/estoque">
+                    <img id="estoque" src="./assets/images/icons/estoque.png" />
+                    <label for="estoque" class="legenda">Estoque Produtos</label>
+                </a>
+            </div>
+        </div>
+        <div class="row content bottom-border">
             <span class="titulo">Utilitários</span>
             <div class="col icone">
                 <a routerLink="/agenda" [matBadge]="5" matBadgeColor="warn" [matBadgeHidden]="false" matBadgeHint="Clintes Novos" matBadgeDescription="Clientes Novos">

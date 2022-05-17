@@ -63,6 +63,10 @@ export class ProdutosComponent implements OnInit {
     })
 
   }
+  verificaEstoque() {
+    this.produtosService.produtosSelecionados(this.selProdutos);
+    this.route.navigateByUrl("/relatorios/produtos/estoque");
+  }
   hasPermissoes(): IPermissoes {
 
   
@@ -144,7 +148,7 @@ export class ProdutosComponent implements OnInit {
   }
   excluirProduto(produto: ProdutosModel) {
     this.confirmationService.confirm({
-      message: "Deseja realmente excluir o grupo " + produto.nome + "?",
+      message: "Deseja realmente excluir o produto " + produto.nome + "?",
       header: "Confirmação",
       icon: "pi pi-exclamation-triangle",
       accept: async () => {

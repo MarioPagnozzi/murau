@@ -1,6 +1,6 @@
-<div id="prodListas" class="murau__container">
+<div id="prodListas" class="murau__container centraliza">
   <p-dataView #dv [value]="produtos" [paginator]="true" [rows]="12" filterBy="nome,referencia,codigo"
-    [sortField]="sortField" [sortOrder]="sortOrdem" layout="grid" (onPage)="onPageChange();">
+    [sortField]="sortField" [sortOrder]="sortOrdem" layout="grid" (onPage)="onPageChange();" emptyMessage="Nenhum Registro Encontrado">
     <ng-template pTemplate="header">
       <div class="p-d-flex p-flex-column p-flex-md-row p-jc-md-between">
         <div class="row content">
@@ -72,5 +72,6 @@
         </div>
       </div>
     </ng-template>
+    
   </p-dataView>
 </div>

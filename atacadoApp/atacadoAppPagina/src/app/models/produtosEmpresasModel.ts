@@ -8,5 +8,9 @@ export class ProdutosEmpresasModel extends BaseModel {
     empresa?: EmpresasModel
     valor?: number
     estoque?: number
+    estoque05?: number
+    estoque08?: number
+    estoque14?: number
+    estoque23?: number
     
 }

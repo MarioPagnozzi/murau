@@ -9,6 +9,7 @@ import { isArray } from 'util';
 import config from "../config";
 import { setInterval } from 'timers';
 import { Grupos } from '../../entity/Grupos';
+import { time } from 'console';
 
 
 //var https = require("https");
@@ -38,7 +39,7 @@ export class apiRequest {
             let interval = setTimeout(() => {
                 const request = https.request(this.options, (res) => {
                     let chuncks = [];
-                    if (res.statusCode == 200 || res.statusCode == 400) {
+                    if (res.statusCode == 200 || res.statusCode == 400 || res.statusCode == 404) {
                         res.on("data", (chunk) => {
                             chuncks.push(chunk);
                         });
@@ -533,7 +534,7 @@ export class atualizaProduto {
             await Promise.all([paramEmps, body, atualiza])
         })
     }
-    async estoque() {
+    async estoque(cdSaldo = 1) {
         return new Promise<any>(async (resolve) => {
             const params = async () => {
                 let parametros = await getParametros();
@@ -555,7 +556,7 @@ export class atualizaProduto {
 
             let _obj = {
                 "produtos": [],
-                "cdSaldo": 1,
+                "cdSaldo": cdSaldo,
                 "inEstoque": 1,
                 "inPedidoVenda": 0,
                 "empresas": []
@@ -603,7 +604,7 @@ export class atualizaProduto {
             const atualiza_saldo = async () => {
 
                 if (body) {
-
+                    //console.log(body)
                     let { saldos } = JSON.parse(body);
                     let bar = new progressBar("[:bar] Atualizando saldo dos produtos \n", {
                         complete: "=",
@@ -658,7 +659,18 @@ export class atualizaProduto {
                                                     let entityProdutoEmpresa: ProdutosEmpresas = new ProdutosEmpresas();
                                                     entityProdutoEmpresa.empresa = Promise.resolve(empresa);
                                                     entityProdutoEmpresa.produto = Promise.resolve(prod);
-                                                    entityProdutoEmpresa.estoque = qtEstoque;
+                                                    if (cdSaldo === 1) {
+                                                        entityProdutoEmpresa.estoque = qtEstoque;
+                                                    } else if (cdSaldo === 5) {
+                                                        entityProdutoEmpresa.estoque05 = qtEstoque;
+                                                    } else if (cdSaldo === 8) {
+                                                        entityProdutoEmpresa.estoque08 = qtEstoque;
+                                                    } else if (cdSaldo === 14) {
+                                                        entityProdutoEmpresa.estoque14 = qtEstoque;
+                                                    } else {
+                                                        entityProdutoEmpresa.estoque23 = qtEstoque;
+                                                    }
+                                                    
                                                     setProdutoEmpresa(entityProdutoEmpresa)
 
                                                 } catch (err) {
@@ -691,7 +703,7 @@ export class atualizaProduto {
         })
     }
     async imagens() {
-        return new Promise<any>(async (resolve) => {
+        return new Promise<any>(async (resolve, reject) => {
             const obj = {
                 where: {
                     ativo: true, excluido: false
@@ -700,24 +712,116 @@ export class atualizaProduto {
 
             let produtos = await getProdutos(obj)
             let options: any;
-            let strBusca: string = "";
-            let cdProdSemEstoque: Array<any> = this.cd_Barra;
+            let time: any;
             if (this.cd_Barra.isArray) {
 
-                for (let i = 0; i < this.cd_Barra.length; i++) {
+                const atualizarImg = async () => {
 
-                    if (strBusca === "") {
-                        strBusca = `fq=skuId:${this.cd_Barra[i]}`;
-                    } else {
-                        strBusca = strBusca + `&fq=skuId:${this.cd_Barra[i]}`;
-
+                    for (let i = 0; i < this.cd_Barra.length; i++) {
+                        options = {
+                            "method": "GET",
+                            "hostname": "lojamurau.vtexcommercestable.com.br",
+                            "path": encodeURI((config.apiVetx).trim()) + this.cd_Barra[i] + '?sc=1',
+                            "headers": {
+                                "Content-Type": "application/json",
+                                "accept": "application/json",
+                                "x-vtex-api-appkey": config.vtexAppKey,
+                                "x-vtex-api-apptoken": config.vtexToken
+                            },
+                            "maxRedirects": 100,
+                            "agent": agent,
+                            "pool": {
+                                "maxSockets": 100
+                            }
+                        }
+                        let api = new apiRequest(options);
+                        let body = await Promise.resolve(api.httpRequest());
+                        
+                        const atualiza_imagens = async () => {
+                            console.log(body)
+                            console.log(body.indexOf("SKU not found"))
+                            if (body.toString().indexOf("SKU not found") >= 0) {
+                                reject("SKU not found");
+                            }
+                            let {Id, ProductDescription, ImageUrl, Images} = JSON.parse(body);
+                            let _produto = produtos.filter(val => val.codigo == Id)[0] as Produtos;
+                            try {
+                                _produto.descricao = ProductDescription;
+                                setProdutos(_produto, "Descrição do produto " + _produto.codigo + " atualizada")
+                            }  catch (e) {
+                                 reject(("Erro ao gravar atualização do produto  \n" + e.message));
+                            }
+                            try {
+                            let bar = new progressBar("[:bar] Atualizando imagens do produto \n", {
+                                complete: "=",
+                                incomplete: " ",
+                                width: 30,
+                                total: Images.length + 1
+                            })
+                            time = setTimeout(async () => {
+                                bar.tick();
+                                if (ImageUrl) {
+                                    let produtoImagens = await getImagemProduto({where: {caminho: ImageUrl}});
+                                    if (!produtoImagens) {
+                                        let _imagemProduto: ImagensProduto = new ImagensProduto();
+                                        _imagemProduto.caminho = ImageUrl;
+                                        _imagemProduto.produto = Promise.resolve(_produto);
+                                        _imagemProduto.referencia = _produto.referencia;
+                                        try {                                            
+                                            setImagemProduto(_imagemProduto, 'Atualizada Imagens do Produto ' + this.cd_Barra[i])
+                                        } catch (e) {
+                                            clearInterval(time)
+                                            reject(("Erro ao Salvar imagems de produto \n" + e.message))
+                                        }
+                                        
+                                    }
+                                }
+                                if (Images.length > 0) {
+                                    for (let x = 0; x < Images.length; x++) {
+                                        bar.tick();
+                                        let produtoImagens = await getImagemProduto({where: {caminho: Images[x].ImageUrl}});
+                                        if (!produtoImagens) {
+                                            let _imagemProduto: ImagensProduto = new ImagensProduto();
+                                            _imagemProduto.caminho = Images[x].ImageUrl;
+                                            _imagemProduto.produto = Promise.resolve(_produto);
+                                            _imagemProduto.referencia = _produto.referencia;
+                                            try {
+                                                setImagemProduto(_imagemProduto, 'Atualizada Imagem para o produto ' + this.cd_Barra[i])
+                                            } catch (e) {
+                                                clearInterval(time)
+                                                reject(("Erro ao Salvar imagens " + e.message));
+                                            }
+                                            
+                                        }
+                                        if (bar.complete) {
+                                           resolve(bar.complete)
+                                        }
+                                    }
+                                }
+                                if (bar.complete) {
+                                    resolve(bar.complete)
+                                }
+                            }, 5000)
+                        }
+                        catch (e) {
+                            reject("Erro ao gravar imagens \n" + e.message)
+                        }
+                    }
+                        let _atualiza_imagens = await atualiza_imagens();
+                        await Promise.all([body, _atualiza_imagens]).finally(() => {
+                            clearInterval(time);
+                        })
                     }
                 }
-
+                let atualiza_img = await atualizarImg();
+                await Promise.all([produtos, atualiza_img])
+            }
+            else {
+                console.log("no array")
                 options = {
                     "method": "GET",
                     "hostname": "lojamurau.vtexcommercestable.com.br",
-                    "path": encodeURI((config.apiVtexSearch + strBusca).trim()),
+                    "path": encodeURI((config.apiVetx).trim()) + this.cd_Barra + '?sc=1',
                     "headers": {
                         "Content-Type": "application/json",
                         "accept": "application/json",
@@ -732,228 +836,93 @@ export class atualizaProduto {
                 }
                 let api = new apiRequest(options);
                 let body = await Promise.resolve(api.httpRequest());
-
+                console.log(body)
                 const atualiza_imagens = async () => {
-                    if (body) {
-
-                        let retornoBody = JSON.parse(body);
-                        let bar = new progressBar("[:bar] Atualizando dados dos produtos :percent", {
-                            complete: "=",
-                            incomplete: " ",
-                            width: 30,
-                            total: retornoBody.length
-                        });
-                        let timer = setInterval(async () => {
-                            const atualiza_desc = async () => {
-                                retornoBody.forEach(async (rbody) => {
-
-                                    let { description, items } = rbody;
-                                    if (items.length > 0 || items) {
-                                        cdProdSemEstoque = cdProdSemEstoque.filter(item => !items.includes(item));
-
-                                        for (let item of items) {
-
-                                            let _produto = produtos.filter(val => val.codigo == item.itemId)[0];
-                                            const itens_prod = async () => {
-                                                if (_produto) {
-                                                    if (description) {
-                                                        if (_produto.descricao != description) {
-                                                            _produto.descricao = description;
-                                                            setProdutos(_produto, `Produto ${item.itemId} teve a descrição atualizada`);
-
-                                                        }
-                                                    }
-                                                    if (item.images.length > 0 || item.images) {
-                                                        let imagemProduto: ImagensProduto;
-
-
-                                                        for (let img of item.images) {
-                                                            let imagens = await getImagemProduto({ where: { produto: [{ uid: _produto.uid }] } });
-                                                            bar.tick()
-                                                            const atualiza_imagens = async () => {
-                                                                if (imagens.length > 0) {
-                                                                    if (img.imageUrl) {
-                                                                        let imagem = await getImagemProduto({ where: { caminho: img.mageUrl } })
-
-                                                                        if (!imagem) {
-                                                                            imagemProduto = new ImagensProduto();
-                                                                            imagemProduto.caminho = img.imageUrl;
-                                                                            imagemProduto.produto = Promise.resolve(_produto);
-                                                                            imagemProduto.referencia = _produto.referencia;
-                                                                            setImagemProduto(imagemProduto)
-
-
-                                                                        }
-                                                                        await Promise.all([imagem]);
-                                                                    }
-                                                                } else {
-                                                                    if (img.imageUrl) {
-                                                                        imagemProduto = new ImagensProduto();
-                                                                        imagemProduto.caminho = img.imageUrl;
-                                                                        imagemProduto.produto = Promise.resolve(_produto);
-                                                                        imagemProduto.referencia = _produto.referencia;
-                                                                        setImagemProduto(imagemProduto)
-
-
-                                                                    }
-                                                                }
-
-                                                            }
-                                                            let exec_atualiza_imagem = await atualiza_imagens();
-                                                            await Promise.all([imagens, exec_atualiza_imagem])
-                                                        }
-                                                    }
-                                                }
-
-                                            }
-                                            let exec_itensProd = await itens_prod();
-                                            await Promise.all([exec_itensProd])
-                                        }
-                                    }
-
-                                });
-                            }
-                            let exec_desc = await atualiza_desc();
-                            await Promise.all([exec_desc]).finally(() => {
-                                clearInterval(timer);
-                            })
-                        }, 5000)
-
-
+                    console.log(body.toString().indexOf("SKU not found"))
+                    if (body.toString().indexOf("SKU not found") >= 0) {
+                        console.log("passou")
+                        resolve(("SKU not found"));
+                        //return;
                     }
-                }
-
-                let exec_atualiza_imagem = await atualiza_imagens();
-                await Promise.all([produtos, body, exec_atualiza_imagem]);
-            }
-
-            if (cdProdSemEstoque.length > 0) {
-                let bar = new progressBar("[:bar] Atualizando imagens de produtos sem estoque", {
-                    complete: "=",
-                    incomplete: " ",
-                    width: 30,
-                    total: cdProdSemEstoque.length
-                });
-                let timerSemEstoque = setInterval(async () => {
-                    for (let prod of cdProdSemEstoque) {
+                    let {Id, ProductDescription, ImageUrl, Images} = JSON.parse(body);
+                    let _produto = produtos.filter(val => val.codigo == Id)[0] as Produtos;
+                    
+                    try {
+                        _produto.descricao = ProductDescription;
+                        setProdutos(_produto, "Descrição do Produto " + _produto.codigo + " atualizada")
+                    } catch (e) {
+                        reject(("Erro ao gravar atualização do produto \n" + e.message));
+                    }
+                   try {
+                    let bar = new progressBar("[:bar] Atualizando imagens do produto \n", {
+                        complete: "=",
+                        incomplete: " ",
+                        width: 30,
+                        total: Images.length + 1
+                    })
+                    time = setTimeout(async () => {
                         bar.tick();
-                        options = {
-                            "method": "GET",
-                            "hostname": "lojamurau.vtexcommercestable.com.br",
-                            "path": "/api/catalog_system/pvt/sku/stockkeepingunitbyid/" + prod,
-                            "headers": {
-                                "Content-Type": "application/json",
-                                "accept": "application/json",
-                                "x-vtex-api-appkey": "vtexappkey-lojamurau-WLQIMF",
-                                "x-vtex-api-apptoken": "ZVWOWRDCPCPZQNECCDZMFYELGQHFIRXFUNRQIDNWIENXDWGBGGAOQTKARLHFKYUYEKECVNTYPCDBLGHKKFZBQJPADQZXVIMKKPTTREGSMBYNPJPKDXVEYSHUVDZFNWDG"
-                            },
-                            "maxRedirects": 1000,
-                            "agent": agent,
-                            "pool": {
-                                "maxSockets": 1000
-                            }
-                        }
-
-                        let api = new apiRequest(options);
-                        let body = await Promise.resolve(api.httpRequest());
-
-                        const atualiza_desc = async () => {
-                            if (body) {
-                                let { ProductDescription, ImageUrl, Images } = JSON.parse(body);
-                                let _produto = produtos.filter(val => val.codigo == prod.codigo)[0];
-
-                                if (_produto) {
-                                    if (ProductDescription) {
-                                        if (_produto.descricao != ProductDescription) {
-                                            _produto.descricao = ProductDescription;
-                                            setProdutos(_produto, 'Teve sua descrição atualizada');
-
-                                        }
-                                    }
-                                    let imagemProduto: ImagensProduto;
-
-                                    let imagens = await getImagemProduto({ where: { produto: [{ uid: _produto.uid }] } });;
-
-                                    if (imagens.length > 0) {
-                                        if (ImageUrl) {
-                                            let imagem = await getImagemProduto({ where: { caminho: ImageUrl } })
-
-                                            if (!imagem) {
-                                                imagemProduto = new ImagensProduto();
-                                                imagemProduto.caminho = ImageUrl;
-                                                imagemProduto.produto = Promise.resolve(_produto);
-                                                imagemProduto.referencia = _produto.referencia;
-                                                setImagemProduto(imagemProduto);
-
-
-                                            }
-                                            await Promise.all([imagem]);
-
-                                        }
-                                        if (Images) {
-                                            for (let img in Images) {
-                                                let imagem = await getImagemProduto({ where: { caminho: Images[img].ImageUrl } })
-
-                                                if (!imagem) {
-                                                    imagemProduto = new ImagensProduto();
-                                                    imagemProduto.caminho = Images[img].ImageUrl;
-                                                    imagemProduto.produto = Promise.resolve(_produto);
-                                                    imagemProduto.referencia = _produto.referencia;
-                                                    setImagemProduto(imagemProduto);
-
-
-                                                }
-                                                await Promise.all([imagem]);
-                                            }
-
-                                        }
-                                    } else {
-                                        if (ImageUrl) {
-                                            imagemProduto = new ImagensProduto();
-                                            imagemProduto.caminho = ImageUrl;
-                                            imagemProduto.produto = Promise.resolve(_produto);
-                                            imagemProduto.referencia = _produto.referencia;
-                                            setImagemProduto(imagemProduto)
-
-
-                                        }
-                                        if (Images) {
-                                            for (let img in Images) {
-                                                imagemProduto = new ImagensProduto();
-                                                imagemProduto.caminho = Images[img].ImageUrl;
-                                                imagemProduto.produto = Promise.resolve(_produto);
-                                                imagemProduto.referencia = _produto.referencia;
-                                                setImagemProduto(imagemProduto)
-
-
-                                            }
-                                        }
-                                    }
-                                    await Promise.all([imagens]);
+                        if (ImageUrl) {
+                            let produtoImagens = await getImagemProduto({where: {caminho: ImageUrl}});
+                            if (!produtoImagens) {
+                                let _imagemProduto: ImagensProduto = new ImagensProduto();
+                                _imagemProduto.caminho = ImageUrl;
+                                _imagemProduto.produto = Promise.resolve(_produto);
+                                _imagemProduto.referencia = _produto.referencia;
+                                try {
+                                    setImagemProduto(_imagemProduto, 'Atualizada Imagens do Produto ' + this.cd_Barra)
+                                } catch (e) {
+                                    clearInterval(time)
+                                    reject(("Erro ao gravar imagem \n" + e.message));
                                 }
-
+                                
                             }
-
                         }
-                        let exec_atualiza = await atualiza_desc()
-                        await Promise.all([body, exec_atualiza]).finally(() => {
-                            clearInterval(timerSemEstoque);
-                        })
-                    }
-
-                }, 5000)
-
+                        if (Images.length > 0) {
+                            for (let x = 0; x < Images.length; x++) {
+                                bar.tick();
+                                let produtoImagens = await getImagemProduto({where: {caminho: Images[x].ImageUrl}});
+                                if (!produtoImagens) {
+                                    let _imagemProduto: ImagensProduto = new ImagensProduto();
+                                    _imagemProduto.caminho = Images[x].ImageUrl;
+                                    _imagemProduto.produto = Promise.resolve(_produto);
+                                    _imagemProduto.referencia = _produto.referencia;
+                                    try {
+                                        setImagemProduto(_imagemProduto, 'Atualizada Imagem para o produto ' + this.cd_Barra)
+                                    } catch (e) {
+                                        clearInterval(time)
+                                        reject(("Erro ao gravar imagem \n" + e.message));
+                                    }
+                                    
+                                }
+                                if (bar.complete) {
+                                    clearInterval(time)
+                                    resolve(bar.complete);
+                                }
+                            }
+                        }
+                        if (bar.complete) {
+                            clearInterval(time)
+                            resolve(bar.complete);
+                        }
+                    },5000)
+                }
+                catch (e) {
+                    reject("Erro ao gravar imagens \n" + e.message)
+                }
             }
-            resolve("ok");
+                let _atualiza_imagens = await atualiza_imagens();
+                await (await Promise.all([produtos, body, _atualiza_imagens]).catch(e => {console.log(e.message)}));
+            }
         })
-    }
 
+    }
 }
 export function getImagemProduto(_where) {
 
     let _repImagensProduto: Repository<ImagensProduto> = getRepository(ImagensProduto);
     const imagens = async () => {
-        let imagens = await _repImagensProduto.find(_where);
+        let imagens = await _repImagensProduto.findOne(_where);
         const [imgs] = await Promise.all([imagens]);
         return imgs;
     }

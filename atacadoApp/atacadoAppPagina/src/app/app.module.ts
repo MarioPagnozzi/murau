@@ -128,6 +128,7 @@ import { PromocoesComponent } from './components/promocoes/promocoes.component';
 import { GridComponenteComponent } from './components/grid-componente/grid-componente.component';
 import { InputFilePhotosComponent } from './components/input-file-photos/input-file-photos.component';
 import { InputFilePhotosDirective } from './diretivas/input-file-photos.directive';
+import { RelEstoqueComponent } from './components/rel-estoque/rel-estoque.component';
 
 declare global {
   interface Document {
@@ -173,6 +174,7 @@ export const MY_DATE_FORMATS = {
 const maskConfig: Partial<IConfig> = {
   validation: false,
 };
+
 export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
   align: "right",
   allowNegative: true,
@@ -225,7 +227,8 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
     PromocoesComponent,
     GridComponenteComponent,
     InputFilePhotosComponent,
-    InputFilePhotosDirective
+    InputFilePhotosDirective,
+    RelEstoqueComponent
   ],
   imports: [
     FormsModule,
